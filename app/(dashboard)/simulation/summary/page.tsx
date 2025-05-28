@@ -17,7 +17,7 @@ import {
 import { Progress } from '~/components/ui/progress'
 import { Tag } from '~/components/ui/tag'
 
-export default function ResultPage() {
+export default function SummaryPage() {
   return (
     <Box p={8}>
       <Grid
