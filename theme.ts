@@ -26,6 +26,7 @@ const customConfig = defineConfig({
       },
       fonts: {
         body: { value: 'var(--font-sans)' },
+        heading: { value: 'var(--font-sans)' },
       },
     },
     semanticTokens: {
