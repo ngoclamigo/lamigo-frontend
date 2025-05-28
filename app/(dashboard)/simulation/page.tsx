@@ -40,13 +40,13 @@ export default function SimulationPage() {
     <Container maxW="container.xl" py={8}>
       <VStack gap={6} align="stretch">
         {/* Conversation History */}
-        <Box flex={1} bg="bg" p={4} borderRadius="lg" boxShadow="base" minH="60vh" overflowY="auto">
+        <Box flex={1} bg="bg" padding={4} borderRadius="lg" boxShadow="base" minH="60vh" overflowY="auto">
           <VStack gap={4} align="stretch">
-            <Box bg="brand.subtle" p={3} borderRadius="md">
+            <Box bg="brand.subtle" padding={3} borderRadius="md">
               <Text fontWeight="bold">AI Coach</Text>
               <Text>Hello! I&apos;m your English conversation coach. What would you like to practice today?</Text>
             </Box>
-            <Box bg="gray.subtle" p={3} borderRadius="md">
+            <Box bg="gray.subtle" padding={3} borderRadius="md">
               <Text fontWeight="bold">You</Text>
               <Text>Click the microphone to start speaking...</Text>
             </Box>
@@ -54,7 +54,7 @@ export default function SimulationPage() {
         </Box>
 
         {/* Voice Controls */}
-        <Box bg="bg" p={4} borderRadius="lg" boxShadow="base">
+        <Box bg="bg" padding={4} borderRadius="lg" boxShadow="base">
           {isRecording && <Progress defaultValue={70} size="xs" mb={4} />}
           <HStack justify="center" gap={4}>
             <IconButton aria-label="Start recording" size="lg" onClick={handleStartRecording} disabled={isRecording}>

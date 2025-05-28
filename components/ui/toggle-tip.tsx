@@ -17,7 +17,7 @@ export const ToggleTip = React.forwardRef<HTMLDivElement, ToggleTipProps>(functi
       <ChakraPopover.Trigger asChild>{children}</ChakraPopover.Trigger>
       <Portal disabled={!portalled} container={portalRef}>
         <ChakraPopover.Positioner>
-          <ChakraPopover.Content width="auto" px="2" py="1" textStyle="xs" rounded="sm" ref={ref}>
+          <ChakraPopover.Content width="auto" px="2" py="1" textStyle="xs" borderRadius="sm" ref={ref}>
             {showArrow && (
               <ChakraPopover.Arrow>
                 <ChakraPopover.ArrowTip />

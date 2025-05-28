@@ -2,7 +2,7 @@ import { LuBell, LuUser } from 'react-icons/lu'
 import { Box, Flex, Grid, GridItem, Heading, Icon, IconButton, Text } from '@chakra-ui/react'
 
 import { ColorModeButton } from '~/components/ui/color-mode'
-import { Navigation } from '~/components/navigation'
+import { Sidebar } from '~/components/sidebar'
 
 export default function DashboardLayout({
   children,
@@ -61,7 +61,7 @@ export default function DashboardLayout({
 
       {/* Sidebar */}
       <GridItem area={'sidebar'} bg="bg" borderRight="1px" borderColor="bg.inverted" p="4">
-        <Navigation />
+        <Sidebar />
       </GridItem>
 
       {/* Main Content */}

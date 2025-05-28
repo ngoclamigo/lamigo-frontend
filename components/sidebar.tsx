@@ -11,7 +11,7 @@ import {
 } from 'react-icons/fi'
 import { Button, HStack, Image, Input, InputGroup, StackSeparator, Text, VStack } from '@chakra-ui/react'
 
-export function Navigation() {
+export function Sidebar() {
   return (
     <VStack gap="4" align="stretch" separator={<StackSeparator />} divideStyle="dashed">
       <HStack align="center" gap="4" px="5">
