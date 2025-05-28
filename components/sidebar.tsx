@@ -10,6 +10,7 @@ import {
   FiZap,
 } from 'react-icons/fi'
 import { Button, HStack, Image, Input, InputGroup, StackSeparator, Text, VStack } from '@chakra-ui/react'
+import Link from 'next/link'
 
 export function Sidebar() {
   return (
@@ -24,8 +25,10 @@ export function Sidebar() {
         <InputGroup endElement={<FiSearch />}>
           <Input placeholder="Search..." />
         </InputGroup>
-        <Button variant="ghost" justifyContent="flex-start" size="lg">
-          <FiHome /> Dashboard
+        <Button variant="ghost" justifyContent="flex-start" size="lg" asChild>
+          <Link href="/">
+            <FiHome /> Dashboard
+          </Link>
         </Button>
         <Button variant="ghost" justifyContent="flex-start" size="lg">
           <FiUsers /> Team Members
