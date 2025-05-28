@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { LuBookAudio, LuMic, LuMicOff, LuPhone } from 'react-icons/lu'
+import { LuMic, LuMicOff, LuPhone, LuTicketX } from 'react-icons/lu'
 import {
   Box,
   Button,
@@ -58,35 +58,27 @@ export default function VoiceAssistantPage() {
         transition={{ duration: 0.6 }}
         spaceY="4"
       >
-        <Heading fontSize="4xl">Scenario 1</Heading>
-        <Tag startElement={<LuBookAudio />} size="lg">
-          Knowledge Check
+        <Heading fontSize="4xl">Scenario 5</Heading>
+        <Tag startElement={<LuTicketX />} size="lg">
+          Cancellations
         </Tag>
       </MotionBox>
 
-      <MotionBox
-        textAlign="center"
-        initial={{ opacity: 0, y: -40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <Card.Root flexDirection="row" overflow="hidden" maxW="lg" p="2" borderRadius="2xl">
-          <AspectRatio ratio={1} w="250px">
+      <MotionBox initial={{ opacity: 0, y: -40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+        <Card.Root flexDirection="row" overflow="hidden" maxW="md" p="2" borderRadius="2xl">
+          <AspectRatio ratio={1} w="200px" h="200px" flexShrink={0}>
             <Image
-              borderRadius="lg"
+              borderRadius="xl"
               objectFit="cover"
-              src="https://plus.unsplash.com/premium_photo-1669704099220-055869422c3a?q=80&w=1288&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Caffe Latte"
             />
           </AspectRatio>
           <Box>
             <Card.Body>
               <Card.Title mb="2">Anne Wojcicki</Card.Title>
-              <Card.Description>
-                Caffè latte is a coffee beverage of Italian origin made with espresso and steamed milk.
-              </Card.Description>
-              <HStack mt="4">
-                <Badge>Director</Badge>
+              <Card.Description>Calling in to cancel her subscription</Card.Description>
+              <HStack mt="2">
                 <Badge>Healthcare</Badge>
                 <Badge>Investment</Badge>
               </HStack>
@@ -101,7 +93,7 @@ export default function VoiceAssistantPage() {
         </Card.Root>
       </MotionBox>
 
-      <HStack mt="12">
+      <HStack>
         <MotionButton
           onClick={handleMicClick}
           size="lg"
@@ -130,7 +122,6 @@ export default function VoiceAssistantPage() {
       )}
 
       <MotionBox
-        mt="12"
         px={6}
         py={4}
         bg="whiteAlpha.200"

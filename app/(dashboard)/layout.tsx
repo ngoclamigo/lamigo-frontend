@@ -65,7 +65,7 @@ export default function DashboardLayout({
       </GridItem>
 
       {/* Main Content */}
-      <GridItem area={'main'} bg="bg.subtle" p="6" overflowY="auto">
+      <GridItem area={'main'} bg="bg.subtle" p="4" overflowY="auto">
         {children}
       </GridItem>
 
