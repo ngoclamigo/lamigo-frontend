@@ -1,46 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
-import { LuMic, LuMicOff, LuPhone, LuTicketX } from 'react-icons/lu'
-import {
-  Box,
-  Button,
-  Heading,
-  Text,
-  HStack,
-  Spinner,
-  IconButton,
-  Image,
-  Card,
-  Badge,
-  AspectRatio,
-  Stack,
-} from '@chakra-ui/react'
+import { LuTicketX } from 'react-icons/lu'
+import { Box, Heading, Text, HStack, Image, Card, Badge, AspectRatio, Stack } from '@chakra-ui/react'
 
 import { Tag } from '~/components/ui/tag'
-// import { toaster } from '~/components/ui/toaster'
+
+const DynamicComponentWithNoSSR = dynamic(() => import('./page.client'), { ssr: false })
 
 const MotionBox = motion.create(Box)
-const MotionButton = motion.create(Button)
 
 export default function VoiceAssistantPage() {
-  const router = useRouter()
-
-  const [isListening, setIsListening] = useState(false)
-
-  const handleMicClick = () => {
-    // Toggle voice recognition (replace with actual implementation)
-    setIsListening((prev) => !prev)
-    // toaster.create({
-    //   title: isListening ? 'Stopped Listening' : 'Listening...',
-    //   type: isListening ? 'warning' : 'success',
-    //   duration: 2000,
-    //   closable: true,
-    // })
-  }
-
   return (
     <Stack
       minH="full"
@@ -93,49 +64,7 @@ export default function VoiceAssistantPage() {
         </Card.Root>
       </MotionBox>
 
-      <HStack>
-        <MotionButton
-          onClick={handleMicClick}
-          size="lg"
-          rounded="full"
-          px={8}
-          py={6}
-          whileTap={{ scale: 0.9 }}
-          whileHover={{ scale: 1.05 }}
-          shadow="lg"
-          variant={isListening ? 'subtle' : 'solid'}
-        >
-          {isListening ? <LuMicOff size={24} /> : <LuMic size={24} />} Tap to {isListening ? 'Stop' : 'Speak'}
-        </MotionButton>
-        <IconButton size="lg" borderRadius="full" colorPalette="red" onClick={() => router.push('/simulation/summary')}>
-          <LuPhone />
-        </IconButton>
-      </HStack>
-
-      {isListening && (
-        <MotionBox initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-          <HStack gap={4}>
-            <Spinner size="md" borderWidth="2px" />
-            <Text>Listening for your command...</Text>
-          </HStack>
-        </MotionBox>
-      )}
-
-      <MotionBox
-        px={6}
-        py={4}
-        bg="whiteAlpha.200"
-        rounded="xl"
-        shadow="xl"
-        backdropBlur="xl"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6, duration: 0.4 }}
-      >
-        <Text fontSize="md">
-          Try saying: <strong>&quot;Nice to meet you&quot;</strong> or <strong>&quot;How have you been?&quot;</strong>
-        </Text>
-      </MotionBox>
+      <DynamicComponentWithNoSSR />
     </Stack>
   )
 }
