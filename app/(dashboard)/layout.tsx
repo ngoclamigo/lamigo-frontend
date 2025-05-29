@@ -1,8 +1,7 @@
-import { LuBell, LuUser } from 'react-icons/lu'
-import { Box, Flex, Grid, GridItem, Heading, Icon, IconButton, Text } from '@chakra-ui/react'
+import { Flex, Grid, GridItem, HStack, Image, Text } from '@chakra-ui/react'
 
 import { ColorModeButton } from '~/components/ui/color-mode'
-import { Sidebar } from '~/components/sidebar'
+// import { Sidebar } from '~/components/sidebar'
 
 export default function DashboardLayout({
   children,
@@ -11,58 +10,36 @@ export default function DashboardLayout({
 }>) {
   return (
     <Grid
-      templateAreas={`"sidebar header"
-                      "sidebar main"
-                      "sidebar footer"`}
+      templateAreas={`"header"
+                      "main"
+                      "footer"`}
+      // templateAreas={`"sidebar header"
+      //                 "sidebar main"
+      //                 "sidebar footer"`}
       templateRows={'60px 1fr 50px'}
-      templateColumns={'250px 1fr'}
+      // templateColumns={'250px 1fr'}
       h="100vh"
       gap="0"
     >
       {/* Header */}
       <GridItem area={'header'} bg="bg" zIndex="1">
         <Flex h="100%" px="6" align="center" justify="space-between">
-          <Flex align="center">
-            <Heading size="md" mr="8">
-              Dashboard
-            </Heading>
-          </Flex>
+          <HStack align="center" gap="4">
+            <Image src="/brand.svg" alt="Brand icon" height="8" />
+            <Text color="brand.600" fontWeight="bold" fontSize="lg">
+              Lamigo AI
+            </Text>
+          </HStack>
           <Flex align="center" gap="4">
-            <IconButton
-              aria-label="Notifications"
-              variant="ghost"
-              // size="md"
-            >
-              <Icon>
-                <LuBell />
-              </Icon>
-            </IconButton>
             <ColorModeButton />
-            <Flex align="center">
-              <Box
-                as="div"
-                borderRadius="full"
-                bg="gray.300"
-                p="1"
-                width="32px"
-                height="32px"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                mr="2"
-              >
-                <LuUser />
-              </Box>
-              <Text display={{ base: 'none', md: 'block' }}>John Doe</Text>
-            </Flex>
           </Flex>
         </Flex>
       </GridItem>
 
       {/* Sidebar */}
-      <GridItem area={'sidebar'} bg="bg" borderRight="1px" borderColor="bg.inverted" p="4">
+      {/* <GridItem area={'sidebar'} bg="bg" borderRight="1px" borderColor="bg.inverted" p="4">
         <Sidebar />
-      </GridItem>
+      </GridItem> */}
 
       {/* Main Content */}
       <GridItem area={'main'} bg="bg.subtle" p="4" overflowY="auto">
