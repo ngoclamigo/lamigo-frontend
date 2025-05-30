@@ -1,5 +1,6 @@
 'use client'
 
+import type { CoreMessage } from 'ai'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { ScaleLoader } from 'react-spinners'
@@ -41,12 +42,15 @@ export default function VoiceAssistantClientPage() {
     highlightMode: 'word',
   })
 
+  const [messages, setMessages] = useState<CoreMessage[]>([])
+
   const wasListeningRef = useRef(false)
 
   useEffect(() => {
     const handleTranscription = async () => {
-      const res = await getAnswer(transcript)
+      const res = await getAnswer([...messages, { role: 'user', content: transcript }])
       setResponse(res.text)
+      setMessages((prev) => [...prev, { role: 'user', content: transcript }, { role: 'assistant', content: res.text }])
     }
 
     if (wasListeningRef.current && !listening) {
@@ -91,6 +95,7 @@ export default function VoiceAssistantClientPage() {
           rounded="full"
           loading={listening}
           spinner={<ScaleLoader color="white" height={16} />}
+          disabled={speechStatus === 'started'}
         >
           {listening ? <LuMicOff size={24} /> : <LuMic size={24} />} Tap to {listening ? 'Stop' : 'Speak'}
         </MotionButton>

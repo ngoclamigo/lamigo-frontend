@@ -1,13 +1,14 @@
 'use server'
 
+import type { CoreMessage } from 'ai'
 import { generateText } from 'ai'
 import { openai } from '@ai-sdk/openai'
 
-export async function getAnswer(question: string) {
+export async function getAnswer(messages: CoreMessage[]) {
   const { text, finishReason, usage } = await generateText({
     model: openai('gpt-4o-mini'),
     system,
-    prompt: question,
+    messages,
   })
 
   return { text, finishReason, usage }
