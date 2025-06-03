@@ -1,29 +1,34 @@
 'use client'
 
-import type { CoreMessage } from 'ai'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { ScaleLoader } from 'react-spinners'
 import { useSpeech } from 'react-text-to-speech'
-import { useEffect, useRef, useState } from 'react'
 import { LuMic, LuMicOff, LuPhone } from 'react-icons/lu'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import { Box, Button, HStack, IconButton, Center } from '@chakra-ui/react'
 
 import { AlertClosedComponent } from '~/components/ui/alert'
-import { getAnswer } from '~/utils/ai-agent'
 
 const MotionBox = motion.create(Box)
 const MotionButton = motion.create(Button)
 
-export default function VoiceAssistantClientPage() {
+interface VoiceAssistantClientPageProps {
+  response: string
+  listening: boolean
+  transcript: string
+  resetTranscript: () => void
+}
+
+export default function VoiceAssistantClientPage({
+  response,
+  listening,
+  transcript,
+  resetTranscript,
+}: VoiceAssistantClientPageProps) {
   const router = useRouter()
-
-  const [response, setResponse] = useState('')
-
-  const { transcript, listening, browserSupportsSpeechRecognition, isMicrophoneAvailable, resetTranscript } =
-    useSpeechRecognition()
-
+  const { browserSupportsSpeechRecognition, isMicrophoneAvailable } = useSpeechRecognition()
   // const text = `how about you`
   const {
     Text: SpeechText,
@@ -41,25 +46,6 @@ export default function VoiceAssistantClientPage() {
     showOnlyHighlightedText: false,
     highlightMode: 'word',
   })
-
-  const [messages, setMessages] = useState<CoreMessage[]>([])
-
-  const wasListeningRef = useRef(false)
-
-  useEffect(() => {
-    const handleTranscription = async () => {
-      const res = await getAnswer([...messages, { role: 'user', content: transcript }])
-      setResponse(res.text)
-      setMessages((prev) => [...prev, { role: 'user', content: transcript }, { role: 'assistant', content: res.text }])
-    }
-
-    if (wasListeningRef.current && !listening) {
-      console.log('User finished speaking')
-      handleTranscription()
-    }
-
-    wasListeningRef.current = listening
-  }, [listening, transcript])
 
   useEffect(() => {
     start()
