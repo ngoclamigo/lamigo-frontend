@@ -12,6 +12,7 @@ import { Box, Heading, Text, HStack, Image, Card, Badge, AspectRatio, Stack, Ico
 import { getAnswer } from '~/utils/ai-agent'
 import { Tag } from '~/components/ui/tag'
 import { Chat } from '~/components/chat'
+import { Recommendations } from '~/components/recommendations'
 
 const DynamicComponentWithNoSSR = dynamic(() => import('./page.client'), { ssr: false })
 
@@ -131,7 +132,8 @@ export default function VoiceAssistantPage() {
       </Stack>
       {isChatOpen && (
         <Box w="400px" overflow="hidden">
-          <Chat messages={messages} onSubmit={handleSubmit} />
+          {/* <Chat messages={messages} onSubmit={handleSubmit} /> */}
+          <Recommendations messages={messages} />
         </Box>
       )}
     </Flex>
