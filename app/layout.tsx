@@ -1,32 +1,26 @@
-import type { Metadata } from 'next'
-import { Jost } from 'next/font/google'
+import "@livekit/components-styles";
+import { Metadata } from "next";
+import { Jost } from "next/font/google";
+import "./globals.css";
 
-import { Provider } from '~/components/ui/provider'
-import { Toaster } from '~/components/ui/toaster'
-
-const jost = Jost({
-  variable: '--font-sans',
-  subsets: ['latin'],
-})
+const rubik = Jost({
+  variable: "--font-sans",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
-  title: 'Lamigo AI',
-  description: 'Your personal champion who never sleeps',
-}
+  title: "Lamigo AI",
+  description: "Your personal champion who never sleeps",
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${jost.variable}`}>
-        <Provider>
-          {children}
-          <Toaster />
-        </Provider>
-      </body>
+    <html lang="en" className={`h-full ${rubik.className}`}>
+      <body className="h-full">{children}</body>
     </html>
-  )
+  );
 }
