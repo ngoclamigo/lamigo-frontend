@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 export function TranscriptionView() {
   const combinedTranscriptions = useCombinedTranscriptions();
 
-  if (!combinedTranscriptions || combinedTranscriptions.length === 0) {
+  if (!combinedTranscriptions || combinedTranscriptions.length === 0 || combinedTranscriptions[combinedTranscriptions.length - 1].text.length === 0) {
     return null;
   }
 
