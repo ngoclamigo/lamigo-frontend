@@ -1,71 +1,168 @@
 "use client";
 
+import { useEvaluation } from "@/hooks/useEvaluation";
+import { CustomerPersona, SalesScenario } from "@/types/evaluation";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
-export default function DemoPage() {
-  // Dynamic data variables
-  const userData = {
-    name: "Sarah",
-    company: "Vista Equity Partners",
-    meetingTime: "Tomorrow 2:00 PM",
-    readinessScore: 85,
-    improvement: "+35% vs Last Practice",
+export default function SummaryPage() {
+  const { evaluation, loading, error, evaluate, loadSample } = useEvaluation();
+
+  // Sample scenario and persona for demonstration
+  const sampleScenario: SalesScenario = {
+    name: "Technical Evaluation",
+    description:
+      "Customer's technical team is evaluating the solution for mid-market PE deal sourcing",
+    customer_mood: "Detail-focused and skeptical but genuinely interested in solving real problems",
+    objectives: [
+      "Answer technical questions about data accuracy and integration",
+      "Provide proof of concept for mid-market tech deals",
+      "Address integration concerns with existing PE tools",
+      "Demonstrate ROI potential for the investment team",
+    ],
+    context:
+      "Vista Equity Partners exploring Capital IQ Pro for deal sourcing and portfolio monitoring",
+    urgency: "Decision needed within 2 weeks for Q4 budget planning",
   };
 
-  const talkingPoints = [
-    {
-      title: "ESG Fund Angle",
-      description: "Perfect timing with your $2B sustainability fund launch",
-    },
-    {
-      title: "Competitive Edge",
-      description: "3x more mid-market tech deals than Bloomberg",
-    },
-    {
-      title: "Proof Point",
-      description: "KKR saved 15 hours/week on initial screening",
-    },
-  ];
-
-  const performanceMetrics = [
-    {
-      category: "Product Knowledge & Application",
-      score: 91,
-      feedback: "Excellent grasp of Capital IQ Pro's PE-specific features",
-      insight: "Perfectly connected mid-market tech screening to their pain point",
-      color: "emerald",
-    },
-    {
-      category: "Communication & Confidence",
-      score: 87,
-      feedback: "Strong professional tone, used PE industry language naturally",
-      insight: "Anne noted your confidence when handling Bloomberg comparison",
-      color: "emerald",
-    },
-    {
-      category: "Discovery & Active Listening",
-      score: 74,
-      feedback: "Good at identifying pain points, could dig deeper on ROI timing",
-      insight: "Missed opportunity to ask about current deal pipeline volume",
-      color: "yellow",
-    },
-    {
-      category: "Objection Handling & Follow-up",
-      score: 68,
-      feedback: "Solid responses but could be more proactive with next steps",
-      insight: "When Anne pushed on ROI proof, pivot to KKR case study faster",
-      color: "red",
-    },
-  ];
-
-  const sessionData = {
-    duration: "14:32",
-    practicePartner: "Vista Equity",
-    scenario: "AI Anne",
-    keyInsight:
-      "Your ESG positioning was significantly stronger than last practice. Anne responded positively when you connected their sustainability fund to your analytics capabilities. This approach will work well with other ESG-focused investors too - consider using it for your KKR meeting next week.",
-    callStatus: "Your call is in 45 minutes. What would you like to do next?",
+  const samplePersona: CustomerPersona = {
+    name: "Anne Wojcicki",
+    role: "Managing Director, Private Equity",
+    company_size: "Mid-market PE firm ($2-5B AUM)",
+    industry: "Private Equity / Investment Management",
+    pain_points: [
+      "Finding quality mid-market tech deals in competitive market",
+      "Limited portfolio company benchmarking tools",
+      "Inefficient due diligence processes",
+      "Lack of real-time market intelligence",
+    ],
+    budget_range: "$100K - $500K annually per seat",
+    decision_style: "ROI-focused, data-driven, values efficiency",
+    objections: [
+      "Concerned about data accuracy and timeliness",
+      "Integration complexity with existing investment tools",
+      "Cost justification for entire investment team",
+      "Learning curve for senior partners",
+    ],
+    personality_traits: ["Confident", "Analytical", "Efficiency-focused", "Tech-savvy"],
+    voice: "Confident, analytical tone with slight Australian accent awareness",
+    background: "12 years in PE, former McKinsey consultant, tech-focused investments",
+    communication_style: "ROI-focused, data-driven, values efficiency",
+    current_challenge: "Finding quality mid-market tech deals in competitive market",
+    specific_context: "Wants better portfolio company benchmarking tools",
+    time_pressure: "Has another meeting in 20 minutes",
+    emotional_state:
+      "Pressed for time, genuinely frustrated with current tools but curious if this could help",
+    competitors_used: ["Bloomberg Terminal", "FactSet"],
   };
+
+  // Load evaluation on component mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const transcriptions = sessionStorage.getItem("transcriptions");
+      if (transcriptions) {
+        const parsedTranscriptions = JSON.parse(transcriptions);
+        evaluate(sampleScenario, samplePersona, parsedTranscriptions, "Nam");
+      } else {
+        loadSample();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Fallback data (original static data)
+  const fallbackData = {
+    userData: {
+      name: "Nam",
+      company: "Vista Equity Partners",
+      meetingTime: "Tomorrow 2:00 PM",
+      readinessScore: 85,
+      improvement: "+35% vs Last Practice",
+    },
+    talkingPoints: [
+      {
+        title: "ESG Fund Angle",
+        description: "Perfect timing with your $2B sustainability fund launch",
+      },
+      {
+        title: "Competitive Edge",
+        description: "3x more mid-market tech deals than Bloomberg",
+      },
+      {
+        title: "Proof Point",
+        description: "KKR saved 15 hours/week on initial screening",
+      },
+    ],
+    performanceMetrics: [
+      {
+        category: "Product Knowledge & Application",
+        score: 91,
+        feedback: "Excellent grasp of Capital IQ Pro's PE-specific features",
+        insight: "Perfectly connected mid-market tech screening to their pain point",
+        color: "emerald" as const,
+      },
+      {
+        category: "Communication & Confidence",
+        score: 87,
+        feedback: "Strong professional tone, used PE industry language naturally",
+        insight: "Anne noted your confidence when handling Bloomberg comparison",
+        color: "emerald" as const,
+      },
+      {
+        category: "Discovery & Active Listening",
+        score: 74,
+        feedback: "Good at identifying pain points, could dig deeper on ROI timing",
+        insight: "Missed opportunity to ask about current deal pipeline volume",
+        color: "yellow" as const,
+      },
+      {
+        category: "Objection Handling & Follow-up",
+        score: 68,
+        feedback: "Solid responses but could be more proactive with next steps",
+        insight: "When Anne pushed on ROI proof, pivot to KKR case study faster",
+        color: "red" as const,
+      },
+    ],
+    sessionData: {
+      duration: "14:32",
+      practicePartner: "Vista Equity",
+      scenario: "AI Anne",
+      keyInsight:
+        "Your ESG positioning was significantly stronger than last practice. Anne responded positively when you connected their sustainability fund to your analytics capabilities. This approach will work well with other ESG-focused investors too - consider using it for your KKR meeting next week.",
+      callStatus: "Your call is in 45 minutes. What would you like to do next?",
+    },
+  };
+
+  // Use evaluation data if available, otherwise fallback
+  const currentData = evaluation || fallbackData;
+  const { userData, talkingPoints, performanceMetrics, sessionData } = currentData;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Generating evaluation...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Error: {error}</p>
+          <button
+            onClick={() => loadSample()}
+            className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -365,7 +462,8 @@ export default function DemoPage() {
             <span className="text-xs text-slate-500 uppercase tracking-wide">Scenario</span>
           </div>
         </div>
-      </div>
+      </div>{" "}
+      {/* Close main container */}
     </motion.div>
   );
 }

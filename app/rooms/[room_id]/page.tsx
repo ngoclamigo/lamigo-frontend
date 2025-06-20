@@ -4,6 +4,7 @@ import type { ConnectionDetails } from "@/app/api/connection-details/route";
 import { NoAgentNotification } from "@/components/NoAgentNotification";
 import { RecommendationView } from "@/components/RecommendationView";
 import { TranscriptionView } from "@/components/TranscriptionView";
+import useCombinedTranscriptions from "@/hooks/useCombinedTranscriptions";
 import {
   BarVisualizer,
   DisconnectButton,
@@ -180,6 +181,12 @@ function AgentVisualizer() {
 function ControlBar(props: { onConnectButtonClicked: () => void }) {
   const router = useRouter();
   const { state: agentState } = useVoiceAssistant();
+  const combinedTranscriptions = useCombinedTranscriptions();
+
+  const handleDisconnect = () => {
+    sessionStorage.setItem("transcriptions", JSON.stringify(combinedTranscriptions));
+    router.push("/rooms/mlosxi2pvg42/summary");
+  };
 
   return (
     <div className="relative h-[60px]">
@@ -207,7 +214,7 @@ function ControlBar(props: { onConnectButtonClicked: () => void }) {
             className="flex h-10 absolute left-1/2 -translate-x-1/2  justify-center"
           >
             <VoiceAssistantControlBar controls={{ leave: false }} />
-            <DisconnectButton onClick={() => router.push("/rooms/mlosxi2pvg42/summary")}>
+            <DisconnectButton onClick={handleDisconnect}>
               <LuPhone />
             </DisconnectButton>
           </motion.div>
