@@ -17,7 +17,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Room, RoomEvent } from "livekit-client";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { LuMessagesSquare, LuPhone, LuX } from "react-icons/lu";
+import { LuMessagesSquare, LuPhone } from "react-icons/lu";
 
 export default function Page() {
   const [room] = useState(new Room());
@@ -51,7 +51,7 @@ export default function Page() {
     };
   }, [room]);
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <main className="container mx-auto h-full">
@@ -108,7 +108,6 @@ export default function Page() {
 
 function SimpleVoiceAssistant(props: { onConnectButtonClicked: () => void }) {
   const { state: agentState } = useVoiceAssistant();
-  const router = useRouter();
 
   return (
     <>
@@ -130,16 +129,6 @@ function SimpleVoiceAssistant(props: { onConnectButtonClicked: () => void }) {
               onClick={() => props.onConnectButtonClicked()}
             >
               Start a conversation
-            </motion.button>
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-              className="w-10 h-10 inline-flex items-center justify-center px-4 py-2 bg-red-500 rounded-lg text-white shadow-md"
-              onClick={() => router.push("/rooms/mlosxi2pvg42/summary")}
-              aria-label="Close conversation"
-            >
-              <LuX className="w-4 h-4 flex-shrink-0" />
             </motion.button>
           </motion.div>
         ) : (
@@ -189,6 +178,7 @@ function AgentVisualizer() {
 }
 
 function ControlBar(props: { onConnectButtonClicked: () => void }) {
+  const router = useRouter();
   const { state: agentState } = useVoiceAssistant();
 
   return (
@@ -217,7 +207,7 @@ function ControlBar(props: { onConnectButtonClicked: () => void }) {
             className="flex h-10 absolute left-1/2 -translate-x-1/2  justify-center"
           >
             <VoiceAssistantControlBar controls={{ leave: false }} />
-            <DisconnectButton>
+            <DisconnectButton onClick={() => router.push("/rooms/mlosxi2pvg42/summary")}>
               <LuPhone />
             </DisconnectButton>
           </motion.div>

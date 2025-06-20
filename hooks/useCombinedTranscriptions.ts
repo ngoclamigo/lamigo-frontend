@@ -11,7 +11,7 @@ export default function useCombinedTranscriptions() {
   const combinedTranscriptions = useMemo(() => {
     return [
       ...agentTranscriptions.map((val) => {
-        return { ...val, text: val.text.split(' ').splice(-24).join(' '), role: "assistant" };
+        return { ...val, role: "assistant" };
       }),
       ...userTranscriptions.map((val) => {
         return { ...val, role: "user" };
