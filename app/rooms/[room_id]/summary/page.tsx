@@ -2,358 +2,369 @@
 
 import { motion } from "framer-motion";
 
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      duration: 0.5,
+export default function DemoPage() {
+  // Dynamic data variables
+  const userData = {
+    name: "Sarah",
+    company: "Vista Equity Partners",
+    meetingTime: "Tomorrow 2:00 PM",
+    readinessScore: 85,
+    improvement: "+35% vs Last Practice",
+  };
+
+  const talkingPoints = [
+    {
+      title: "ESG Fund Angle",
+      description: "Perfect timing with your $2B sustainability fund launch",
     },
-  },
-};
-
-const slideIn = {
-  hidden: { x: -50, opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 12,
+    {
+      title: "Competitive Edge",
+      description: "3x more mid-market tech deals than Bloomberg",
     },
-  },
-};
-
-const statsVariants = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 15,
+    {
+      title: "Proof Point",
+      description: "KKR saved 15 hours/week on initial screening",
     },
-  },
-};
+  ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-      delayChildren: 0.3,
+  const performanceMetrics = [
+    {
+      category: "Product Knowledge & Application",
+      score: 91,
+      feedback: "Excellent grasp of Capital IQ Pro's PE-specific features",
+      insight: "Perfectly connected mid-market tech screening to their pain point",
+      color: "emerald",
     },
-  },
-};
+    {
+      category: "Communication & Confidence",
+      score: 87,
+      feedback: "Strong professional tone, used PE industry language naturally",
+      insight: "Anne noted your confidence when handling Bloomberg comparison",
+      color: "emerald",
+    },
+    {
+      category: "Discovery & Active Listening",
+      score: 74,
+      feedback: "Good at identifying pain points, could dig deeper on ROI timing",
+      insight: "Missed opportunity to ask about current deal pipeline volume",
+      color: "yellow",
+    },
+    {
+      category: "Objection Handling & Follow-up",
+      score: 68,
+      feedback: "Solid responses but could be more proactive with next steps",
+      insight: "When Anne pushed on ROI proof, pivot to KKR case study faster",
+      color: "red",
+    },
+  ];
 
-const pulseAnimation = {
-  scale: [1, 1.05, 1],
-  transition: {
-    duration: 2,
-    repeat: Infinity,
-    repeatType: "reverse" as const,
-  },
-};
+  const sessionData = {
+    duration: "14:32",
+    practicePartner: "Vista Equity",
+    scenario: "AI Anne",
+    keyInsight:
+      "Your ESG positioning was significantly stronger than last practice. Anne responded positively when you connected their sustainability fund to your analytics capabilities. This approach will work well with other ESG-focused investors too - consider using it for your KKR meeting next week.",
+    callStatus: "Your call is in 45 minutes. What would you like to do next?",
+  };
 
-export default function RoomSummaryPage() {
   return (
     <motion.div
-      className="container mx-auto p-8 bg-gradient-to-b from-brand-50 to-white rounded-xl shadow-xl"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+      style={{ background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)" }}
     >
-      <div className="grid grid-cols-2 gap-6 grid-rows-[auto_1fr_auto]">
-        {/* 1. Congrats + Stats */}
+      <div className="max-w-4xl mx-auto bg-white min-h-screen">
         <motion.div
-          className="col-span-2"
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="relative text-center bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-900 px-8 py-10 overflow-hidden"
         >
-          <div className="h-full rounded-lg border shadow-sm hover:shadow-md transition-shadow duration-300 bg-white">
-            <div className="flex flex-col items-center p-4 border-b bg-gradient-to-r from-brand-50 to-green-50 rounded-t-lg">
-              <motion.h2
-                className="text-2xl font-bold text-brand-800"
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-              >
-                Excellent Practice Session!
-              </motion.h2>
-              <motion.p
-                className="text-gray-600"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-              >
-                You&apos;re ready to nail your Vista Equity call, Sarah
-              </motion.p>
-            </div>
-            <div className="p-4">
+          <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle,rgba(16,185,129,0.1)_2px,transparent_2px)] bg-[30px_30px] animate-[spin_20s_linear_infinite]"></div>
+          <div className="relative z-10">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="inline-flex items-center gap-2 bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold mb-4"
+            >
+              🎯 Session Complete
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="text-3xl font-bold mb-2"
+            >
+              You&apos;re Ready, {userData.name}!
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="text-lg text-emerald-800 mb-8"
+            >
+              {userData.company} • {userData.meetingTime}
+            </motion.p>
+            <div className="mt-2">
               <motion.div
-                className="flex gap-4 justify-center"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 1.0, type: "spring", stiffness: 100 }}
+                className="relative w-32 h-32 mx-auto mb-4 rounded-full bg-[conic-gradient(#047857_0deg_306deg,#e5e7eb_306deg_360deg)] flex items-center justify-center shadow-[0_12px_40px_rgba(4,120,87,0.3),0_4px_16px_rgba(0,0,0,0.1)] border-4 border-white"
               >
-                <motion.span
-                  className="px-3 py-1 text-lg bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition-colors duration-300"
-                  variants={statsVariants}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  ⏱️ 12 minutes
-                </motion.span>
-                <motion.span
-                  className="px-3 py-1 text-lg bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition-colors duration-300"
-                  variants={statsVariants}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  📈 40% improvement
-                </motion.span>
-                <motion.span
-                  className="px-3 py-1 text-lg bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition-colors duration-300"
-                  variants={statsVariants}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  ✅ 4/4 key messages
-                </motion.span>
-              </motion.div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* 2. Session Performance */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={slideIn}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="h-full rounded-lg border shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div className="p-4 border-b bg-gradient-to-r from-brand-50 to-indigo-50 rounded-t-lg">
-              <motion.h2
-                className="text-2xl font-bold text-brand-700"
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-              >
-                📊 Session Performance
-              </motion.h2>
-              <motion.p
-                className="text-gray-600"
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-              >
-                How you performed vs. your last practice
-              </motion.p>
-            </div>
-            <div className="p-4">
-              <motion.div
-                className="flex flex-col gap-3 items-start"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                {[
-                  ["ESG Positioning", "Excellent", "+30%"],
-                  ["Competitive Differentiation", "Strong", "+25%"],
-                  ["Objection Handling", "Outstanding", "+45%"],
-                  ["Confidence Level", "Very High", null],
-                ].map(([label, value, rate], index) => (
-                  <motion.div
-                    key={label}
-                    className="w-full flex border-b pb-3"
-                    variants={fadeIn}
-                    transition={{ duration: 0.3, delay: 0.1 * index }}
-                    whileHover={{ backgroundColor: "rgba(0,0,0,0.02)" }}
-                  >
-                    <p className="flex-1">{label}</p>
-                    <div className="flex">
-                      <p className="text-green-600 font-medium text-sm">{value}</p>
-                      {rate && (
-                        <motion.span
-                          className="ml-2 px-2 py-0.5 text-xs bg-green-100 text-green-800 rounded-md"
-                          whileHover={{ scale: 1.1 }}
-                        >
-                          {rate}
-                        </motion.span>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
+                <div className="absolute w-20 h-20 bg-white rounded-full shadow-md"></div>
                 <motion.div
-                  className="w-full mt-2"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.8, duration: 0.5 }}
+                  transition={{ duration: 0.6, delay: 1.2 }}
+                  className="relative text-2xl font-bold text-emerald-700"
                 >
-                  <div className="flex justify-between mb-2">
-                    <span>Overall Readiness</span>
-                    <span>85% Ready to Close</span>
-                  </div>
-                  <motion.div
-                    className="w-full bg-gray-200 rounded-full h-2.5"
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 0.8 }}
-                  >
-                    <motion.div
-                      className="bg-green-600 h-2.5 rounded-full"
-                      style={{ width: "85%" }}
-                      initial={{ width: "0%" }}
-                      animate={{ width: "85%" }}
-                      transition={{ duration: 1, delay: 0.5 }}
-                    ></motion.div>
-                  </motion.div>
+                  {userData.readinessScore}%
                 </motion.div>
               </motion.div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* 3. Winning Talking Points */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={slideIn}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <div className="h-full rounded-lg border shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div className="p-4 border-b">
-              <motion.h2
-                className="text-2xl font-bold"
-                initial={{ x: 20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-              >
-                🏆 Winning Talking Points
-              </motion.h2>
-              <motion.p
-                initial={{ x: 20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-              >
-                Use these in your actual Vista call
-              </motion.p>
-            </div>
-            <div className="p-4">
               <motion.div
-                className="flex flex-col gap-3"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 1.4 }}
+                className="font-semibold text-emerald-800"
               >
-                {[
-                  [
-                    1,
-                    "ESG Fund Opening",
-                    "I've been flowing over $2B sustainability fund launch - Our ESG analytics could be perfect for portfolio evaluation.",
-                  ],
-                  [
-                    2,
-                    "Workflow Integration",
-                    "Unlike Bloomberg's general market data, we provide operational analytics specifically for PE workflow.",
-                  ],
-                  [
-                    3,
-                    "Healthcare Context",
-                    "For healthcare deals like your InTouch Health acquisition, we offer clinical workflow analytics.",
-                  ],
-                  [
-                    4,
-                    "ROI Positioning",
-                    "ROI typically covers annual cost within the first deal - we've seen this with similar PE firms.",
-                  ],
-                ].map(([num, title, quote], index) => (
-                  <motion.div
-                    key={num}
-                    className={`flex gap-3 items-start ${index < 3 ? "border-b pb-3" : ""}`}
-                    variants={fadeIn}
-                    transition={{ duration: 0.3, delay: 0.15 * index }}
-                    whileHover={{ x: 5 }}
-                  >
-                    <motion.div
-                      className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center"
-                      whileHover={{ scale: 1.1, backgroundColor: "#3b82f6" }}
-                    >
-                      {num}
-                    </motion.div>
-                    <div>
-                      <p className="font-medium">{title}</p>
-                      <p className="text-gray-600 text-sm">&quot;{quote}&quot;</p>
-                    </div>
-                  </motion.div>
-                ))}
+                Ready for {userData.company}
               </motion.div>
             </div>
           </div>
         </motion.div>
 
-        {/* 4. Call to Action */}
         <motion.div
-          className="col-span-2"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 1.6 }}
+          className="bg-gradient-to-br from-blue-100 to-blue-200 border-b border-gray-200 p-8"
         >
-          <div className="h-full rounded-lg border shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div className="flex flex-col items-center justify-center p-4 border-b bg-gradient-to-r from-brand-50 to-purple-50 rounded-t-lg">
-              <motion.h2
-                className="text-2xl font-bold text-brand-800"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.7, duration: 0.5 }}
-              >
-                You&apos;re Ready for Vista Equity
-              </motion.h2>
-              <motion.p
-                className="text-gray-600"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.5 }}
-              >
-                Your call is in 45 minutes. What would you like to do next?
-              </motion.p>
-            </div>
-            <div className="p-4">
+          <motion.h2
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1.8 }}
+            className="text-xl font-bold text-blue-900 text-center mb-4"
+          >
+            💪 Your Winning Talking Points
+          </motion.h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {talkingPoints.map((point, index) => (
               <motion.div
-                className="flex justify-center gap-4"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
+                key={index}
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.6, delay: 2.0 + index * 0.2 }}
+                whileHover={{
+                  scale: 1.05,
+                  y: -8,
+                  transition: { duration: 0.2 },
+                }}
+                className="bg-white p-5 rounded-xl shadow border-l-4 border-emerald-500 cursor-pointer"
               >
-                <motion.button
-                  className="px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  animate={pulseAnimation}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{
+                    duration: 0.4,
+                    delay: 2.2 + index * 0.2,
+                    type: "spring",
+                    stiffness: 200,
+                  }}
+                  className="w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-bold mb-2"
                 >
-                  ✅ I&apos;m ready for the call
-                </motion.button>
-                <motion.button
-                  className="px-4 py-2 bg-white text-brand-600 font-medium border border-brand-600 rounded-md hover:bg-brand-50"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  🔁 One more quick practice
-                </motion.button>
-                <motion.button
-                  className="px-4 py-2 text-gray-700 font-medium rounded-md hover:bg-gray-100"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  ⬅️ Back to Slack
-                </motion.button>
+                  {index + 1}
+                </motion.div>
+                <div className="font-semibold text-gray-900 mb-1">{point.title}</div>
+                <div className="text-sm text-gray-500">&quot;{point.description}&quot;</div>
               </motion.div>
-            </div>
+            ))}
           </div>
         </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 2.8 }}
+          className="p-8"
+        >
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 3.0 }}
+            className="flex items-center justify-between mb-6"
+          >
+            <h2 className="text-xl font-bold text-gray-900">📊 Performance Breakdown</h2>
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 3.2, type: "spring", stiffness: 150 }}
+              className="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-sm font-semibold"
+            >
+              {userData.improvement}
+            </motion.div>
+          </motion.div>
+          <div className="grid gap-4">
+            {performanceMetrics.map((metric, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -30, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                transition={{ duration: 0.6, delay: 3.4 + index * 0.15 }}
+                whileHover={{
+                  scale: 1.02,
+                  y: -4,
+                  transition: { duration: 0.2 },
+                }}
+                className={`bg-gradient-to-br from-${metric.color}-50 to-${metric.color}-100 p-5 rounded-xl border-l-4 border-${metric.color}-500 hover:shadow-md transition-transform cursor-pointer`}
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 3.6 + index * 0.15 }}
+                  className="flex justify-between items-center mb-2"
+                >
+                  <div className="font-semibold text-gray-800">{metric.category}</div>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{
+                      duration: 0.5,
+                      delay: 3.8 + index * 0.15,
+                      type: "spring",
+                      stiffness: 120,
+                    }}
+                    className={`text-xl font-bold text-${metric.color}-${metric.color === "red" ? "500" : metric.color === "yellow" ? "500" : "600"}`}
+                  >
+                    {metric.score}/100
+                  </motion.div>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 4.0 + index * 0.15 }}
+                  className="text-sm text-gray-600 mb-2"
+                >
+                  {metric.feedback}
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 4.2 + index * 0.15 }}
+                  className="text-sm italic text-gray-400 bg-white/60 p-2 rounded"
+                >
+                  {metric.color === "emerald" ? "💡" : "⚠️"} &quot;{metric.insight}&quot;
+                </motion.div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 5.0 }}
+          className="p-8 bg-gradient-to-br from-yellow-100 to-yellow-200"
+        >
+          <motion.h3
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 5.2 }}
+            className="text-lg font-bold text-orange-900 mb-4 flex items-center gap-2"
+          >
+            💡 Key Insight from This Session
+          </motion.h3>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 5.4 }}
+            className="bg-white/70 p-5 rounded-xl border-l-4 border-yellow-500 text-orange-900 leading-relaxed"
+          >
+            {sessionData.keyInsight}
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 5.6 }}
+          className="p-8 bg-slate-50 text-center"
+        >
+          <motion.h3
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 5.8 }}
+            className="text-lg font-semibold text-gray-800 mb-6"
+          >
+            {sessionData.callStatus}
+          </motion.h3>
+          <div className="flex flex-wrap justify-center gap-4">
+            <motion.a
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 6.0 }}
+              whileHover={{
+                scale: 1.05,
+                y: -2,
+                transition: { duration: 0.2 },
+              }}
+              whileTap={{ scale: 0.95 }}
+              href="#"
+              className="px-6 py-4 rounded-xl font-semibold text-white bg-gradient-to-br from-blue-500 to-blue-600 hover:shadow-lg transition cursor-pointer"
+            >
+              ❤️ I&apos;M READY FOR THE CALL
+            </motion.a>
+            <motion.a
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 6.2 }}
+              whileHover={{
+                scale: 1.05,
+                y: -2,
+                transition: { duration: 0.2 },
+              }}
+              whileTap={{ scale: 0.95 }}
+              href="#"
+              className="px-6 py-4 rounded-xl font-semibold text-gray-800 border-2 border-gray-200 bg-white hover:shadow-lg transition cursor-pointer"
+            >
+              🎭 ONE MORE FULL PRACTICE
+            </motion.a>
+            <motion.a
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 6.4 }}
+              whileHover={{
+                scale: 1.05,
+                y: -2,
+                transition: { duration: 0.2 },
+              }}
+              whileTap={{ scale: 0.95 }}
+              href="#"
+              className="px-6 py-4 rounded-xl font-semibold text-gray-800 border-2 border-gray-200 bg-white hover:shadow-lg transition cursor-pointer"
+            >
+              💬 ASK ABOUT MY FEEDBACK
+            </motion.a>
+          </div>
+        </motion.div>
+
+        <div className="flex flex-col sm:flex-row justify-around text-center bg-slate-100 border-t border-slate-200 px-8 py-6 gap-4">
+          <div className="flex-1">
+            <span className="block text-lg font-bold text-gray-900">{sessionData.duration}</span>
+            <span className="text-xs text-slate-500 uppercase tracking-wide">Duration</span>
+          </div>
+          <div className="flex-1">
+            <span className="block text-lg font-bold text-gray-900">
+              {sessionData.practicePartner}
+            </span>
+            <span className="text-xs text-slate-500 uppercase tracking-wide">Practice Partner</span>
+          </div>
+          <div className="flex-1">
+            <span className="block text-lg font-bold text-gray-900">{sessionData.scenario}</span>
+            <span className="text-xs text-slate-500 uppercase tracking-wide">Scenario</span>
+          </div>
+        </div>
       </div>
     </motion.div>
   );
