@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { LuMessagesSquare, LuPhone } from "react-icons/lu";
 
-export default function Page() {
+export default function ScenarioPracticePage() {
   const [room] = useState(new Room());
 
   const onConnectButtonClicked = useCallback(async () => {

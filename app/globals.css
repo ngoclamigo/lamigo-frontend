@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: light;
+
   --lk-va-bar-width: 72px;
   --lk-control-bar-height: unset;
 

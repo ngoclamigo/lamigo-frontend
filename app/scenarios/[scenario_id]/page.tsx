@@ -1,6 +1,6 @@
 "use client";
 
-import { useAudioInputDevices } from "@/hooks/useAudioInputDevices";
+import { useMediaDeviceSelect } from "@livekit/components-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -11,7 +11,6 @@ import {
   FiChevronUp,
   FiClock,
   FiDollarSign,
-  FiLoader,
   FiMapPin,
   FiMic,
   FiMicOff,
@@ -84,7 +83,7 @@ const pulseVariants = {
   },
 };
 
-export default function RoomSetup() {
+export default function ScenarioPage() {
   const router = useRouter();
 
   const [collapsedSteps, setCollapsedSteps] = useState<Record<number, boolean>>({
@@ -93,7 +92,9 @@ export default function RoomSetup() {
     3: false,
   });
 
-  const { devices, error, loading } = useAudioInputDevices();
+  const { devices, activeDeviceId, setActiveMediaDevice } = useMediaDeviceSelect({
+    kind: "audioinput",
+  });
 
   const isTestingMic = false; // Mock state for demonstration
   const micTestResult = "success"; // Mock result for demonstration
@@ -281,28 +282,18 @@ export default function RoomSetup() {
                         Don&apos;t worry if this isn&apos;t perfect - we can adjust during practice
                       </p>
 
-                      {loading ? (
-                        <div className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-lg">
-                          <FiLoader className="animate-spin" />
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Loading devices...
-                          </p>
-                        </div>
-                      ) : (
-                        <select
-                          className="w-full p-2 bg-white border border-gray-300 rounded-md"
-                          disabled={devices.length === 0}
-                          defaultValue={devices.length > 0 ? devices[0].deviceId : ""}
-                        >
-                          {devices.map((device) => (
-                            <option key={device.deviceId} value={device.deviceId}>
-                              {device.label}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-
-                      {error && <p className="text-sm text-red-500 mt-2">{error.message}</p>}
+                      <select
+                        className="w-full p-2 bg-white border border-gray-300 rounded-md"
+                        disabled={devices.length === 0}
+                        value={activeDeviceId}
+                        onChange={(e) => setActiveMediaDevice(e.target.value)}
+                      >
+                        {devices.map((device) => (
+                          <option key={device.deviceId} value={device.deviceId}>
+                            {device.label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <hr className="border-gray-200 dark:border-gray-600" />

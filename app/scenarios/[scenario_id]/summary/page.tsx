@@ -5,7 +5,7 @@ import { CustomerPersona, SalesScenario } from "@/types/evaluation";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 
-export default function SummaryPage() {
+export default function ScenarioSummaryPage() {
   const { evaluation, loading, error, evaluate, loadSample } = useEvaluation();
 
   // Sample scenario and persona for demonstration
