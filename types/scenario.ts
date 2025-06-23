@@ -52,7 +52,7 @@ export type ScenarioDetail = {
   name: string;
   description: string;
   customer_mood: string;
-  objections: string[];
+  objectives: string[];
   context: string;
   urgency: string;
 };

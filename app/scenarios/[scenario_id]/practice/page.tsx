@@ -118,7 +118,7 @@ export default function ScenarioPracticePage({ params }: { params: { scenario_id
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col gap-3 p-4 bg-white">
+              <div className="flex-1 flex flex-col gap-3 p-4 bg-white overflow-auto">
                 <div className="text-sm text-gray-700 leading-relaxed">
                   {scenario.scenarios[0].context}
                 </div>
@@ -130,13 +130,13 @@ export default function ScenarioPracticePage({ params }: { params: { scenario_id
                   <span className="text-sm font-medium">{scenario.scenarios[0].customer_mood}</span>
                 </div>
 
-                {scenario.scenarios[0].objections.length > 0 && (
+                {scenario.scenarios[0].objectives.length > 0 && (
                   <div className="mt-1">
                     <p className="text-gray-600 font-medium text-xs uppercase tracking-wide mb-2">
-                      Potential Objections
+                      Potential Objectives
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {scenario.scenarios[0].objections.map((objection, index) => (
+                      {scenario.scenarios[0].objectives.map((objective, index) => (
                         <span
                           key={index}
                           className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${
@@ -147,7 +147,7 @@ export default function ScenarioPracticePage({ params }: { params: { scenario_id
                                 : "bg-purple-50 text-purple-700"
                           }`}
                         >
-                          {objection}
+                          {objective}
                         </span>
                       ))}
                     </div>

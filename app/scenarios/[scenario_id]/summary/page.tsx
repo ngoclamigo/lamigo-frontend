@@ -1,161 +1,94 @@
 "use client";
 
-import { useEvaluation } from "@/hooks/useEvaluation";
-import { CustomerPersona, SalesScenario } from "@/types/evaluation";
+import { getScenario } from "@/lib/api";
+import { generateEvaluation } from "@/lib/evaluation";
+import { EvaluationResult, Transcription } from "@/types/evaluation";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-export default function ScenarioSummaryPage() {
-  const { evaluation, loading, error, evaluate, loadSample } = useEvaluation();
+export default function ScenarioSummaryPage({ params }: { params: { scenario_id: string } }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [evaluationResult, setEvaluationResult] = useState<EvaluationResult | null>(null);
 
-  // Sample scenario and persona for demonstration
-  const sampleScenario: SalesScenario = {
-    name: "Technical Evaluation",
-    description:
-      "Customer's technical team is evaluating the solution for mid-market PE deal sourcing",
-    customer_mood: "Detail-focused and skeptical but genuinely interested in solving real problems",
-    objectives: [
-      "Answer technical questions about data accuracy and integration",
-      "Provide proof of concept for mid-market tech deals",
-      "Address integration concerns with existing PE tools",
-      "Demonstrate ROI potential for the investment team",
-    ],
-    context:
-      "Vista Equity Partners exploring Capital IQ Pro for deal sourcing and portfolio monitoring",
-    urgency: "Decision needed within 2 weeks for Q4 budget planning",
-  };
-
-  const samplePersona: CustomerPersona = {
-    name: "Anne Wojcicki",
-    role: "Managing Director, Private Equity",
-    company_size: "Mid-market PE firm ($2-5B AUM)",
-    industry: "Private Equity / Investment Management",
-    pain_points: [
-      "Finding quality mid-market tech deals in competitive market",
-      "Limited portfolio company benchmarking tools",
-      "Inefficient due diligence processes",
-      "Lack of real-time market intelligence",
-    ],
-    budget_range: "$100K - $500K annually per seat",
-    decision_style: "ROI-focused, data-driven, values efficiency",
-    objections: [
-      "Concerned about data accuracy and timeliness",
-      "Integration complexity with existing investment tools",
-      "Cost justification for entire investment team",
-      "Learning curve for senior partners",
-    ],
-    personality_traits: ["Confident", "Analytical", "Efficiency-focused", "Tech-savvy"],
-    voice: "Confident, analytical tone with slight Australian accent awareness",
-    background: "12 years in PE, former McKinsey consultant, tech-focused investments",
-    communication_style: "ROI-focused, data-driven, values efficiency",
-    current_challenge: "Finding quality mid-market tech deals in competitive market",
-    specific_context: "Wants better portfolio company benchmarking tools",
-    time_pressure: "Has another meeting in 20 minutes",
-    emotional_state:
-      "Pressed for time, genuinely frustrated with current tools but curious if this could help",
-    competitors_used: ["Bloomberg Terminal", "FactSet"],
-  };
-
-  // Load evaluation on component mount
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const transcriptions = sessionStorage.getItem("transcriptions");
-      if (transcriptions) {
-        const parsedTranscriptions = JSON.parse(transcriptions);
-        evaluate(sampleScenario, samplePersona, parsedTranscriptions, "Nam");
-      } else {
-        loadSample();
+    const fetchScenarioAndEvaluate = async () => {
+      setIsLoading(true);
+      setIsError(false);
+      try {
+        const data = await getScenario(params.scenario_id);
+        // Generate evaluation using mock transcriptions for now
+        // In a real app, you would fetch actual transcriptions from your API
+        const mockTranscriptions: Transcription[] = [
+          {
+            id: "1",
+            text: "Hi, I'm calling about our software solution that could help with your current challenges.",
+            startTime: 0,
+            endTime: 5000,
+            final: true,
+            language: "en",
+            firstReceivedTime: Date.now(),
+            lastReceivedTime: Date.now(),
+            receivedAtMediaTimestamp: 0,
+            receivedAt: Date.now(),
+            role: "user",
+          },
+          {
+            id: "2",
+            text: "I'm not sure we have the budget for new software right now.",
+            startTime: 5000,
+            endTime: 8000,
+            final: true,
+            language: "en",
+            firstReceivedTime: Date.now(),
+            lastReceivedTime: Date.now(),
+            receivedAtMediaTimestamp: 5000,
+            receivedAt: Date.now(),
+            role: "assistant",
+          },
+        ];
+        const transcriptions = sessionStorage.getItem("transcriptions");
+
+        if (data.data.persona && data.data.scenarios[0]) {
+          const evaluation = await generateEvaluation(
+            data.data.persona,
+            data.data.scenarios[0],
+            transcriptions ? JSON.parse(transcriptions) : mockTranscriptions
+          );
+          setEvaluationResult(evaluation);
+        }
+      } catch (error) {
+        console.error("Failed to fetch scenario or generate evaluation:", error);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    };
 
-  // Fallback data (original static data)
-  const fallbackData = {
-    userData: {
-      name: "Nam",
-      company: "Vista Equity Partners",
-      meetingTime: "Tomorrow 2:00 PM",
-      readinessScore: 85,
-      improvement: "+35% vs Last Practice",
-    },
-    talkingPoints: [
-      {
-        title: "ESG Fund Angle",
-        description: "Perfect timing with your $2B sustainability fund launch",
-      },
-      {
-        title: "Competitive Edge",
-        description: "3x more mid-market tech deals than Bloomberg",
-      },
-      {
-        title: "Proof Point",
-        description: "KKR saved 15 hours/week on initial screening",
-      },
-    ],
-    performanceMetrics: [
-      {
-        category: "Product Knowledge & Application",
-        score: 91,
-        feedback: "Excellent grasp of Capital IQ Pro's PE-specific features",
-        insight: "Perfectly connected mid-market tech screening to their pain point",
-        color: "emerald" as const,
-      },
-      {
-        category: "Communication & Confidence",
-        score: 87,
-        feedback: "Strong professional tone, used PE industry language naturally",
-        insight: "Anne noted your confidence when handling Bloomberg comparison",
-        color: "emerald" as const,
-      },
-      {
-        category: "Discovery & Active Listening",
-        score: 74,
-        feedback: "Good at identifying pain points, could dig deeper on ROI timing",
-        insight: "Missed opportunity to ask about current deal pipeline volume",
-        color: "yellow" as const,
-      },
-      {
-        category: "Objection Handling & Follow-up",
-        score: 68,
-        feedback: "Solid responses but could be more proactive with next steps",
-        insight: "When Anne pushed on ROI proof, pivot to KKR case study faster",
-        color: "red" as const,
-      },
-    ],
-    sessionData: {
-      duration: "14:32",
-      practicePartner: "Vista Equity",
-      scenario: "AI Anne",
-      keyInsight:
-        "Your ESG positioning was significantly stronger than last practice. Anne responded positively when you connected their sustainability fund to your analytics capabilities. This approach will work well with other ESG-focused investors too - consider using it for your KKR meeting next week.",
-      callStatus: "Your call is in 45 minutes. What would you like to do next?",
-    },
-  };
+    fetchScenarioAndEvaluate();
+  }, [params.scenario_id]);
 
-  // Use evaluation data if available, otherwise fallback
-  const currentData = evaluation || fallbackData;
-  const { userData, talkingPoints, performanceMetrics, sessionData } = currentData;
-
-  if (loading) {
+  // Show loading state
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Generating evaluation...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Generating your evaluation...</p>
         </div>
       </div>
     );
   }
 
-  if (error) {
+  // Show error state
+  if (isError || !evaluationResult) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">Error: {error}</p>
+          <p className="text-red-600 mb-4">Failed to load evaluation</p>
           <button
-            onClick={() => loadSample()}
-            className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
+            onClick={() => window.location.reload()}
+            className="bg-emerald-500 text-white px-4 py-2 rounded"
           >
             Try Again
           </button>
@@ -164,6 +97,8 @@ export default function ScenarioSummaryPage() {
     );
   }
 
+  const { userData, talkingPoints, performanceMetrics, sessionData } = evaluationResult;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -171,7 +106,7 @@ export default function ScenarioSummaryPage() {
       transition={{ duration: 0.6 }}
       style={{ background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)" }}
     >
-      <div className="max-w-4xl mx-auto bg-white min-h-screen">
+      <div className="container mx-auto bg-white min-h-screen">
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -304,58 +239,65 @@ export default function ScenarioSummaryPage() {
             </motion.div>
           </motion.div>
           <div className="grid gap-4">
-            {performanceMetrics.map((metric, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -30, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                transition={{ duration: 0.6, delay: 3.4 + index * 0.15 }}
-                whileHover={{
-                  scale: 1.02,
-                  y: -4,
-                  transition: { duration: 0.2 },
-                }}
-                className={`bg-gradient-to-br from-${metric.color}-50 to-${metric.color}-100 p-5 rounded-xl border-l-4 border-${metric.color}-500 hover:shadow-md transition-transform cursor-pointer`}
-              >
+            {performanceMetrics.map((metric, index) => {
+              const colorClass = {
+                emerald: "from-emerald-50 to-emerald-100 border-emerald-500",
+                yellow: "from-yellow-50 to-yellow-100 border-yellow-500",
+                red: "from-red-50 to-red-100 border-red-500",
+              };
+              return (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 3.6 + index * 0.15 }}
-                  className="flex justify-between items-center mb-2"
+                  key={index}
+                  initial={{ opacity: 0, x: -30, scale: 0.95 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 3.4 + index * 0.15 }}
+                  whileHover={{
+                    scale: 1.02,
+                    y: -4,
+                    transition: { duration: 0.2 },
+                  }}
+                  className={`bg-gradient-to-br p-5 rounded-xl border-l-4 hover:shadow-md transition-transform cursor-pointer ${colorClass[metric.color as keyof typeof colorClass]}`}
                 >
-                  <div className="font-semibold text-gray-800">{metric.category}</div>
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{
-                      duration: 0.5,
-                      delay: 3.8 + index * 0.15,
-                      type: "spring",
-                      stiffness: 120,
-                    }}
-                    className={`text-xl font-bold text-${metric.color}-${metric.color === "red" ? "500" : metric.color === "yellow" ? "500" : "600"}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 3.6 + index * 0.15 }}
+                    className="flex justify-between items-center mb-2"
                   >
-                    {metric.score}/100
+                    <div className="font-semibold text-gray-800">{metric.category}</div>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{
+                        duration: 0.5,
+                        delay: 3.8 + index * 0.15,
+                        type: "spring",
+                        stiffness: 120,
+                      }}
+                      className={`text-xl font-bold text-${metric.color}-${metric.color === "red" ? "500" : metric.color === "yellow" ? "500" : "600"}`}
+                    >
+                      {metric.score}/100
+                    </motion.div>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.4, delay: 4.0 + index * 0.15 }}
+                    className="text-sm text-gray-600 mb-2"
+                  >
+                    {metric.feedback}
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 4.2 + index * 0.15 }}
+                    className="text-sm italic text-gray-400 bg-white/60 p-2 rounded"
+                  >
+                    {metric.color === "emerald" ? "💡" : "⚠️"} &quot;{metric.insight}&quot;
                   </motion.div>
                 </motion.div>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 4.0 + index * 0.15 }}
-                  className="text-sm text-gray-600 mb-2"
-                >
-                  {metric.feedback}
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 4.2 + index * 0.15 }}
-                  className="text-sm italic text-gray-400 bg-white/60 p-2 rounded"
-                >
-                  {metric.color === "emerald" ? "💡" : "⚠️"} &quot;{metric.insight}&quot;
-                </motion.div>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
 
