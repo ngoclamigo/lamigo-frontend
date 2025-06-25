@@ -3,6 +3,8 @@
 import { type GetScenariosResponse, getScenarios } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { BookOpen } from "lucide-react";
 
 export default function ScenariosPage() {
   const [scenarioId, setScenarioId] = useState("");
@@ -39,7 +41,21 @@ export default function ScenariosPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-b from-slate-50 to-slate-100">
       <div className="w-full max-w-md space-y-6 p-8 bg-white rounded-xl shadow-lg">
-        <h1 className="text-3xl font-bold text-center text-gray-800">Scenario Lookup</h1>
+        <h1 className="text-3xl font-bold text-center text-gray-800">Lamigo Platform</h1>
+
+        <div className="space-y-4">
+          <Link
+            href="/learning-paths"
+            className="flex items-center justify-center w-full px-6 py-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+          >
+            <BookOpen className="w-5 h-5 mr-2" />
+            Learning Paths
+          </Link>
+
+          <div className="text-center text-gray-500 text-sm">or</div>
+
+          <div className="text-center text-gray-700 font-medium">Access Scenarios</div>
+        </div>
 
         {isLoading ? (
           <div className="flex justify-center py-8">
