@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, Sparkles, MessageCircle, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+import { Bot, MessageCircle, Mic, MicOff, Send, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface Message {
   id: string;
   content: string;
-  sender: 'user' | 'assistant';
+  sender: "user" | "assistant";
   timestamp: Date;
 }
 
@@ -19,15 +19,16 @@ interface LearningChatProps {
 export function LearningChatComponent({
   learningPathId,
   currentActivity,
-  className = ""
+  className = "",
 }: LearningChatProps) {
   const [latestMessage, setLatestMessage] = useState<Message>({
-    id: '1',
-    content: "Hi! I'm David. I'm here to help you understand the concepts and answer any questions you might have about this learning path. How can I help you today?",
-    sender: 'assistant',
-    timestamp: new Date()
+    id: "1",
+    content:
+      "Hi! I'm David. I'm here to help you understand the concepts and answer any questions you might have about this learning path. How can I help you today?",
+    sender: "assistant",
+    timestamp: new Date(),
   });
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -37,12 +38,12 @@ export function LearningChatComponent({
 
   // Initialize speech recognition
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
+    if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const speechRecognition = new (window as any).webkitSpeechRecognition();
       speechRecognition.continuous = false;
       speechRecognition.interimResults = false;
-      speechRecognition.lang = 'en-US';
+      speechRecognition.lang = "en-US";
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       speechRecognition.onresult = (event: any) => {
@@ -57,7 +58,7 @@ export function LearningChatComponent({
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       speechRecognition.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
+        console.error("Speech recognition error:", event.error);
         setIsListening(false);
       };
 
@@ -73,7 +74,7 @@ export function LearningChatComponent({
   };
 
   const playMessage = () => {
-    if ('speechSynthesis' in window) {
+    if ("speechSynthesis" in window) {
       if (isPlaying) {
         window.speechSynthesis.cancel();
         setIsPlaying(false);
@@ -85,10 +86,11 @@ export function LearningChatComponent({
 
         // Set a female voice if available
         const voices = window.speechSynthesis.getVoices();
-        const femaleVoice = voices.find(voice =>
-          voice.name.toLowerCase().includes('female') ||
-          voice.name.toLowerCase().includes('sarah') ||
-          voice.name.toLowerCase().includes('samantha')
+        const femaleVoice = voices.find(
+          (voice) =>
+            voice.name.toLowerCase().includes("female") ||
+            voice.name.toLowerCase().includes("sarah") ||
+            voice.name.toLowerCase().includes("samantha")
         );
         if (femaleVoice) {
           utterance.voice = femaleVoice;
@@ -109,39 +111,42 @@ export function LearningChatComponent({
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputValue.trim(),
-      sender: 'user',
-      timestamp: new Date()
+      sender: "user",
+      timestamp: new Date(),
     };
 
-    setInputValue('');
+    setInputValue("");
     setIsLoading(true);
 
     // Simulate AI response (replace with actual API call)
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: generateResponse(userMessage.content),
-        sender: 'assistant',
-        timestamp: new Date()
-      };
-      setLatestMessage(assistantMessage);
-      setIsLoading(false);
-    }, 1000 + Math.random() * 2000);
+    setTimeout(
+      () => {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: generateResponse(userMessage.content),
+          sender: "assistant",
+          timestamp: new Date(),
+        };
+        setLatestMessage(assistantMessage);
+        setIsLoading(false);
+      },
+      1000 + Math.random() * 2000
+    );
   };
 
   const generateResponse = (userInput: string): string => {
     // Context-aware responses based on learning path and current activity
     const contextualResponses = [
-      `That's a great question about ${currentActivity || 'this topic'}! Let me explain that concept in more detail...`,
+      `That's a great question about ${currentActivity || "this topic"}! Let me explain that concept in more detail...`,
       "I can help you understand this better. Here's what you need to know...",
       "That's an important point to clarify. Let me break it down for you...",
       "Excellent observation! This relates to the core concepts we're covering...",
-      `I see you're thinking deeply about this${learningPathId ? ' learning path' : ''}. Here's my perspective...`,
-      "That's a common area of confusion. Let me provide some clarity..."
+      `I see you're thinking deeply about this${learningPathId ? " learning path" : ""}. Here's my perspective...`,
+      "That's a common area of confusion. Let me provide some clarity...",
     ];
 
     // Simple keyword matching for more relevant responses
-    if (userInput.toLowerCase().includes('help') || userInput.toLowerCase().includes('explain')) {
+    if (userInput.toLowerCase().includes("help") || userInput.toLowerCase().includes("explain")) {
       return contextualResponses[0];
     }
 
@@ -149,14 +154,16 @@ export function LearningChatComponent({
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   };
 
   return (
-    <div className={`flex flex-col h-full bg-gradient-to-br from-white via-brand-50/30 to-teal-50/20 rounded-3xl border border-white/20 shadow-2xl backdrop-blur-xl overflow-hidden ${className}`}>
+    <div
+      className={`flex flex-col h-full bg-gradient-to-br from-white via-brand-50/30 to-teal-50/20 border border-white/20 shadow-2xl backdrop-blur-xl overflow-hidden ${className}`}
+    >
       {/* Header */}
       <div className="relative p-6 bg-gradient-to-r from-brand-600 to-teal-600 border-b border-white/10">
         <div className="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
@@ -189,10 +196,10 @@ export function LearningChatComponent({
             disabled={isLoading}
             className={`ml-4 p-2 rounded-full transition-all duration-300 ${
               isPlaying
-                ? 'bg-gradient-to-r from-red-500 to-red-600 text-white animate-pulse'
-                : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 hover:from-blue-100 hover:to-blue-200 hover:text-blue-600'
+                ? "bg-gradient-to-r from-red-500 to-red-600 text-white animate-pulse"
+                : "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 hover:from-blue-100 hover:to-blue-200 hover:text-blue-600"
             } shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed`}
-            title={isPlaying ? 'Stop playing' : 'Play message'}
+            title={isPlaying ? "Stop playing" : "Play message"}
           >
             {isPlaying ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
           </button>
@@ -234,8 +241,8 @@ export function LearningChatComponent({
               disabled={isLoading}
               className={`px-6 py-4 rounded-2xl font-medium shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
                 isListening
-                  ? 'bg-gradient-to-r from-red-500 to-red-600 text-white animate-pulse'
-                  : 'bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700'
+                  ? "bg-gradient-to-r from-red-500 to-red-600 text-white animate-pulse"
+                  : "bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700"
               }`}
             >
               {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
@@ -247,7 +254,9 @@ export function LearningChatComponent({
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative flex items-center gap-2">
-                <Send className={`w-5 h-5 transition-transform duration-300 ${isLoading ? 'animate-pulse' : 'group-hover:translate-x-1'}`} />
+                <Send
+                  className={`w-5 h-5 transition-transform duration-300 ${isLoading ? "animate-pulse" : "group-hover:translate-x-1"}`}
+                />
                 <span className="hidden sm:inline">Send</span>
               </div>
             </button>
