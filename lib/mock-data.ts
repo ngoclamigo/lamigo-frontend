@@ -14,19 +14,19 @@ export const mockLearningPaths: LearningPath[] = [
         config: {
           title: 'Getting Started with S&P Capital IQ Pro',
           content: `
-            <h2>What is S&P Capital IQ Pro?</h2>
-            <p>S&P Capital IQ Pro is a comprehensive financial intelligence platform that provides data, analytics, and research on public and private companies, markets, and industries worldwide.</p>
+            <h2 class="text-2xl font-bold mb-4 text-blue-800">What is S&P Capital IQ Pro?</h2>
+            <p class="mb-4">S&P Capital IQ Pro is a comprehensive financial intelligence platform that provides data, analytics, and research on public and private companies, markets, and industries worldwide.</p>
 
-            <h3>Key Features:</h3>
-            <ul>
-              <li><strong>Company Screening:</strong> Filter companies based on financial metrics and criteria</li>
-              <li><strong>Financial Data:</strong> Access to comprehensive financial statements and ratios</li>
-              <li><strong>Market Intelligence:</strong> Real-time market data and news</li>
-              <li><strong>Excel Integration:</strong> Pull data directly into spreadsheets for analysis</li>
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Key Features:</h3>
+            <ul class="list-disc pl-6 mb-4">
+              <li class="mb-2"><strong class="font-semibold">Company Screening:</strong> Filter companies based on financial metrics and criteria</li>
+              <li class="mb-2"><strong class="font-semibold">Financial Data:</strong> Access to comprehensive financial statements and ratios</li>
+              <li class="mb-2"><strong class="font-semibold">Market Intelligence:</strong> Real-time market data and news</li>
+              <li class="mb-2"><strong class="font-semibold">Excel Integration:</strong> Pull data directly into spreadsheets for analysis</li>
             </ul>
 
-            <h3>Why Use Capital IQ Pro?</h3>
-            <p>Capital IQ Pro offers unparalleled depth of financial information, making it essential for financial analysts, investment bankers, private equity professionals, and corporate strategists.</p>
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Why Use Capital IQ Pro?</h3>
+            <p class="mb-4">Capital IQ Pro offers unparalleled depth of financial information, making it essential for financial analysts, investment bankers, private equity professionals, and corporate strategists.</p>
           `
         }
       },
@@ -242,23 +242,23 @@ export const mockLearningPaths: LearningPath[] = [
         config: {
           title: 'Excel Integration with Capital IQ Pro',
           content: `
-            <h2>Leveraging the Excel Plugin</h2>
-            <p>The S&P Capital IQ Pro Excel Plugin allows analysts to pull financial data directly into spreadsheets for advanced modeling and analysis.</p>
+            <h2 class="text-2xl font-bold mb-4 text-green-800">Leveraging the Excel Plugin</h2>
+            <p class="mb-4">The S&P Capital IQ Pro Excel Plugin allows analysts to pull financial data directly into spreadsheets for advanced modeling and analysis.</p>
 
-            <h3>Key Functions:</h3>
-            <ul>
-              <li>CIQ() - Retrieve specific data points for companies</li>
-              <li>CIQCF() - Pull complete financial statements</li>
-              <li>CIQINDEX() - Access index and market data</li>
-              <li>CIQTRADE() - Get trading and pricing information</li>
+            <h3 class="text-xl font-semibold mb-3 text-green-700">Key Functions:</h3>
+            <ul class="list-disc pl-6 mb-4">
+              <li class="mb-2"><code class="bg-gray-100 px-2 py-1 rounded">CIQ()</code> - Retrieve specific data points for companies</li>
+              <li class="mb-2"><code class="bg-gray-100 px-2 py-1 rounded">CIQCF()</code> - Pull complete financial statements</li>
+              <li class="mb-2"><code class="bg-gray-100 px-2 py-1 rounded">CIQINDEX()</code> - Access index and market data</li>
+              <li class="mb-2"><code class="bg-gray-100 px-2 py-1 rounded">CIQTRADE()</code> - Get trading and pricing information</li>
             </ul>
 
-            <h3>Benefits of Excel Integration:</h3>
-            <ol>
-              <li>Automate data collection</li>
-              <li>Ensure data accuracy</li>
-              <li>Create dynamic models that update with fresh data</li>
-              <li>Build custom templates for recurring analyses</li>
+            <h3 class="text-xl font-semibold mb-3 text-green-700">Benefits of Excel Integration:</h3>
+            <ol class="list-decimal pl-6 mb-4">
+              <li class="mb-2">Automate data collection</li>
+              <li class="mb-2">Ensure data accuracy</li>
+              <li class="mb-2">Create dynamic models that update with fresh data</li>
+              <li class="mb-2">Build custom templates for recurring analyses</li>
             </ol>
           `
         }
@@ -481,20 +481,20 @@ export const mockLearningPaths: LearningPath[] = [
         config: {
           title: 'Industry Research with Capital IQ Pro',
           content: `
-            <h2>Sector and Industry Analysis</h2>
-            <p>S&P Capital IQ Pro provides powerful tools for analyzing industries, sectors, and market trends to inform investment decisions and strategic planning.</p>
+            <h2 class="text-2xl font-bold mb-4 text-purple-800">Sector and Industry Analysis</h2>
+            <p class="mb-4">S&P Capital IQ Pro provides powerful tools for analyzing industries, sectors, and market trends to inform investment decisions and strategic planning.</p>
 
-            <h3>Key Industry Analysis Features:</h3>
-            <ul>
-              <li>Industry Primers and Reports</li>
-              <li>Sector-Specific Metrics and KPIs</li>
-              <li>Competitive Landscape Analysis</li>
-              <li>Market Share Data</li>
-              <li>Industry Growth Projections</li>
+            <h3 class="text-xl font-semibold mb-3 text-purple-700">Key Industry Analysis Features:</h3>
+            <ul class="list-disc pl-6 mb-4">
+              <li class="mb-2">Industry Primers and Reports</li>
+              <li class="mb-2">Sector-Specific Metrics and KPIs</li>
+              <li class="mb-2">Competitive Landscape Analysis</li>
+              <li class="mb-2">Market Share Data</li>
+              <li class="mb-2">Industry Growth Projections</li>
             </ul>
 
-            <h3>Analytical Framework:</h3>
-            <p>A comprehensive sector analysis typically includes examination of market structure, competitive dynamics, regulatory environment, growth drivers, and financial performance metrics specific to the industry.</p>
+            <h3 class="text-xl font-semibold mb-3 text-purple-700">Analytical Framework:</h3>
+            <p class="mb-4">A comprehensive sector analysis typically includes examination of market structure, competitive dynamics, regulatory environment, growth drivers, and financial performance metrics specific to the industry.</p>
           `
         }
       },
