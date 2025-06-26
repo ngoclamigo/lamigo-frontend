@@ -9,8 +9,8 @@ export interface LearningPath {
 export interface LearningActivity {
   activity_id: string;
   title: string;
-  type: 'slide' | 'quiz' | 'flashcard' | 'embed';
-  config: SlideConfig | QuizConfig | FlashcardConfig | EmbedConfig;
+  type: 'slide' | 'quiz' | 'flashcard' | 'embed' | 'fill_blanks' | 'matching' | 'sequence';
+  config: SlideConfig | QuizConfig | FlashcardConfig | EmbedConfig | FillBlanksConfig | MatchingConfig | SequenceConfig;
 }
 
 export interface LearningChat {
@@ -53,6 +53,56 @@ export interface EmbedConfig {
   title: string;
   description?: string;
   embed_type: 'video' | 'article' | 'interactive';
+}
+
+export interface FillBlanksConfig {
+  instruction: string;
+  text_with_blanks: string; // Text with placeholders like "The _____ of a company is calculated by..."
+  blanks: FillBlank[];
+  success_message?: string;
+}
+
+export interface FillBlank {
+  id: string;
+  position: number; // Position in the text where this blank appears
+  correct_answers: string[]; // Multiple correct answers possible
+  hint?: string;
+  feedback?: string;
+}
+
+export interface MatchingConfig {
+  instruction: string;
+  pairs: MatchingPair[];
+  success_message?: string;
+  layout?: 'two_columns' | 'grid';
+}
+
+export interface MatchingPair {
+  id: string;
+  left: MatchingItem;
+  right: MatchingItem;
+}
+
+export interface MatchingItem {
+  id: string;
+  content: string;
+  type?: 'text' | 'image' | 'formula';
+  category?: string;
+}
+
+export interface SequenceConfig {
+  instruction: string;
+  items: SequenceItem[];
+  success_message?: string;
+  show_numbers?: boolean;
+}
+
+export interface SequenceItem {
+  id: string;
+  content: string;
+  correct_position: number;
+  hint?: string;
+  type?: 'text' | 'image' | 'step';
 }
 
 // Progress and Achievement types

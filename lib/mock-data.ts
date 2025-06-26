@@ -91,6 +91,132 @@ export const mockLearningPaths: LearningPath[] = [
         }
       },
       {
+        activity_id: 'capital-iq-features-matching',
+        title: 'Match Capital IQ Features to Use Cases',
+        type: 'matching',
+        config: {
+          instruction: 'Connect each Capital IQ Pro feature with its primary use case.',
+          pairs: [
+            {
+              id: 'pair-1',
+              left: { id: 'screening', content: 'Screening & Analytics', type: 'text' },
+              right: { id: 'screening-use', content: 'Find companies that match specific financial criteria', type: 'text' }
+            },
+            {
+              id: 'pair-2',
+              left: { id: 'excel-plugin', content: 'Excel Plugin', type: 'text' },
+              right: { id: 'excel-use', content: 'Pull live financial data directly into spreadsheets', type: 'text' }
+            },
+            {
+              id: 'pair-3',
+              left: { id: 'tearsheet', content: 'Company Tearsheet', type: 'text' },
+              right: { id: 'tearsheet-use', content: 'Get comprehensive overview of a single company', type: 'text' }
+            },
+            {
+              id: 'pair-4',
+              left: { id: 'news', content: 'News & Research', type: 'text' },
+              right: { id: 'news-use', content: 'Stay updated on market events and analyst reports', type: 'text' }
+            }
+          ],
+          success_message: 'Great! You understand how to use Capital IQ Pro\'s key features.',
+          layout: 'two_columns'
+        }
+      },
+      {
+        activity_id: 'financial-statement-sequence',
+        title: 'Financial Statement Analysis Sequence',
+        type: 'sequence',
+        config: {
+          instruction: 'Arrange these steps in the correct order for conducting financial statement analysis.',
+          items: [
+            {
+              id: 'step-1',
+              content: 'Obtain the company\'s financial statements',
+              correct_position: 1,
+              hint: 'Start with gathering the data',
+              type: 'step'
+            },
+            {
+              id: 'step-2',
+              content: 'Review accounting policies and notes',
+              correct_position: 2,
+              hint: 'Understand how numbers were calculated',
+              type: 'step'
+            },
+            {
+              id: 'step-3',
+              content: 'Calculate key financial ratios',
+              correct_position: 3,
+              hint: 'Transform raw data into meaningful metrics',
+              type: 'step'
+            },
+            {
+              id: 'step-4',
+              content: 'Compare ratios to industry benchmarks',
+              correct_position: 4,
+              hint: 'Context is crucial for interpretation',
+              type: 'step'
+            },
+            {
+              id: 'step-5',
+              content: 'Analyze trends over multiple periods',
+              correct_position: 5,
+              hint: 'Look for patterns over time',
+              type: 'step'
+            },
+            {
+              id: 'step-6',
+              content: 'Draw conclusions and make recommendations',
+              correct_position: 6,
+              hint: 'Synthesize your analysis into actionable insights',
+              type: 'step'
+            }
+          ],
+          success_message: 'Excellent! You\'ve mastered the financial analysis process.',
+          show_numbers: true
+        }
+      },
+      {
+        activity_id: 'capital-iq-terminology-blanks',
+        title: 'Capital IQ Pro Terminology',
+        type: 'fill_blanks',
+        config: {
+          instruction: 'Complete these sentences about Capital IQ Pro features and terminology.',
+          text_with_blanks: 'A company _____ provides a one-page summary of key financial metrics and information. The _____ function allows you to filter companies based on specific criteria. _____ data shows real-time stock prices and trading volumes. The _____ plugin enables you to pull Capital IQ data directly into spreadsheets.',
+          blanks: [
+            {
+              id: 'blank-1',
+              position: 1,
+              correct_answers: ['Tearsheet', 'Tear Sheet'],
+              hint: 'One-page company summary',
+              feedback: 'A tearsheet provides a comprehensive one-page overview of a company.'
+            },
+            {
+              id: 'blank-2',
+              position: 2,
+              correct_answers: ['Screening', 'Screen'],
+              hint: 'Feature for filtering companies',
+              feedback: 'Screening allows you to filter companies by financial criteria.'
+            },
+            {
+              id: 'blank-3',
+              position: 3,
+              correct_answers: ['Market', 'Trading'],
+              hint: 'Real-time price information',
+              feedback: 'Market data provides real-time pricing and trading information.'
+            },
+            {
+              id: 'blank-4',
+              position: 4,
+              correct_answers: ['Excel', 'Office'],
+              hint: 'Spreadsheet integration tool',
+              feedback: 'The Excel plugin integrates Capital IQ data with spreadsheets.'
+            }
+          ],
+          success_message: 'Perfect! You\'re becoming a Capital IQ Pro expert!'
+        }
+      },
+      {
         activity_id: 'capital-iq-docs-embed',
         title: 'S&P Capital IQ Pro Documentation',
         type: 'embed',
@@ -173,6 +299,144 @@ export const mockLearningPaths: LearningPath[] = [
           title: 'Company Valuation Simulator',
           description: 'Interactive tool to practice valuation techniques and see how changing assumptions affects company value',
           embed_type: 'interactive',
+        }
+      },
+      {
+        activity_id: 'financial-terminology-blanks',
+        title: 'Financial Terminology Fill-in-the-Blanks',
+        type: 'fill_blanks',
+        config: {
+          instruction: 'Complete the sentences by dragging the correct financial terms into the blanks.',
+          text_with_blanks: 'The _____ represents the total market value of a company\'s outstanding shares. To calculate enterprise value, you add _____ to market capitalization. The _____ ratio compares a company\'s stock price to its earnings per share. A company\'s _____ margin shows how much profit it makes on each dollar of revenue.',
+          blanks: [
+            {
+              id: 'blank-1',
+              position: 1,
+              correct_answers: ['Market Cap', 'Market Capitalization'],
+              hint: 'Total value of all shares',
+              feedback: 'Market capitalization is the total value of a company\'s shares.'
+            },
+            {
+              id: 'blank-2',
+              position: 2,
+              correct_answers: ['Net Debt', 'Debt'],
+              hint: 'What you add to market cap for enterprise value',
+              feedback: 'Net debt is added to market cap to get enterprise value.'
+            },
+            {
+              id: 'blank-3',
+              position: 3,
+              correct_answers: ['P/E', 'Price-to-Earnings'],
+              hint: 'Stock price divided by earnings per share',
+              feedback: 'P/E ratio compares stock price to earnings per share.'
+            },
+            {
+              id: 'blank-4',
+              position: 4,
+              correct_answers: ['Gross', 'Profit'],
+              hint: 'Type of margin that shows profitability',
+              feedback: 'Gross margin shows profit as a percentage of revenue.'
+            }
+          ],
+          success_message: 'Excellent! You\'ve mastered these key financial terms!'
+        }
+      },
+      {
+        activity_id: 'valuation-metrics-matching',
+        title: 'Match Valuation Metrics to Definitions',
+        type: 'matching',
+        config: {
+          instruction: 'Drag each valuation metric to its correct definition.',
+          pairs: [
+            {
+              id: 'pair-1',
+              left: { id: 'ev-ebitda', content: 'EV/EBITDA', type: 'text' },
+              right: { id: 'ev-ebitda-def', content: 'Enterprise value divided by earnings before interest, taxes, depreciation, and amortization', type: 'text' }
+            },
+            {
+              id: 'pair-2',
+              left: { id: 'pe-ratio', content: 'P/E Ratio', type: 'text' },
+              right: { id: 'pe-ratio-def', content: 'Stock price divided by earnings per share', type: 'text' }
+            },
+            {
+              id: 'pair-3',
+              left: { id: 'pbv-ratio', content: 'P/B Ratio', type: 'text' },
+              right: { id: 'pbv-ratio-def', content: 'Market value of equity divided by book value of equity', type: 'text' }
+            },
+            {
+              id: 'pair-4',
+              left: { id: 'dcf', content: 'DCF Valuation', type: 'text' },
+              right: { id: 'dcf-def', content: 'Present value of projected future cash flows', type: 'text' }
+            },
+            {
+              id: 'pair-5',
+              left: { id: 'wacc', content: 'WACC', type: 'text' },
+              right: { id: 'wacc-def', content: 'Weighted average cost of capital used as discount rate', type: 'text' }
+            }
+          ],
+          success_message: 'Perfect! You understand how these valuation metrics work.',
+          layout: 'two_columns'
+        }
+      },
+      {
+        activity_id: 'dcf-process-sequence',
+        title: 'DCF Modeling Process Sequence',
+        type: 'sequence',
+        config: {
+          instruction: 'Arrange the DCF modeling steps in the correct order from start to finish.',
+          items: [
+            {
+              id: 'step-1',
+              content: 'Gather historical financial data and build financial statements',
+              correct_position: 1,
+              hint: 'You need data before you can project',
+              type: 'step'
+            },
+            {
+              id: 'step-2',
+              content: 'Project future revenue, expenses, and cash flows',
+              correct_position: 2,
+              hint: 'Build projections based on historical trends',
+              type: 'step'
+            },
+            {
+              id: 'step-3',
+              content: 'Calculate the discount rate (WACC)',
+              correct_position: 3,
+              hint: 'Determine the appropriate rate to discount future cash flows',
+              type: 'step'
+            },
+            {
+              id: 'step-4',
+              content: 'Calculate terminal value',
+              correct_position: 4,
+              hint: 'Estimate value beyond the projection period',
+              type: 'step'
+            },
+            {
+              id: 'step-5',
+              content: 'Discount all cash flows to present value',
+              correct_position: 5,
+              hint: 'Apply the discount rate to future cash flows',
+              type: 'step'
+            },
+            {
+              id: 'step-6',
+              content: 'Sum present values to get enterprise value',
+              correct_position: 6,
+              hint: 'Add up all discounted cash flows',
+              type: 'step'
+            },
+            {
+              id: 'step-7',
+              content: 'Subtract net debt to get equity value',
+              correct_position: 7,
+              hint: 'Final step to get the value for shareholders',
+              type: 'step'
+            }
+          ],
+          success_message: 'Outstanding! You\'ve mastered the DCF process sequence.',
+          show_numbers: true
         }
       },
       {

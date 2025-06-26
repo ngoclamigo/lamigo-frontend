@@ -1,13 +1,219 @@
 import {
   EmbedConfig,
+  FillBlanksConfig,
   FlashcardConfig,
   LearningActivity,
+  MatchingConfig,
   QuizConfig,
+  SequenceConfig,
   SlideConfig,
 } from "@/types/learning-path";
-import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Shuffle } from "lucide-react";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  closestCenter,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  GripVertical,
+  Move,
+  RotateCcw,
+  Shuffle,
+} from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+
+// Droppable container for sequence building
+function SequenceDropContainer({
+  children,
+  isEmpty,
+}: {
+  children: React.ReactNode;
+  isEmpty: boolean;
+}) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: "sequence-container",
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`bg-gradient-to-br from-white to-brand-50/30 p-6 rounded-2xl border-2 border-dashed min-h-[120px] transition-all duration-300 ${
+        isOver ? "border-brand-500 bg-brand-100/50" : "border-brand-300"
+      }`}
+    >
+      {isEmpty ? (
+        <div className="text-center text-gray-500 py-8">
+          <Move className="w-12 h-12 mx-auto mb-4 opacity-30" />
+          <p>Drag items here to build the sequence</p>
+        </div>
+      ) : (
+        children
+      )}
+    </div>
+  );
+}
+
+// Draggable Word Component
+function DraggableWord({ id, word, isUsed }: { id: string; word: string; isUsed: boolean }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+    disabled: isUsed,
+  });
+
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transition,
+    opacity: isDragging ? 0.5 : isUsed ? 0.4 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`px-4 py-2 bg-gradient-to-r from-brand-100 to-teal-100 text-brand-800 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-brand-200/50 select-none ${
+        isUsed ? "cursor-not-allowed" : "cursor-move"
+      }`}
+    >
+      <div className="flex items-center">
+        <GripVertical className="w-4 h-4 mr-2 opacity-60" />
+        {word}
+      </div>
+    </div>
+  );
+}
+
+// Droppable Blank Component
+function DroppableBlank({
+  id,
+  word,
+  isCorrect,
+  showFeedback,
+  onRemove,
+}: {
+  id: string;
+  word?: string;
+  isCorrect?: boolean;
+  showFeedback: boolean;
+  onRemove: () => void;
+}) {
+  const { setNodeRef, isOver } = useSortable({
+    id: `blank-${id}`,
+  });
+
+  return (
+    <span className="inline-block mx-1">
+      <div
+        ref={setNodeRef}
+        className={`inline-flex items-center justify-center min-w-[100px] h-10 border-2 border-dashed rounded-lg transition-all duration-300 ${
+          word
+            ? showFeedback
+              ? isCorrect
+                ? "border-green-500 bg-green-50 text-green-800"
+                : "border-red-500 bg-red-50 text-red-800"
+              : "border-brand-500 bg-brand-50 text-brand-800"
+            : isOver
+              ? "border-brand-400 bg-brand-100"
+              : "border-gray-300 bg-gray-50 hover:border-brand-400"
+        }`}
+      >
+        {word ? (
+          <div className="flex items-center">
+            <span>{word}</span>
+            {!showFeedback && (
+              <button onClick={onRemove} className="ml-2 text-xs text-gray-500 hover:text-red-500">
+                ✕
+              </button>
+            )}
+          </div>
+        ) : (
+          "Drop here"
+        )}
+      </div>
+    </span>
+  );
+}
+
+// Sortable Sequence Item Component
+function SortableSequenceItem({
+  id,
+  content,
+  index,
+  isCorrect,
+  showFeedback,
+  showNumbers,
+  onRemove,
+}: {
+  id: string;
+  content: string;
+  index: number;
+  isCorrect?: boolean;
+  showFeedback: boolean;
+  showNumbers?: boolean;
+  onRemove: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
+
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`flex items-center p-4 rounded-xl border transition-all duration-300 cursor-move ${
+        showFeedback
+          ? isCorrect
+            ? "border-green-500 bg-green-50 text-green-800"
+            : "border-red-500 bg-red-50 text-red-800"
+          : "border-brand-200 bg-white hover:border-brand-400"
+      }`}
+    >
+      <div className="flex items-center flex-1">
+        {showNumbers && (
+          <div className="w-8 h-8 bg-brand-500 text-white rounded-full flex items-center justify-center font-bold text-sm mr-4">
+            {index + 1}
+          </div>
+        )}
+        <span className="font-medium">{content}</span>
+      </div>
+      <button
+        onClick={onRemove}
+        className="ml-4 text-gray-400 hover:text-red-500 transition-colors"
+      >
+        ✕
+      </button>
+      {showFeedback && (
+        <span className={`ml-2 ${isCorrect ? "text-green-600" : "text-red-600"}`}>
+          {isCorrect ? "✓" : "✗"}
+        </span>
+      )}
+    </div>
+  );
+}
 
 interface ActivityRendererProps {
   activity: LearningActivity;
@@ -58,6 +264,36 @@ export function ActivityRenderer({
     case "embed":
       return (
         <EmbedActivity
+          activity={activity}
+          onComplete={onComplete}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          showNavigation={showNavigation}
+        />
+      );
+    case "fill_blanks":
+      return (
+        <FillBlanksActivity
+          activity={activity}
+          onComplete={onComplete}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          showNavigation={showNavigation}
+        />
+      );
+    case "matching":
+      return (
+        <MatchingActivity
+          activity={activity}
+          onComplete={onComplete}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          showNavigation={showNavigation}
+        />
+      );
+    case "sequence":
+      return (
+        <SequenceActivity
           activity={activity}
           onComplete={onComplete}
           onNext={onNext}
@@ -517,6 +753,814 @@ function NavigationButtons({
           <ChevronRight className="w-4 h-4 ml-1" />
         </button>
       )}
+    </div>
+  );
+}
+
+function FillBlanksActivity({
+  activity,
+  onComplete,
+  onNext,
+  onPrevious,
+  showNavigation,
+}: ActivityRendererProps) {
+  const config = activity.config as FillBlanksConfig;
+  const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+
+  // Create sensors for drag and drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  // Extract available words from correct answers
+  const availableWords = Array.from(
+    new Set(config.blanks.flatMap((blank) => blank.correct_answers))
+  ).sort(() => Math.random() - 0.5); // Shuffle
+
+  // Add some distractors
+  const distractors = ["ROI", "CAGR", "Beta", "Alpha", "Yield", "Margin", "Ratio", "Index"];
+  const allWords = [...availableWords, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
+
+  // Get used words
+  const usedWords = Object.values(userAnswers);
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || !active) {
+      setActiveId(null);
+      return;
+    }
+
+    const activeWordId = active.id as string;
+    const overTarget = over.id as string;
+
+    // Get the actual word from the wordItems
+    const wordItem = wordItems.find((item) => item.id === activeWordId);
+    if (!wordItem) {
+      setActiveId(null);
+      return;
+    }
+
+    // Check if dropping on a blank
+    if (overTarget.startsWith("blank-")) {
+      const blankId = overTarget.replace("blank-", "");
+
+      // Remove this word from any existing blank first
+      const updatedAnswers = { ...userAnswers };
+      Object.keys(updatedAnswers).forEach((key) => {
+        if (updatedAnswers[key] === wordItem.word) {
+          delete updatedAnswers[key];
+        }
+      });
+
+      // Add word to new blank
+      updatedAnswers[blankId] = wordItem.word;
+      setUserAnswers(updatedAnswers);
+    }
+
+    setActiveId(null);
+  };
+
+  const removeWordFromBlank = (blankId: string) => {
+    setUserAnswers((prev) => {
+      const updated = { ...prev };
+      delete updated[blankId];
+      return updated;
+    });
+  };
+
+  const checkAnswers = () => {
+    const isAllCorrect = config.blanks.every((blank) => {
+      const userAnswer = userAnswers[blank.id];
+      return (
+        userAnswer &&
+        blank.correct_answers.some((correct) => correct.toLowerCase() === userAnswer.toLowerCase())
+      );
+    });
+
+    setShowFeedback(true);
+    if (isAllCorrect) {
+      setIsCompleted(true);
+      onComplete?.();
+    }
+  };
+
+  const handleReset = () => {
+    setUserAnswers({});
+    setShowFeedback(false);
+    setIsCompleted(false);
+    setActiveId(null);
+  };
+
+  // Create word items with proper IDs
+  const wordItems = allWords.map((word, index) => ({
+    id: `word-${index}`,
+    word,
+    isUsed: usedWords.includes(word),
+  }));
+
+  // Create blank items with proper IDs
+  const blankItems = config.blanks.map((blank) => `blank-${blank.id}`);
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="h-full">
+        <div className="relative z-10">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent mb-8">
+            {activity.title}
+          </h2>
+
+          <div className="mb-8">
+            <p className="text-lg text-gray-600 mb-8">{config.instruction}</p>
+
+            {/* Text with blanks */}
+            <div className="bg-gradient-to-br from-white to-brand-50/30 p-8 rounded-2xl shadow-lg border border-brand-200/30 mb-8">
+              <SortableContext items={blankItems}>
+                <div className="text-lg leading-relaxed">
+                  {config.text_with_blanks.split("_____").map((textPart, index) => (
+                    <span key={index}>
+                      {textPart}
+                      {index < config.blanks.length && (
+                        <DroppableBlank
+                          id={config.blanks[index].id}
+                          word={userAnswers[config.blanks[index].id]}
+                          isCorrect={
+                            userAnswers[config.blanks[index].id]
+                              ? config.blanks[index].correct_answers.some(
+                                  (correct) =>
+                                    correct.toLowerCase() ===
+                                    userAnswers[config.blanks[index].id]?.toLowerCase()
+                                )
+                              : undefined
+                          }
+                          showFeedback={showFeedback}
+                          onRemove={() => removeWordFromBlank(config.blanks[index].id)}
+                        />
+                      )}
+                    </span>
+                  ))}
+                </div>
+              </SortableContext>
+            </div>
+
+            {/* Available words */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">Available Words:</h3>
+              <SortableContext
+                items={wordItems.filter((item) => !item.isUsed).map((item) => item.id)}
+              >
+                <div className="flex flex-wrap gap-3">
+                  {wordItems
+                    .filter((item) => !item.isUsed)
+                    .map((item) => (
+                      <DraggableWord
+                        key={item.id}
+                        id={item.id}
+                        word={item.word}
+                        isUsed={item.isUsed}
+                      />
+                    ))}
+                </div>
+              </SortableContext>
+            </div>
+
+            {/* Check answers button */}
+            {!isCompleted && (
+              <div className="text-center mb-8">
+                <button
+                  onClick={checkAnswers}
+                  disabled={Object.keys(userAnswers).length !== config.blanks.length}
+                  className="px-8 py-4 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-lg"
+                >
+                  Check Answers
+                </button>
+              </div>
+            )}
+
+            {/* Feedback */}
+            {showFeedback && (
+              <div
+                className={`p-6 rounded-2xl border shadow-lg mb-8 ${
+                  isCompleted
+                    ? "bg-gradient-to-r from-green-50 to-emerald-100 border-green-200 text-green-800"
+                    : "bg-gradient-to-r from-yellow-50 to-orange-100 border-yellow-200 text-yellow-800"
+                }`}
+              >
+                <h4 className="font-bold mb-2 text-lg">
+                  {isCompleted ? "🎉 Excellent!" : "📝 Keep trying!"}
+                </h4>
+                <p className="mb-4">
+                  {isCompleted
+                    ? config.success_message || "You got all the answers correct!"
+                    : "Some answers need adjustment. Check the highlighted blanks."}
+                </p>
+                {!isCompleted && (
+                  <div className="flex justify-center">
+                    <button
+                      onClick={handleReset}
+                      className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-base flex items-center"
+                    >
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                      Try Again
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <NavigationButtons
+          onNext={onNext}
+          onPrevious={onPrevious}
+          showNavigation={showNavigation}
+          disabled={!isCompleted}
+        />
+      </div>
+
+      <DragOverlay dropAnimation={null}>
+        {activeId && wordItems.find((item) => item.id === activeId) ? (
+          <div className="px-4 py-2 bg-gradient-to-r from-brand-200 to-teal-200 text-brand-900 rounded-full shadow-2xl border-2 border-brand-300 scale-110 font-semibold pointer-events-none">
+            <div className="flex items-center">
+              <GripVertical className="w-4 h-4 mr-2 opacity-60" />
+              {wordItems.find((item) => item.id === activeId)?.word}
+            </div>
+          </div>
+        ) : null}
+      </DragOverlay>
+    </DndContext>
+  );
+}
+
+function MatchingActivity({
+  activity,
+  onComplete,
+  onNext,
+  onPrevious,
+  showNavigation,
+}: ActivityRendererProps) {
+  const config = activity.config as MatchingConfig;
+  const [matches, setMatches] = useState<Record<string, string>>({});
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+
+  // Create sensors for drag and drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  // Shuffle right side items
+  const [shuffledRightItems] = useState(() =>
+    [...config.pairs.map((pair) => pair.right)].sort(() => Math.random() - 0.5)
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || !active) {
+      setActiveId(null);
+      return;
+    }
+
+    const activeItemId = active.id as string;
+    const overTargetId = over.id as string;
+
+    // Check if dropping on a left item (term)
+    if (overTargetId.startsWith("left-")) {
+      const leftItemId = overTargetId.replace("left-", "");
+
+      // Remove this right item from any existing matches
+      const updatedMatches = { ...matches };
+      Object.keys(updatedMatches).forEach((key) => {
+        if (updatedMatches[key] === activeItemId) {
+          delete updatedMatches[key];
+        }
+      });
+
+      // Add new match
+      updatedMatches[leftItemId] = activeItemId;
+      setMatches(updatedMatches);
+    }
+
+    setActiveId(null);
+  };
+
+  const checkMatches = () => {
+    const isAllCorrect = config.pairs.every((pair) => {
+      return matches[pair.left.id] === pair.right.id;
+    });
+
+    setShowFeedback(true);
+    if (isAllCorrect) {
+      setIsCompleted(true);
+      onComplete?.();
+    }
+  };
+
+  const handleReset = () => {
+    setMatches({});
+    setShowFeedback(false);
+    setIsCompleted(false);
+    setActiveId(null);
+  };
+
+  // Create droppable targets for left items
+  const droppableTargets = config.pairs.map((pair) => `left-${pair.left.id}`);
+  const draggableItems = shuffledRightItems.map((item) => item.id);
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="h-full">
+        <div className="relative z-10">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent mb-8">
+            {activity.title}
+          </h2>
+
+          <div className="mb-8">
+            <p className="text-lg text-gray-600 mb-8">{config.instruction}</p>
+
+            {/* Matching interface */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Left column - Terms */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-700 mb-4">Terms</h3>
+                <SortableContext items={droppableTargets}>
+                  {config.pairs.map((pair) => {
+                    const matchedRightId = matches[pair.left.id];
+                    const isCorrect = matchedRightId === pair.right.id;
+
+                    return (
+                      <div
+                        key={pair.left.id}
+                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                          matchedRightId
+                            ? showFeedback
+                              ? isCorrect
+                                ? "border-green-500 bg-green-50"
+                                : "border-red-500 bg-red-50"
+                              : "border-brand-500 bg-brand-50"
+                            : "border-gray-200 bg-white"
+                        }`}
+                      >
+                        <MatchingDropTarget
+                          id={`left-${pair.left.id}`}
+                          leftContent={pair.left.content}
+                          rightContent={
+                            matchedRightId
+                              ? shuffledRightItems.find((item) => item.id === matchedRightId)
+                                  ?.content
+                              : undefined
+                          }
+                          isCorrect={isCorrect}
+                          showFeedback={showFeedback}
+                        />
+                      </div>
+                    );
+                  })}
+                </SortableContext>
+              </div>
+
+              {/* Right column - Definitions */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-700 mb-4">Definitions</h3>
+                <SortableContext items={draggableItems}>
+                  <div className="space-y-3">
+                    {shuffledRightItems
+                      .filter((item) => !Object.values(matches).includes(item.id))
+                      .map((item) => (
+                        <DraggableDefinition key={item.id} id={item.id} content={item.content} />
+                      ))}
+                  </div>
+                </SortableContext>
+              </div>
+            </div>
+
+            {/* Check matches button */}
+            {!isCompleted && (
+              <div className="text-center mb-8">
+                <button
+                  onClick={checkMatches}
+                  disabled={Object.keys(matches).length !== config.pairs.length}
+                  className="px-8 py-4 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-lg"
+                >
+                  Check Matches
+                </button>
+              </div>
+            )}
+
+            {/* Feedback */}
+            {showFeedback && (
+              <div
+                className={`p-6 rounded-2xl border shadow-lg mb-8 ${
+                  isCompleted
+                    ? "bg-gradient-to-r from-green-50 to-emerald-100 border-green-200 text-green-800"
+                    : "bg-gradient-to-r from-yellow-50 to-orange-100 border-yellow-200 text-yellow-800"
+                }`}
+              >
+                <h4 className="font-bold mb-2 text-lg">
+                  {isCompleted ? "🎯 Perfect Match!" : "🔄 Try Again!"}
+                </h4>
+                <p className="mb-4">
+                  {isCompleted
+                    ? config.success_message || "You matched all pairs correctly!"
+                    : "Some matches need adjustment. Check the highlighted pairs."}
+                </p>
+                {!isCompleted && (
+                  <div className="flex justify-center">
+                    <button
+                      onClick={handleReset}
+                      className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-base flex items-center"
+                    >
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                      Try Again
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <NavigationButtons
+          onNext={onNext}
+          onPrevious={onPrevious}
+          showNavigation={showNavigation}
+          disabled={!isCompleted}
+        />
+      </div>
+
+      <DragOverlay dropAnimation={null}>
+        {activeId && shuffledRightItems.find((item) => item.id === activeId) ? (
+          <div className="p-4 bg-gradient-to-r from-teal-200 to-brand-200 text-teal-900 rounded-xl shadow-2xl border-2 border-teal-300 scale-110 font-semibold transform rotate-6">
+            <div className="flex items-center">
+              <Move className="w-4 h-4 mr-2 opacity-60" />
+              {shuffledRightItems.find((item) => item.id === activeId)?.content}
+            </div>
+          </div>
+        ) : null}
+      </DragOverlay>
+    </DndContext>
+  );
+}
+
+// Helper component for matching drop targets
+function MatchingDropTarget({
+  id,
+  leftContent,
+  rightContent,
+  isCorrect,
+  showFeedback,
+}: {
+  id: string;
+  leftContent: string;
+  rightContent?: string;
+  isCorrect?: boolean;
+  showFeedback: boolean;
+}) {
+  const { setNodeRef, isOver } = useSortable({ id });
+
+  return (
+    <div ref={setNodeRef} className={`${isOver ? "ring-2 ring-brand-400" : ""}`}>
+      <div className="flex items-center justify-between">
+        <span className="font-medium">{leftContent}</span>
+        <div className="flex items-center">
+          {rightContent && (
+            <span className="ml-2 px-3 py-1 bg-white/70 rounded-full text-sm">{rightContent}</span>
+          )}
+          {showFeedback && rightContent && (
+            <span className={`ml-2 ${isCorrect ? "text-green-600" : "text-red-600"}`}>
+              {isCorrect ? "✓" : "✗"}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Helper component for draggable definitions
+function DraggableDefinition({ id, content }: { id: string; content: string }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
+
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="p-4 bg-gradient-to-r from-teal-100 to-brand-100 text-teal-800 rounded-xl cursor-move shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-teal-200/50 select-none"
+    >
+      <div className="flex items-center">
+        <Move className="w-4 h-4 mr-2 opacity-60" />
+        {content}
+      </div>
+    </div>
+  );
+}
+
+function SequenceActivity({
+  activity,
+  onComplete,
+  onNext,
+  onPrevious,
+  showNavigation,
+}: ActivityRendererProps) {
+  const config = activity.config as SequenceConfig;
+  const [orderedItems, setOrderedItems] = useState<string[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+
+  // Create sensors for drag and drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  // Shuffle items initially
+  const [shuffledItems] = useState(() => [...config.items].sort(() => Math.random() - 0.5));
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) {
+      setActiveId(null);
+      return;
+    }
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    // Handle dropping from available items to sequence
+    if (!orderedItems.includes(activeId) && overId === "sequence-container") {
+      setOrderedItems((prev) => [...prev, activeId]);
+    }
+    // Handle reordering within sequence
+    else if (orderedItems.includes(activeId) && orderedItems.includes(overId)) {
+      const oldIndex = orderedItems.indexOf(activeId);
+      const newIndex = orderedItems.indexOf(overId);
+      setOrderedItems(arrayMove(orderedItems, oldIndex, newIndex));
+    }
+    // Handle dropping on another sortable item in sequence
+    else if (!orderedItems.includes(activeId) && orderedItems.includes(overId)) {
+      const targetIndex = orderedItems.indexOf(overId);
+      setOrderedItems((prev) => {
+        const newItems = [...prev];
+        newItems.splice(targetIndex, 0, activeId);
+        return newItems;
+      });
+    }
+
+    setActiveId(null);
+  };
+
+  const addToSequence = (itemId: string) => {
+    if (!orderedItems.includes(itemId)) {
+      setOrderedItems((prev) => [...prev, itemId]);
+    }
+  };
+
+  const removeFromSequence = (itemId: string) => {
+    setOrderedItems((prev) => prev.filter((id) => id !== itemId));
+  };
+
+  const checkSequence = () => {
+    const isCorrect =
+      orderedItems.length === config.items.length &&
+      orderedItems.every((itemId, index) => {
+        const item = config.items.find((i) => i.id === itemId);
+        return item && item.correct_position === index + 1;
+      });
+
+    setShowFeedback(true);
+    if (isCorrect) {
+      setIsCompleted(true);
+      onComplete?.();
+    }
+  };
+
+  const handleReset = () => {
+    setOrderedItems([]);
+    setShowFeedback(false);
+    setIsCompleted(false);
+    setActiveId(null);
+  };
+
+  const availableItems = shuffledItems.filter((item) => !orderedItems.includes(item.id));
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="h-full">
+        <div className="relative z-10">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent mb-8">
+            {activity.title}
+          </h2>
+
+          <div className="mb-8">
+            <p className="text-lg text-gray-600 mb-8">{config.instruction}</p>
+
+            {/* Sequence building area */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">Build the Sequence:</h3>
+              <SequenceDropContainer isEmpty={orderedItems.length === 0}>
+                {orderedItems.length > 0 && (
+                  <SortableContext items={orderedItems} strategy={verticalListSortingStrategy}>
+                    <div className="space-y-3">
+                      {orderedItems.map((itemId, index) => {
+                        const item = config.items.find((i) => i.id === itemId);
+                        if (!item) return null;
+
+                        const isCorrectPosition =
+                          showFeedback && item.correct_position === index + 1;
+
+                        return (
+                          <SortableSequenceItem
+                            key={itemId}
+                            id={itemId}
+                            content={item.content}
+                            index={index}
+                            isCorrect={isCorrectPosition}
+                            showFeedback={showFeedback}
+                            showNumbers={config.show_numbers}
+                            onRemove={() => removeFromSequence(itemId)}
+                          />
+                        );
+                      })}
+                    </div>
+                  </SortableContext>
+                )}
+              </SequenceDropContainer>
+            </div>
+
+            {/* Available items */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">Available Items:</h3>
+              <SortableContext items={availableItems.map((item) => item.id)}>
+                <div className="flex flex-wrap gap-3">
+                  {availableItems.map((item) => (
+                    <DraggableSequenceItem
+                      key={item.id}
+                      id={item.id}
+                      content={item.content}
+                      onClick={() => addToSequence(item.id)}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </div>
+
+            {/* Check sequence button */}
+            {!isCompleted && (
+              <div className="text-center mb-8">
+                <button
+                  onClick={checkSequence}
+                  disabled={orderedItems.length !== config.items.length}
+                  className="px-8 py-4 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-lg"
+                >
+                  Check Sequence
+                </button>
+              </div>
+            )}
+
+            {/* Feedback */}
+            {showFeedback && (
+              <div
+                className={`p-6 rounded-2xl border shadow-lg mb-8 ${
+                  isCompleted
+                    ? "bg-gradient-to-r from-green-50 to-emerald-100 border-green-200 text-green-800"
+                    : "bg-gradient-to-r from-yellow-50 to-orange-100 border-yellow-200 text-yellow-800"
+                }`}
+              >
+                <h4 className="font-bold mb-2 text-lg">
+                  {isCompleted ? "🎯 Perfect Sequence!" : "🔄 Try Again!"}
+                </h4>
+                <p className="mb-4">
+                  {isCompleted
+                    ? config.success_message || "You got the sequence exactly right!"
+                    : "The sequence needs adjustment. Check the highlighted positions."}
+                </p>
+                {!isCompleted && (
+                  <div className="flex justify-center">
+                    <button
+                      onClick={handleReset}
+                      className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-base flex items-center"
+                    >
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                      Try Again
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <NavigationButtons
+          onNext={onNext}
+          onPrevious={onPrevious}
+          showNavigation={showNavigation}
+          disabled={!isCompleted}
+        />
+      </div>
+
+      <DragOverlay dropAnimation={null}>
+        {activeId ? (
+          <div className="p-4 bg-gradient-to-r from-teal-200 to-brand-200 text-teal-900 rounded-xl shadow-2xl border-2 border-teal-300 scale-110 font-semibold transform rotate-3">
+            <div className="flex items-center">
+              <GripVertical className="w-4 h-4 mr-2 opacity-60" />
+              {config.items.find((item) => item.id === activeId)?.content}
+            </div>
+          </div>
+        ) : null}
+      </DragOverlay>
+    </DndContext>
+  );
+}
+
+// Helper component for draggable sequence items (available items)
+function DraggableSequenceItem({
+  id,
+  content,
+  onClick,
+}: {
+  id: string;
+  content: string;
+  onClick: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
+
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onClick={onClick}
+      className="p-4 bg-gradient-to-r from-teal-100 to-brand-100 text-teal-800 rounded-xl cursor-move shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-teal-200/50 select-none"
+    >
+      <div className="flex items-center">
+        <GripVertical className="w-4 h-4 mr-2 opacity-60" />
+        {content}
+      </div>
     </div>
   );
 }

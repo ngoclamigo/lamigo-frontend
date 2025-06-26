@@ -209,7 +209,7 @@ export default function LearningPathPage() {
       <div className="flex h-full pt-20">
         {/* Sidebar - Activity List */}
         <div
-          className={`bg-black/30 backdrop-blur-sm border-r border-white/10 overflow-y-auto flex flex-col transition-all duration-300 ${
+          className={`bg-black/30 backdrop-blur-sm border-r border-white/10 overflow-y-auto custom-scrollbar flex flex-col transition-all duration-300 ${
             sidebarCollapsed ? "w-16" : "w-80"
           }`}
         >
@@ -329,7 +329,7 @@ export default function LearningPathPage() {
 
           {/* Activity Content */}
           <div className="flex-1 h-full overflow-hidden p-6">
-            <div className="h-full w-full flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-10 border border-white/50 transform transition-all duration-500 hover:shadow-2xl relative overflow-auto custom-scrollbar">
+            <div className="h-full w-full flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-10 border border-white/50 transform transition-all duration-500 hover:shadow-2xl relative overflow-y-auto custom-scrollbar">
               <div
                 className={`transition-all duration-300 ease-in-out transform h-full  ${
                   isTransitioning
