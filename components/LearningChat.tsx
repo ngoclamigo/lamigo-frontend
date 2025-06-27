@@ -185,7 +185,7 @@ export function LearningChatComponent({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 p-6 overflow-y-auto bg-gradient-to-b from-transparent to-white/5">
+      <div className="flex-1 p-6 overflow-y-auto bg-gradient-to-b from-transparent to-white/10">
         {/* Display only the latest assistant message text */}
         <div className="flex items-start justify-between">
           <div className="text-gray-800 flex-1">

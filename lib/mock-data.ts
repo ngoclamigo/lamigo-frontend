@@ -14,10 +14,10 @@ export const mockLearningPaths: LearningPath[] = [
         config: {
           title: 'Getting Started with S&P Capital IQ Pro',
           content: `
-            <h2 class="text-2xl font-bold mb-4 text-blue-800">What is S&P Capital IQ Pro?</h2>
+            <h2 class="text-2xl font-bold mb-4 text-brand-800">What is S&P Capital IQ Pro?</h2>
             <p class="mb-4">S&P Capital IQ Pro is a comprehensive financial intelligence platform that provides data, analytics, and research on public and private companies, markets, and industries worldwide.</p>
 
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Key Features:</h3>
+            <h3 class="text-xl font-semibold mb-3 text-brand-700">Key Features:</h3>
             <ul class="list-disc pl-6 mb-4">
               <li class="mb-2"><strong class="font-semibold">Company Screening:</strong> Filter companies based on financial metrics and criteria</li>
               <li class="mb-2"><strong class="font-semibold">Financial Data:</strong> Access to comprehensive financial statements and ratios</li>
@@ -25,7 +25,7 @@ export const mockLearningPaths: LearningPath[] = [
               <li class="mb-2"><strong class="font-semibold">Excel Integration:</strong> Pull data directly into spreadsheets for analysis</li>
             </ul>
 
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Why Use Capital IQ Pro?</h3>
+            <h3 class="text-xl font-semibold mb-3 text-brand-700">Why Use Capital IQ Pro?</h3>
             <p class="mb-4">Capital IQ Pro offers unparalleled depth of financial information, making it essential for financial analysts, investment bankers, private equity professionals, and corporate strategists.</p>
           `
         }

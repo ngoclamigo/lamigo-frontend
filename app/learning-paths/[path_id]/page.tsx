@@ -117,7 +117,7 @@ export default function LearningPathPage() {
 
   const currentActivity = learningPath.activities[currentActivityIndex];
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+    <div className="h-screen bg-gradient-to-br from-slate-600 via-slate-500 to-slate-600 relative overflow-hidden">
       {/* Fireworks Celebration */}
       {showCelebration && (
         <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden">
@@ -157,7 +157,7 @@ export default function LearningPathPage() {
       </div>
 
       {/* Top Navigation Bar */}
-      <div className="absolute top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm border-b border-white/10">
+      <div className="absolute top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-sm border-b border-white/20">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center space-x-4">
             <Link
@@ -209,7 +209,7 @@ export default function LearningPathPage() {
       <div className="flex h-full pt-20">
         {/* Sidebar - Activity List */}
         <div
-          className={`bg-black/30 backdrop-blur-sm border-r border-white/10 overflow-y-auto custom-scrollbar flex flex-col transition-all duration-300 ${
+          className={`bg-white/20 backdrop-blur-sm border-r border-white/10 overflow-y-auto custom-scrollbar flex flex-col transition-all duration-300 ${
             sidebarCollapsed ? "w-16" : "w-80"
           }`}
         >
@@ -350,7 +350,7 @@ export default function LearningPathPage() {
         </div>
 
         {/* Chat Sidebar - Fixed Right */}
-        <div className="w-96 bg-black/30 backdrop-blur-sm border-l border-white/10">
+        <div className="w-96 bg-white/20 backdrop-blur-sm border-l border-white/10">
           <div className="h-full">
             <LearningChatComponent
               learningPathId={pathId}

@@ -1,15 +1,16 @@
 import "@livekit/components-styles";
 import { Metadata } from "next";
-import { Jost } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const rubik = Jost({
+const spaceGrotesk = Space_Grotesk({
+  weight: ["400", "500", "600", "700"],
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Lamigo AI",
+  title: "Lamigo",
   description: "Your personal champion who never sleeps",
 };
 
@@ -19,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full ${rubik.className}`}>
+    <html lang="en" className={`h-full ${spaceGrotesk.className}`}>
       <body className="h-full">{children}</body>
     </html>
   );

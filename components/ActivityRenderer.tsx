@@ -1018,57 +1018,70 @@ function MatchingActivity({
 }: ActivityRendererProps) {
   const config = activity.config as MatchingConfig;
   const [matches, setMatches] = useState<Record<string, string>>({});
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
+  const [selectedRight, setSelectedRight] = useState<string | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
-
-  // Create sensors for drag and drop
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
-  );
 
   // Shuffle right side items
   const [shuffledRightItems] = useState(() =>
     [...config.pairs.map((pair) => pair.right)].sort(() => Math.random() - 0.5)
   );
 
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
+  const handleLeftClick = (leftId: string) => {
+    if (showFeedback) return;
+
+    setSelectedLeft(leftId);
+    setSelectedRight(null);
+
+    // If there's already a match for this left item, auto-select the corresponding right item
+    if (matches[leftId]) {
+      setSelectedRight(matches[leftId]);
+    }
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleRightClick = (rightId: string) => {
+    if (showFeedback) return;
 
-    if (!over || !active) {
-      setActiveId(null);
-      return;
-    }
-
-    const activeItemId = active.id as string;
-    const overTargetId = over.id as string;
-
-    // Check if dropping on a left item (term)
-    if (overTargetId.startsWith("left-")) {
-      const leftItemId = overTargetId.replace("left-", "");
+    if (selectedLeft) {
+      // Create or update the match
+      const updatedMatches = { ...matches };
 
       // Remove this right item from any existing matches
-      const updatedMatches = { ...matches };
       Object.keys(updatedMatches).forEach((key) => {
-        if (updatedMatches[key] === activeItemId) {
+        if (updatedMatches[key] === rightId) {
           delete updatedMatches[key];
         }
       });
 
       // Add new match
-      updatedMatches[leftItemId] = activeItemId;
+      updatedMatches[selectedLeft] = rightId;
       setMatches(updatedMatches);
-    }
 
-    setActiveId(null);
+      // Clear selections
+      setSelectedLeft(null);
+      setSelectedRight(null);
+    } else {
+      // Just select the right item
+      setSelectedRight(rightId);
+      setSelectedLeft(null);
+
+      // If there's a match for this right item, auto-select the corresponding left item
+      const leftItemId = Object.keys(matches).find((key) => matches[key] === rightId);
+      if (leftItemId) {
+        setSelectedLeft(leftItemId);
+      }
+    }
+  };
+
+  const removeMatch = (leftId: string) => {
+    if (showFeedback) return;
+
+    const updatedMatches = { ...matches };
+    delete updatedMatches[leftId];
+    setMatches(updatedMatches);
+    setSelectedLeft(null);
+    setSelectedRight(null);
   };
 
   const checkMatches = () => {
@@ -1087,190 +1100,191 @@ function MatchingActivity({
     setMatches({});
     setShowFeedback(false);
     setIsCompleted(false);
-    setActiveId(null);
+    setSelectedLeft(null);
+    setSelectedRight(null);
   };
 
-  // Create droppable targets for left items
-  const droppableTargets = config.pairs.map((pair) => `left-${pair.left.id}`);
-  const draggableItems = shuffledRightItems.map((item) => item.id);
-
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="h-full">
-        <div className="relative z-10">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent mb-8">
-            {activity.title}
-          </h2>
+    <div className="h-full">
+      <div className="relative z-10">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent mb-8">
+          {activity.title}
+        </h2>
 
-          <div className="mb-8">
-            <p className="text-lg text-gray-600 mb-8">{config.instruction}</p>
+        <div className="mb-8">
+          <p className="text-lg text-gray-600 mb-8">{config.instruction}</p>
 
-            {/* Matching interface */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              {/* Left column - Terms */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">Terms</h3>
-                <SortableContext items={droppableTargets}>
-                  {config.pairs.map((pair) => {
-                    const matchedRightId = matches[pair.left.id];
-                    const isCorrect = matchedRightId === pair.right.id;
+          {/* Selection instructions */}
+          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-100 rounded-xl border border-blue-200">
+            <p className="text-sm text-blue-800 font-medium">
+              💡 Click on a term and then click on its matching definition to connect them. Click on
+              connected pairs to break the connection.
+            </p>
+          </div>
 
-                    return (
-                      <div
-                        key={pair.left.id}
-                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
-                          matchedRightId
-                            ? showFeedback
-                              ? isCorrect
-                                ? "border-green-500 bg-green-50"
-                                : "border-red-500 bg-red-50"
-                              : "border-brand-500 bg-brand-50"
-                            : "border-gray-200 bg-white"
-                        }`}
-                      >
-                        <MatchingDropTarget
-                          id={`left-${pair.left.id}`}
-                          leftContent={pair.left.content}
-                          rightContent={
-                            matchedRightId
-                              ? shuffledRightItems.find((item) => item.id === matchedRightId)
+          {/* Matching interface */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* Left column - Terms */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">Terms</h3>
+              {config.pairs.map((pair) => {
+                const matchedRightId = matches[pair.left.id];
+                const isSelected = selectedLeft === pair.left.id;
+                const isCorrect = showFeedback && matchedRightId === pair.right.id;
+                const isIncorrect =
+                  showFeedback && matchedRightId && matchedRightId !== pair.right.id;
+
+                return (
+                  <div
+                    key={pair.left.id}
+                    onClick={() => handleLeftClick(pair.left.id)}
+                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 transform hover:scale-[1.02] ${
+                      isSelected
+                        ? "border-blue-500 bg-blue-100 shadow-lg scale-[1.02]"
+                        : matchedRightId
+                          ? isCorrect
+                            ? "border-green-500 bg-green-50 shadow-md"
+                            : isIncorrect
+                              ? "border-red-500 bg-red-50 shadow-md"
+                              : "border-brand-500 bg-brand-50 shadow-md"
+                          : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-gray-800">{pair.left.content}</span>
+                      <div className="flex items-center">
+                        {matchedRightId && (
+                          <>
+                            <span className="ml-2 px-3 py-1 bg-white/70 rounded-full text-sm border">
+                              {
+                                shuffledRightItems.find((item) => item.id === matchedRightId)
                                   ?.content
-                              : undefined
-                          }
-                          isCorrect={isCorrect}
-                          showFeedback={showFeedback}
-                        />
+                              }
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeMatch(pair.left.id);
+                              }}
+                              className="ml-2 text-gray-400 hover:text-red-500 transition-colors"
+                            >
+                              ✕
+                            </button>
+                          </>
+                        )}
+                        {isSelected && (
+                          <span className="ml-2 text-blue-600 font-bold animate-pulse">→</span>
+                        )}
+                        {showFeedback && matchedRightId && (
+                          <span className={`ml-2 ${isCorrect ? "text-green-600" : "text-red-600"}`}>
+                            {isCorrect ? "✓" : "✗"}
+                          </span>
+                        )}
                       </div>
-                    );
-                  })}
-                </SortableContext>
-              </div>
-
-              {/* Right column - Definitions */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">Definitions</h3>
-                <SortableContext items={draggableItems}>
-                  <div className="space-y-3">
-                    {shuffledRightItems
-                      .filter((item) => !Object.values(matches).includes(item.id))
-                      .map((item) => (
-                        <DraggableDefinition key={item.id} id={item.id} content={item.content} />
-                      ))}
+                    </div>
                   </div>
-                </SortableContext>
-              </div>
+                );
+              })}
             </div>
 
-            {/* Check matches button */}
-            {!isCompleted && (
-              <div className="text-center mb-8">
-                <button
-                  onClick={checkMatches}
-                  disabled={Object.keys(matches).length !== config.pairs.length}
-                  className="px-8 py-4 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-lg"
-                >
-                  Check Matches
-                </button>
-              </div>
-            )}
+            {/* Right column - Definitions */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">Definitions</h3>
+              {shuffledRightItems.map((item) => {
+                const isMatched = Object.values(matches).includes(item.id);
+                const isSelected = selectedRight === item.id;
 
-            {/* Feedback */}
-            {showFeedback && (
-              <div
-                className={`p-6 rounded-2xl border shadow-lg mb-8 ${
-                  isCompleted
-                    ? "bg-gradient-to-r from-green-50 to-emerald-100 border-green-200 text-green-800"
-                    : "bg-gradient-to-r from-yellow-50 to-orange-100 border-yellow-200 text-yellow-800"
-                }`}
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => handleRightClick(item.id)}
+                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 transform hover:scale-[1.02] ${
+                      isSelected
+                        ? "border-blue-500 bg-blue-100 shadow-lg scale-[1.02]"
+                        : isMatched
+                          ? "border-gray-300 bg-gray-100 opacity-60 cursor-not-allowed"
+                          : "border-teal-200 bg-teal-50 hover:border-teal-300 hover:shadow-md"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-gray-800">{item.content}</span>
+                      {isSelected && (
+                        <span className="text-blue-600 font-bold animate-pulse">←</span>
+                      )}
+                      {isMatched && <span className="text-gray-500 text-sm">Matched</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Check matches button */}
+          {!isCompleted && (
+            <div className="text-center mb-8">
+              <button
+                onClick={checkMatches}
+                disabled={Object.keys(matches).length !== config.pairs.length}
+                className="px-8 py-4 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-lg"
               >
-                <h4 className="font-bold mb-2 text-lg">
-                  {isCompleted ? "🎯 Perfect Match!" : "🔄 Try Again!"}
-                </h4>
-                <p className="mb-4">
-                  {isCompleted
-                    ? config.success_message || "You matched all pairs correctly!"
-                    : "Some matches need adjustment. Check the highlighted pairs."}
-                </p>
-                {!isCompleted && (
-                  <div className="flex justify-center">
-                    <button
-                      onClick={handleReset}
-                      className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-base flex items-center"
-                    >
-                      <RotateCcw className="w-4 h-4 mr-2" />
-                      Try Again
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <NavigationButtons
-          onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
-          disabled={!isCompleted}
-        />
-      </div>
-
-      <DragOverlay dropAnimation={null}>
-        {activeId && shuffledRightItems.find((item) => item.id === activeId) ? (
-          <div className="p-4 bg-gradient-to-r from-teal-200 to-brand-200 text-teal-900 rounded-xl shadow-2xl border-2 border-teal-300 scale-110 font-semibold transform rotate-6">
-            <div className="flex items-center">
-              <Move className="w-4 h-4 mr-2 opacity-60" />
-              {shuffledRightItems.find((item) => item.id === activeId)?.content}
+                Check Matches
+              </button>
             </div>
-          </div>
-        ) : null}
-      </DragOverlay>
-    </DndContext>
-  );
-}
-
-// Helper component for matching drop targets
-function MatchingDropTarget({
-  id,
-  leftContent,
-  rightContent,
-  isCorrect,
-  showFeedback,
-}: {
-  id: string;
-  leftContent: string;
-  rightContent?: string;
-  isCorrect?: boolean;
-  showFeedback: boolean;
-}) {
-  const { setNodeRef, isOver } = useSortable({ id });
-
-  return (
-    <div ref={setNodeRef} className={`${isOver ? "ring-2 ring-brand-400" : ""}`}>
-      <div className="flex items-center justify-between">
-        <span className="font-medium">{leftContent}</span>
-        <div className="flex items-center">
-          {rightContent && (
-            <span className="ml-2 px-3 py-1 bg-white/70 rounded-full text-sm">{rightContent}</span>
           )}
-          {showFeedback && rightContent && (
-            <span className={`ml-2 ${isCorrect ? "text-green-600" : "text-red-600"}`}>
-              {isCorrect ? "✓" : "✗"}
-            </span>
+
+          {/* Feedback */}
+          {showFeedback && (
+            <div
+              className={`p-6 rounded-2xl border shadow-lg mb-8 ${
+                isCompleted
+                  ? "bg-gradient-to-r from-green-50 to-emerald-100 border-green-200 text-green-800"
+                  : "bg-gradient-to-r from-yellow-50 to-orange-100 border-yellow-200 text-yellow-800"
+              }`}
+            >
+              <h4 className="font-bold mb-2 text-lg">
+                {isCompleted ? "🎯 Perfect Match!" : "🔄 Try Again!"}
+              </h4>
+              <p className="mb-4">
+                {isCompleted
+                  ? config.success_message || "You matched all pairs correctly!"
+                  : "Some matches need adjustment. Check the highlighted pairs."}
+              </p>
+              {!isCompleted && (
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleReset}
+                    className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-base flex items-center"
+                  >
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Try Again
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
+
+      <NavigationButtons
+        onNext={onNext}
+        onPrevious={onPrevious}
+        showNavigation={showNavigation}
+        disabled={!isCompleted}
+      />
     </div>
   );
 }
 
-// Helper component for draggable definitions
-function DraggableDefinition({ id, content }: { id: string; content: string }) {
+// Helper component for draggable sequence items (available items)
+function DraggableSequenceItem({
+  id,
+  content,
+  onClick,
+}: {
+  id: string;
+  content: string;
+  onClick: () => void;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   });
@@ -1287,10 +1301,11 @@ function DraggableDefinition({ id, content }: { id: string; content: string }) {
       style={style}
       {...attributes}
       {...listeners}
+      onClick={onClick}
       className="p-4 bg-gradient-to-r from-teal-100 to-brand-100 text-teal-800 rounded-xl cursor-move shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-teal-200/50 select-none"
     >
       <div className="flex items-center">
-        <Move className="w-4 h-4 mr-2 opacity-60" />
+        <GripVertical className="w-4 h-4 mr-2 opacity-60" />
         {content}
       </div>
     </div>
@@ -1525,43 +1540,6 @@ function SequenceActivity({
         ) : null}
       </DragOverlay>
     </DndContext>
-  );
-}
-
-// Helper component for draggable sequence items (available items)
-function DraggableSequenceItem({
-  id,
-  content,
-  onClick,
-}: {
-  id: string;
-  content: string;
-  onClick: () => void;
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id,
-  });
-
-  const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      onClick={onClick}
-      className="p-4 bg-gradient-to-r from-teal-100 to-brand-100 text-teal-800 rounded-xl cursor-move shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-teal-200/50 select-none"
-    >
-      <div className="flex items-center">
-        <GripVertical className="w-4 h-4 mr-2 opacity-60" />
-        {content}
-      </div>
-    </div>
   );
 }
 
