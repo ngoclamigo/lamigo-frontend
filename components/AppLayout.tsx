@@ -34,7 +34,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               href="/scenarios"
               className="text-gray-700 hover:text-brand-600 font-medium transition-colors"
             >
-              Scenario
+              Scenarios
             </Link>
           </nav>
         </div>

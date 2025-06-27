@@ -3,6 +3,18 @@
 @tailwind utilities;
 
 :root {
+  --brand-50: #f0f4ff;
+  --brand-100: #dbe4ff;
+  --brand-200: #b6caff;
+  --brand-300: #8eaaff;
+  --brand-400: #6a90ff;
+  --brand-500: #4a74f1;
+  --brand-600: #3a5dd1;
+  --brand-700: #304db1;
+  --brand-800: #283e91;
+  --brand-900: #212f71;
+  --brand-950: #1a2255;
+
   color-scheme: light;
 
   --lk-va-bar-width: 72px;
@@ -152,12 +164,7 @@
 }
 
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -207,13 +214,29 @@ html {
 
 /* Beautiful interaction animations */
 @keyframes wiggle {
-  0%, 7% { transform: rotateZ(0); }
-  15% { transform: rotateZ(-15deg); }
-  20% { transform: rotateZ(10deg); }
-  25% { transform: rotateZ(-10deg); }
-  30% { transform: rotateZ(6deg); }
-  35% { transform: rotateZ(-4deg); }
-  40%, 100% { transform: rotateZ(0); }
+  0%,
+  7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(-15deg);
+  }
+  20% {
+    transform: rotateZ(10deg);
+  }
+  25% {
+    transform: rotateZ(-10deg);
+  }
+  30% {
+    transform: rotateZ(6deg);
+  }
+  35% {
+    transform: rotateZ(-4deg);
+  }
+  40%,
+  100% {
+    transform: rotateZ(0);
+  }
 }
 
 .animate-wiggle {
@@ -240,9 +263,16 @@ html {
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
 }
 
 .animate-shake {

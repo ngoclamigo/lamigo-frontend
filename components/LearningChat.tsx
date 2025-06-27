@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Bot, MessageCircle, Mic, MicOff, Send, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -161,64 +162,113 @@ export function LearningChatComponent({
   };
 
   return (
-    <div
-      className={`flex flex-col h-full bg-gradient-to-br from-white via-brand-50/30 to-teal-50/20 border border-white/20 shadow-2xl backdrop-blur-xl overflow-hidden ${className}`}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className={`flex flex-col h-full overflow-hidden rounded-lg shadow-md ${className}`}
+      style={{
+        background: "linear-gradient(to bottom, white, #f7f9fc)",
+      }}
     >
       {/* Header */}
-      <div className="relative p-6 bg-gradient-to-r from-brand-600 to-teal-600 border-b border-white/10">
-        <div className="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
-        <div className="relative flex items-center gap-3">
+      <div
+        className="relative p-4 rounded-t-lg"
+        style={{
+          background: "linear-gradient(135deg, var(--brand-600), var(--brand-700))",
+        }}
+      >
+        <motion.div
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="relative flex items-center gap-3"
+        >
           <div className="relative">
-            <div className="w-12 h-12 bg-gradient-to-br from-white/20 to-white/5 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
-              <Bot className="w-6 h-6 text-white" />
-            </div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-2 border-white"></div>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20"
+            >
+              <Bot className="w-5 h-5 text-white" />
+            </motion.div>
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ repeat: Infinity, repeatDelay: 5 }}
+              className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border border-white"
+            ></motion.div>
           </div>
           <div>
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               David
-              <Sparkles className="w-4 h-4 text-yellow-300" />
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              >
+                <Sparkles className="w-4 h-4 text-yellow-300" />
+              </motion.div>
             </h3>
             <p className="text-white/80 text-sm">Supportive coach</p>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 p-6 overflow-y-auto bg-gradient-to-b from-transparent to-white/10">
+      <div className="flex-1 p-4 overflow-y-auto">
         {/* Display only the latest assistant message text */}
-        <div className="flex items-start justify-between">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          key={latestMessage.id}
+          className="flex items-start justify-between"
+        >
           <div className="text-gray-800 flex-1">
             <p className="text-base leading-relaxed">{latestMessage.content}</p>
           </div>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={playMessage}
             disabled={isLoading}
-            className={`ml-4 p-2 rounded-full transition-all duration-300 ${
-              isPlaying
-                ? "bg-gradient-to-r from-red-500 to-red-600 text-white animate-pulse"
-                : "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 hover:from-blue-100 hover:to-blue-200 hover:text-blue-600"
-            } shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`ml-4 p-2 rounded-full ${
+              isPlaying ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
             title={isPlaying ? "Stop playing" : "Play message"}
           >
             {isPlaying ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         {isLoading && (
           <div className="mt-4">
-            <div className="flex gap-2">
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300"></div>
-            </div>
+            <motion.div
+              className="flex gap-2"
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <div className="w-2 h-2 bg-brand-400 rounded-full"></div>
+              <motion.div
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
+                className="w-2 h-2 bg-brand-400 rounded-full"
+              ></motion.div>
+              <motion.div
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
+                className="w-2 h-2 bg-brand-400 rounded-full"
+              ></motion.div>
+            </motion.div>
           </div>
         )}
       </div>
 
       {/* Input */}
-      <div className="p-6 bg-gradient-to-r from-white/60 via-white/40 to-white/60 backdrop-blur-xl border-t border-white/20">
-        <div className="space-y-3">
+      <div
+        className="p-4 bg-gray-50 border-t rounded-b-lg"
+        style={{
+          background: "linear-gradient(to top, #f0f4f8, #f7f9fc)",
+        }}
+      >
+        <div className="space-y-2">
           {/* Text Input */}
           <div className="w-full relative">
             <input
@@ -227,44 +277,44 @@ export function LearningChatComponent({
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask me anything about this learning path..."
-              className="w-full p-4 pr-12 bg-gradient-to-r from-white/80 to-white/60 backdrop-blur-sm border border-white/30 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500/50 transition-all duration-300 text-gray-800 placeholder-gray-500 shadow-lg"
+              placeholder="Ask me anything..."
+              className="w-full p-3 pr-10 bg-white border rounded-full focus:outline-none focus:ring-2 focus:ring-brand-400 text-gray-800 placeholder-gray-500"
               disabled={isLoading}
             />
-            <MessageCircle className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <MessageCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
           </div>
 
           {/* Voice and Send Buttons */}
-          <div className="flex gap-3 justify-center">
-            <button
+          <div className="flex gap-2 justify-center">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={startListening}
               disabled={isLoading}
-              className={`px-6 py-4 rounded-2xl font-medium shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
-                isListening
-                  ? "bg-gradient-to-r from-red-500 to-red-600 text-white animate-pulse"
-                  : "bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700"
+              className={`px-4 py-2 rounded-full font-medium disabled:opacity-50 disabled:cursor-not-allowed ${
+                isListening ? "bg-red-500 text-white" : "bg-gray-500 text-white hover:bg-gray-600"
               }`}
             >
               {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleSendMessage}
               disabled={!inputValue.trim() || isLoading}
-              className="relative px-6 py-4 bg-gradient-to-r from-brand-600 to-teal-600 text-white rounded-2xl font-medium shadow-xl hover:shadow-2xl transform transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden group"
+              className="px-4 py-2 rounded-full font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: "linear-gradient(135deg, var(--brand-500), var(--brand-600))",
+              }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative flex items-center gap-2">
-                <Send
-                  className={`w-5 h-5 transition-transform duration-300 ${isLoading ? "animate-pulse" : "group-hover:translate-x-1"}`}
-                />
+              <div className="flex items-center gap-2 text-white">
+                <Send className="w-5 h-5" />
                 <span className="hidden sm:inline">Send</span>
               </div>
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
-
-export default LearningChatComponent;

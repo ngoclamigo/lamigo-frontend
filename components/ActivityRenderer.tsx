@@ -5,7 +5,6 @@ import {
   LearningActivity,
   MatchingConfig,
   QuizConfig,
-  SequenceConfig,
   SlideConfig,
 } from "@/types/learning-path";
 import {
@@ -15,58 +14,21 @@ import {
   DragStartEvent,
   PointerSensor,
   closestCenter,
-  useDroppable,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  arrayMove,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
+import { motion } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
   GripVertical,
-  Move,
   RotateCcw,
   Shuffle,
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-
-// Droppable container for sequence building
-function SequenceDropContainer({
-  children,
-  isEmpty,
-}: {
-  children: React.ReactNode;
-  isEmpty: boolean;
-}) {
-  const { setNodeRef, isOver } = useDroppable({
-    id: "sequence-container",
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className={`bg-gradient-to-br from-white to-brand-50/30 p-6 rounded-2xl border-2 border-dashed min-h-[120px] transition-all duration-300 ${
-        isOver ? "border-brand-500 bg-brand-100/50" : "border-brand-300"
-      }`}
-    >
-      {isEmpty ? (
-        <div className="text-center text-gray-500 py-8">
-          <Move className="w-12 h-12 mx-auto mb-4 opacity-30" />
-          <p>Drag items here to build the sequence</p>
-        </div>
-      ) : (
-        children
-      )}
-    </div>
-  );
-}
 
 // Draggable Word Component
 function DraggableWord({ id, word, isUsed }: { id: string; word: string; isUsed: boolean }) {
@@ -82,20 +44,27 @@ function DraggableWord({ id, word, isUsed }: { id: string; word: string; isUsed:
   };
 
   return (
-    <div
+    <motion.div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className={`px-4 py-2 bg-gradient-to-r from-brand-100 to-teal-100 text-brand-800 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-brand-200/50 select-none ${
-        isUsed ? "cursor-not-allowed" : "cursor-move"
+      className={`px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 select-none ${
+        isUsed
+          ? "cursor-not-allowed opacity-60 bg-gray-100"
+          : "cursor-move bg-gradient-to-r from-brand-50 to-brand-100 border border-brand-200 text-brand-800"
       }`}
+      whileHover={!isUsed ? { scale: 1.03 } : {}}
+      whileTap={!isUsed ? { scale: 0.98 } : {}}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
     >
       <div className="flex items-center">
         <GripVertical className="w-4 h-4 mr-2 opacity-60" />
         {word}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -118,100 +87,52 @@ function DroppableBlank({
   });
 
   return (
-    <span className="inline-block mx-1">
-      <div
+    <motion.span
+      className="inline-block mx-1"
+      initial={{ opacity: 0, y: 5 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <motion.div
         ref={setNodeRef}
-        className={`inline-flex items-center justify-center min-w-[100px] h-10 border-2 border-dashed rounded-lg transition-all duration-300 ${
+        className={`inline-flex items-center justify-center min-w-[100px] h-10 border-2 border-dashed rounded-md ${
           word
             ? showFeedback
               ? isCorrect
-                ? "border-green-500 bg-green-50 text-green-800"
-                : "border-red-500 bg-red-50 text-red-800"
-              : "border-brand-500 bg-brand-50 text-brand-800"
+                ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100 text-green-800"
+                : "border-red-500 bg-gradient-to-r from-red-50 to-red-100 text-red-800"
+              : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100 text-brand-800"
             : isOver
-              ? "border-brand-400 bg-brand-100"
-              : "border-gray-300 bg-gray-50 hover:border-brand-400"
+              ? "border-brand-400 bg-gradient-to-r from-brand-50 to-brand-100"
+              : "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 hover:border-brand-400"
         }`}
+        whileHover={{ scale: 1.02, boxShadow: "0 2px 4px rgba(0,0,0,0.05)" }}
+        whileTap={{ scale: 0.98 }}
       >
         {word ? (
           <div className="flex items-center">
             <span>{word}</span>
             {!showFeedback && (
-              <button onClick={onRemove} className="ml-2 text-xs text-gray-500 hover:text-red-500">
+              <motion.button
+                onClick={onRemove}
+                className="ml-2 text-xs text-gray-500 hover:text-red-500"
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+              >
                 ✕
-              </button>
+              </motion.button>
             )}
           </div>
         ) : (
-          "Drop here"
+          <motion.span
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+          >
+            Drop here
+          </motion.span>
         )}
-      </div>
-    </span>
-  );
-}
-
-// Sortable Sequence Item Component
-function SortableSequenceItem({
-  id,
-  content,
-  index,
-  isCorrect,
-  showFeedback,
-  showNumbers,
-  onRemove,
-}: {
-  id: string;
-  content: string;
-  index: number;
-  isCorrect?: boolean;
-  showFeedback: boolean;
-  showNumbers?: boolean;
-  onRemove: () => void;
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id,
-  });
-
-  const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className={`flex items-center p-4 rounded-xl border transition-all duration-300 cursor-move ${
-        showFeedback
-          ? isCorrect
-            ? "border-green-500 bg-green-50 text-green-800"
-            : "border-red-500 bg-red-50 text-red-800"
-          : "border-brand-200 bg-white hover:border-brand-400"
-      }`}
-    >
-      <div className="flex items-center flex-1">
-        {showNumbers && (
-          <div className="w-8 h-8 bg-brand-500 text-white rounded-full flex items-center justify-center font-bold text-sm mr-4">
-            {index + 1}
-          </div>
-        )}
-        <span className="font-medium">{content}</span>
-      </div>
-      <button
-        onClick={onRemove}
-        className="ml-4 text-gray-400 hover:text-red-500 transition-colors"
-      >
-        ✕
-      </button>
-      {showFeedback && (
-        <span className={`ml-2 ${isCorrect ? "text-green-600" : "text-red-600"}`}>
-          {isCorrect ? "✓" : "✗"}
-        </span>
-      )}
-    </div>
+      </motion.div>
+    </motion.span>
   );
 }
 
@@ -291,16 +212,6 @@ export function ActivityRenderer({
           showNavigation={showNavigation}
         />
       );
-    case "sequence":
-      return (
-        <SequenceActivity
-          activity={activity}
-          onComplete={onComplete}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
-        />
-      );
     default:
       return <div>Unknown activity type</div>;
   }
@@ -317,39 +228,56 @@ function SlideActivity({
 
   return (
     <div className="h-full">
-      <div className="relative z-10">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent mb-10">
-          {config.title || activity.title}
-        </h2>
+      <motion.div
+        className="relative z-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{config.title || activity.title}</h2>
 
         {config.media_url && (
-          <div className="mb-10 rounded-2xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-[1.02]">
+          <motion.div
+            className="mb-6 overflow-hidden rounded-xl shadow-md"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             {config.media_type === "video" ? (
-              <video src={config.media_url} controls className="w-full rounded-2xl" />
+              <video src={config.media_url} controls className="w-full rounded-lg" />
             ) : (
               <Image
                 src={config.media_url}
                 alt={config.title || activity.title}
                 width={800}
                 height={400}
-                className="w-full rounded-2xl shadow-lg"
+                className="w-full rounded-lg"
               />
             )}
-          </div>
+          </motion.div>
         )}
 
-        <div
-          className="prose prose-lg max-w-none text-gray-700 mb-12 leading-loose"
+        <motion.div
+          className="prose prose-lg max-w-none text-gray-700 mb-8 p-6 rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 border border-brand-200/50"
           dangerouslySetInnerHTML={{ __html: config.content }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
         />
-      </div>
+      </motion.div>
 
-      <NavigationButtons
-        onComplete={onComplete}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        showNavigation={showNavigation}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.4 }}
+      >
+        <NavigationButtons
+          onComplete={onComplete}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          showNavigation={showNavigation}
+        />
+      </motion.div>
     </div>
   );
 }
@@ -383,31 +311,47 @@ function QuizActivity({
   };
 
   return (
-    <div className="h-full">
-      <div className="relative z-10">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent mb-10">
-          {activity.title}
-        </h2>
+    <motion.div
+      className="h-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="relative z-10"
+        initial={{ y: 20 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
-        <div className="mb-12">
-          <h3 className="text-2xl font-semibold text-gray-700 mb-10 leading-relaxed">
-            {config.question}
-          </h3>
+        <motion.div
+          className="mb-8 p-6 rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 border border-brand-200/50"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <h3 className="text-xl font-semibold text-gray-700 mb-6">{config.question}</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {config.options.map((option, index) => (
-              <label
+              <motion.label
                 key={index}
-                className={`flex items-center p-6 rounded-2xl border-2 cursor-pointer transition-all duration-500 transform hover:scale-[1.02] ${
+                whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 * index }}
+                className={`flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all ${
                   selectedAnswer === index
                     ? showResult
                       ? index === config.correct_answer
-                        ? "border-green-500 bg-gradient-to-r from-green-50 to-emerald-100 shadow-xl"
-                        : "border-red-500 bg-gradient-to-r from-red-50 to-red-100 shadow-xl"
-                      : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100 shadow-lg"
+                        ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
+                        : "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
+                      : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
                     : showResult && index === config.correct_answer
-                      ? "border-green-500 bg-gradient-to-r from-green-50 to-emerald-100 shadow-xl"
-                      : "border-gray-200 hover:border-brand-300 hover:bg-gradient-to-r hover:from-brand-50 hover:to-brand-100 hover:shadow-lg"
+                      ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
+                      : "border-gray-200 hover:border-brand-300 bg-gradient-to-r from-white to-gray-50"
                 }`}
               >
                 <input
@@ -417,61 +361,102 @@ function QuizActivity({
                   checked={selectedAnswer === index}
                   onChange={() => !answered && setSelectedAnswer(index)}
                   disabled={answered}
-                  className="w-5 h-5 text-brand-600 mr-4 rounded-full"
+                  className="w-4 h-4 text-brand-600 mr-3"
                 />
-                <span className="text-lg font-medium text-gray-800">{option}</span>
+                <span className="text-base font-medium text-gray-800">{option}</span>
                 {showResult && index === config.correct_answer && (
-                  <span className="ml-auto text-green-600 font-bold">✓ Correct</span>
+                  <motion.span
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="ml-auto text-green-600 font-bold flex items-center"
+                  >
+                    <span className="h-6 w-6 flex items-center justify-center bg-green-100 rounded-full mr-1">
+                      ✓
+                    </span>
+                    Correct
+                  </motion.span>
                 )}
                 {showResult && selectedAnswer === index && index !== config.correct_answer && (
-                  <span className="ml-auto text-red-600 font-bold">✗ Incorrect</span>
+                  <motion.span
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="ml-auto text-red-600 font-bold flex items-center"
+                  >
+                    <span className="h-6 w-6 flex items-center justify-center bg-red-100 rounded-full mr-1">
+                      ✗
+                    </span>
+                    Incorrect
+                  </motion.span>
                 )}
-              </label>
+              </motion.label>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {showResult && config.explanation && (
-          <div className="mb-10 p-6 bg-gradient-to-r from-brand-50 to-teal-100 rounded-2xl border border-brand-200/50 shadow-lg">
-            <h4 className="font-bold text-gray-800 mb-3 text-lg">Explanation:</h4>
-            <p className="text-gray-700 leading-relaxed">{config.explanation}</p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="mb-6 p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200"
+          >
+            <h4 className="font-bold text-gray-800 mb-2">Explanation:</h4>
+            <p className="text-gray-700">{config.explanation}</p>
+          </motion.div>
         )}
 
-        <div className="flex justify-center space-x-4">
+        <motion.div
+          className="flex justify-center space-x-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
           {!answered ? (
-            <button
+            <motion.button
               onClick={handleSubmit}
               disabled={selectedAnswer === null}
-              className="px-10 py-4 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-lg"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-md disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
             >
               Submit Answer
-            </button>
+            </motion.button>
           ) : selectedAnswer === config.correct_answer ? (
-            <div className="flex items-center px-10 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full shadow-xl font-bold text-lg">
-              <span className="mr-3">🎉</span>
-              Correct! Well done!
-            </div>
-          ) : (
-            <button
-              onClick={handleReset}
-              className="px-10 py-4 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-lg flex items-center"
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              className="flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg shadow-md"
             >
-              <RotateCcw className="w-5 h-5 mr-3" />
+              Correct! Well done!
+            </motion.div>
+          ) : (
+            <motion.button
+              onClick={handleReset}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg shadow-md hover:from-gray-600 hover:to-gray-700 transition-colors flex items-center"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
               Try Again
-            </button>
+            </motion.button>
           )}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      <NavigationButtons
-        onComplete={onComplete}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        showNavigation={showNavigation}
-        disabled={!answered || selectedAnswer !== config.correct_answer}
-      />
-    </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.4 }}
+      >
+        <NavigationButtons
+          onComplete={onComplete}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          showNavigation={showNavigation}
+          disabled={!answered || selectedAnswer !== config.correct_answer}
+        />
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -522,134 +507,228 @@ function FlashcardActivity({
   };
 
   return (
-    <div className="h-full">
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent">
-            {activity.title}
-          </h2>
-          <div className="flex items-center space-x-4">
-            <div className="bg-gradient-to-r from-brand-100 to-teal-100 px-6 py-3 rounded-full shadow-lg border border-white/50">
-              <span className="text-sm font-bold bg-gradient-to-r from-brand-600 to-teal-600 bg-clip-text text-transparent">
+    <motion.div
+      className="h-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="relative z-10"
+        initial={{ y: 20 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">{activity.title}</h2>
+          <div className="flex items-center space-x-3">
+            <motion.div
+              className="bg-gradient-to-r from-brand-50 to-brand-100 px-4 py-2 rounded-lg border border-brand-200"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="text-sm font-bold text-brand-700">
                 {currentCardIndex + 1} of {totalCards}
               </span>
-            </div>
-            <button
+            </motion.div>
+            <motion.button
               onClick={shuffleCards}
-              className="p-3 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110"
+              className="p-2 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-lg hover:from-gray-200 hover:to-gray-300 transition-colors"
               title="Shuffle cards"
+              whileHover={{ scale: 1.1, rotate: 180 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ duration: 0.3 }}
             >
               <Shuffle className="w-5 h-5" />
-            </button>
+            </motion.button>
           </div>
         </div>
 
-        <div className="mb-8">
-          <div className={`flip-card ${isFlipped ? "flipped" : ""}`}>
-            <div
-              className="flip-card-inner relative bg-gradient-to-br from-brand-50/80 via-teal-50/80 to-brand-100/80 rounded-xl min-h-[280px] max-h-[320px] cursor-pointer shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] mx-auto max-w-2xl"
+        <div className="mb-6">
+          <motion.div
+            className={`flip-card ${isFlipped ? "flipped" : ""}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <motion.div
+              className="flip-card-inner relative bg-gradient-to-br from-white to-brand-50 rounded-xl min-h-[280px] max-h-[320px] cursor-pointer shadow-md border border-brand-200 hover:shadow-lg transition-all mx-auto max-w-2xl"
               onClick={handleFlip}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <div className="flip-card-front absolute inset-0 rounded-xl p-8 flex flex-col items-center justify-center text-center">
-                <div className="bg-gradient-to-r from-brand-600 to-teal-600 text-white px-4 py-2 rounded-full text-xs font-bold mb-6 shadow-md">
+              <div className="flip-card-front absolute inset-0 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+                <motion.div
+                  className="bg-gradient-to-r from-brand-500 to-brand-600 text-white px-4 py-1.5 rounded-full text-xs font-bold mb-4"
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
                   Question
-                </div>
-                <p className="text-lg font-medium text-gray-800 leading-relaxed mb-6 max-w-sm">
+                </motion.div>
+                <motion.p
+                  className="text-lg font-medium text-gray-800 leading-relaxed mb-4 max-w-sm"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                >
                   {currentCard.front}
-                </p>
-                <div className="bg-gradient-to-r from-brand-100 to-teal-100 px-4 py-2 rounded-full">
+                </motion.p>
+                <motion.div
+                  className="bg-gradient-to-r from-gray-100 to-gray-200 px-4 py-1.5 rounded-full"
+                  animate={{
+                    scale: [1, 1.05, 1],
+                    backgroundColor: [
+                      "rgba(243, 244, 246, 1)",
+                      "rgba(229, 231, 235, 1)",
+                      "rgba(243, 244, 246, 1)",
+                    ],
+                  }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
                   <p className="text-xs text-gray-600 font-medium flex items-center">
-                    <span className="inline-block w-1.5 h-1.5 bg-brand-500 rounded-full mr-2"></span>
                     Click to reveal answer
                   </p>
-                </div>
+                </motion.div>
               </div>
 
               {/* Back of card */}
-              <div className="flip-card-back absolute inset-0 rounded-xl p-8 flex flex-col items-center justify-center text-center">
-                <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-full text-xs font-bold mb-6 shadow-md">
+              <div className="flip-card-back absolute inset-0 rounded-xl p-6 flex flex-col items-center justify-center text-center bg-gradient-to-br from-white to-green-50">
+                <motion.div
+                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-1.5 rounded-full text-xs font-bold mb-4"
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
                   Answer
-                </div>
-                <p className="text-lg font-medium text-gray-800 leading-relaxed mb-6 max-w-sm">
+                </motion.div>
+                <motion.p
+                  className="text-lg font-medium text-gray-800 leading-relaxed mb-4 max-w-sm"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                >
                   {currentCard.back}
-                </p>
-                <div className="bg-gradient-to-r from-green-100 to-emerald-100 px-4 py-2 rounded-full">
+                </motion.p>
+                <motion.div
+                  className="bg-gradient-to-r from-gray-100 to-gray-200 px-4 py-1.5 rounded-full"
+                  animate={{
+                    scale: [1, 1.05, 1],
+                  }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
                   <p className="text-xs text-gray-600 font-medium flex items-center">
-                    <span className="inline-block w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></span>
                     Click to flip back
                   </p>
-                </div>
+                </motion.div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Card Navigation */}
-          <div className="flex items-center justify-between mt-6">
-            <button
+          <motion.div
+            className="flex items-center justify-between mt-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <motion.button
               onClick={handlePrevCard}
               disabled={currentCardIndex === 0}
-              className="flex items-center px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 disabled:from-gray-50 disabled:to-gray-100 disabled:text-gray-400 rounded-full transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg font-medium text-gray-700 text-sm"
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 disabled:from-gray-50 disabled:to-gray-100 disabled:text-gray-400 rounded-lg transition-colors font-medium text-gray-700 text-sm"
+              whileHover={{ scale: 1.05, x: -2 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.2 }}
             >
-              <ChevronLeft className="w-4 h-4 mr-2" />
+              <ChevronLeft className="w-4 h-4 mr-1" />
               Previous
-            </button>
+            </motion.button>
 
             <div className="text-center">
-              <div className="flex space-x-2 mb-2">
+              <div className="flex space-x-2 mb-1">
                 {config.cards.map((card, index) => (
-                  <button
+                  <motion.button
                     key={card.id}
                     onClick={() => {
                       setCurrentCardIndex(index);
                       setIsFlipped(false);
                     }}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 transform hover:scale-125 ${
+                    className={`w-3 h-3 rounded-full ${
                       index === currentCardIndex
-                        ? "bg-gradient-to-r from-brand-500 to-teal-500 scale-125 shadow-md"
+                        ? "bg-gradient-to-r from-brand-400 to-brand-500"
                         : studiedCards.has(card.id)
-                          ? "bg-gradient-to-r from-green-500 to-emerald-500 shadow-sm"
-                          : "bg-gray-300 hover:bg-gray-400"
+                          ? "bg-gradient-to-r from-green-400 to-green-500"
+                          : "bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400"
                     }`}
+                    whileHover={{ scale: 1.3 }}
+                    whileTap={{ scale: 0.8 }}
+                    // transition={{ duration: 0.2 }}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: 0.1 * index }}
                   />
                 ))}
               </div>
-              <p className="text-xs font-medium bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent">
+              <motion.p
+                className="text-xs font-medium text-gray-600"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
                 {studiedCards.size} of {totalCards} studied
-              </p>
+              </motion.p>
             </div>
 
-            <button
+            <motion.button
               onClick={handleNextCard}
               disabled={currentCardIndex === totalCards - 1}
-              className="flex items-center px-6 py-3 bg-gradient-to-r from-brand-500 to-teal-600 hover:from-brand-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-full transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg font-medium text-sm"
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg transition-colors font-medium text-sm"
+              whileHover={{ scale: 1.05, x: 2 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.2 }}
             >
               Next
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </button>
-          </div>
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </motion.button>
+          </motion.div>
 
           {currentCard.tags && currentCard.tags.length > 0 && (
-            <div className="mt-6 flex flex-wrap gap-2 justify-center">
+            <motion.div
+              className="mt-4 flex flex-wrap gap-2 justify-center"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+            >
               {currentCard.tags.map((tag, index) => (
-                <span
+                <motion.span
                   key={index}
-                  className="px-3 py-1 bg-gradient-to-r from-brand-100 to-teal-100 text-brand-700 rounded-full text-xs font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 border border-brand-200/50"
+                  className="px-3 py-1 bg-gradient-to-r from-brand-50 to-brand-100 text-brand-700 rounded-full text-xs font-medium border border-brand-200"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.1 * index }}
+                  whileHover={{ scale: 1.1 }}
                 >
                   #{tag}
-                </span>
+                </motion.span>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
-      </div>
+      </motion.div>
 
-      <NavigationButtons
-        onComplete={onComplete}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        showNavigation={showNavigation}
-      />
-    </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.6 }}
+      >
+        <NavigationButtons
+          onComplete={onComplete}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          showNavigation={showNavigation}
+        />
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -663,55 +742,117 @@ function EmbedActivity({
   const config = activity.config as EmbedConfig;
 
   return (
-    <div className="">
-      <div className="relative z-10">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent mb-8">
-          {activity.title}
-        </h2>
+    <motion.div
+      className="h-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="relative z-10"
+        initial={{ y: 20 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
         {config.description && (
-          <p className="text-gray-600 mb-8 text-lg leading-relaxed">{config.description}</p>
+          <motion.p
+            className="text-gray-600 mb-6 text-base"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+          >
+            {config.description}
+          </motion.p>
         )}
 
-        <div className="mb-10">
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
           {config.embed_type === "video" ? (
-            <div className="aspect-video rounded-2xl overflow-hidden shadow-2xl">
+            <motion.div
+              className="aspect-video overflow-hidden rounded-xl shadow-md"
+              whileHover={{ scale: 1.01, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
+              transition={{ duration: 0.3 }}
+            >
               <iframe
                 src={config.url}
-                className="w-full h-full rounded-2xl"
+                className="w-full h-full rounded-xl"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            </div>
+            </motion.div>
           ) : (
-            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300">
-              <ExternalLink className="w-16 h-16 text-gray-400 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-gray-700 mb-4">{config.title}</h3>
+            <motion.div
+              className="border border-brand-200 p-8 text-center rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 shadow-sm"
+              whileHover={{ boxShadow: "0 8px 30px rgba(0,0,0,0.08)" }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <ExternalLink className="w-12 h-12 text-brand-400 mx-auto mb-4" />
+              </motion.div>
+
+              <motion.h3
+                className="text-xl font-bold text-gray-700 mb-3"
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+              >
+                {config.title}
+              </motion.h3>
+
               {config.description && (
-                <p className="text-gray-600 mb-8 leading-relaxed">{config.description}</p>
+                <motion.p
+                  className="text-gray-600 mb-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3, duration: 0.4 }}
+                >
+                  {config.description}
+                </motion.p>
               )}
-              <a
+
+              <motion.a
                 href={config.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-lg"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white font-medium rounded-lg shadow-md"
+                whileHover={{ scale: 1.05, boxShadow: "0 5px 15px rgba(0,0,0,0.1)" }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
               >
-                <ExternalLink className="w-5 h-5 mr-3" />
+                <ExternalLink className="w-4 h-4 mr-2" />
                 Open Resource
-              </a>
-            </div>
+              </motion.a>
+            </motion.div>
           )}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      <NavigationButtons
-        onComplete={onComplete}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        showNavigation={showNavigation}
-      />
-    </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5, duration: 0.4 }}
+      >
+        <NavigationButtons
+          onComplete={onComplete}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          showNavigation={showNavigation}
+        />
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -730,30 +871,39 @@ function NavigationButtons({
   if (!showNavigation) return null;
 
   return (
-    <div className="flex justify-between items-center mt-8">
+    <motion.div
+      className="flex justify-between items-center mt-8"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
       {onPrevious ? (
-        <button
+        <motion.button
           onClick={onPrevious}
-          className="flex items-center px-6 py-3 text-gray-600 hover:text-gray-800 transition-colors rounded-full bg-gray-100 hover:bg-gray-200 shadow-lg hover:shadow-xl hover:scale-105 font-semibold"
+          whileHover={{ scale: 1.05, x: -2 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center px-6 py-3 rounded-lg text-gray-700 transition-colors bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 border border-gray-200 font-medium shadow-sm"
         >
           <ChevronLeft className="w-4 h-4 mr-1" />
           Previous
-        </button>
+        </motion.button>
       ) : (
         <div />
       )}
 
       {onNext && (
-        <button
+        <motion.button
           onClick={onNext}
           disabled={disabled}
-          className="flex items-center px-8 py-3 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 font-semibold"
+          whileHover={{ scale: 1.05, x: 2 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center px-8 py-3 rounded-lg bg-gradient-to-r from-brand-500 to-brand-600 text-white hover:from-brand-600 hover:to-brand-700 disabled:from-gray-300 disabled:to-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed transition-colors font-medium shadow-md"
         >
           Next
           <ChevronRight className="w-4 h-4 ml-1" />
-        </button>
+        </motion.button>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -881,21 +1031,45 @@ function FillBlanksActivity({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="h-full">
-        <div className="relative z-10">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent mb-8">
-            {activity.title}
-          </h2>
+      <motion.div
+        className="h-full"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div
+          className="relative z-10"
+          initial={{ y: 20 }}
+          animate={{ y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
-          <div className="mb-8">
-            <p className="text-lg text-gray-600 mb-8">{config.instruction}</p>
+          <motion.div
+            className="mb-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+          >
+            <p className="text-gray-600 mb-6">{config.instruction}</p>
 
             {/* Text with blanks */}
-            <div className="bg-gradient-to-br from-white to-brand-50/30 p-8 rounded-2xl shadow-lg border border-brand-200/30 mb-8">
+            <motion.div
+              className="bg-gradient-to-br from-white to-brand-50/50 p-6 border border-brand-200/50 shadow-sm mb-6 rounded-xl"
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              whileHover={{ boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+            >
               <SortableContext items={blankItems}>
                 <div className="text-lg leading-relaxed">
                   {config.text_with_blanks.split("_____").map((textPart, index) => (
-                    <span key={index}>
+                    <motion.span
+                      key={index}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+                    >
                       {textPart}
                       {index < config.blanks.length && (
                         <DroppableBlank
@@ -914,95 +1088,126 @@ function FillBlanksActivity({
                           onRemove={() => removeWordFromBlank(config.blanks[index].id)}
                         />
                       )}
-                    </span>
+                    </motion.span>
                   ))}
                 </div>
               </SortableContext>
-            </div>
+            </motion.div>
 
             {/* Available words */}
-            <div className="mb-8">
+            <motion.div
+              className="mb-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+            >
               <h3 className="text-lg font-semibold text-gray-700 mb-4">Available Words:</h3>
               <SortableContext
                 items={wordItems.filter((item) => !item.isUsed).map((item) => item.id)}
               >
-                <div className="flex flex-wrap gap-3">
+                <motion.div
+                  className="flex flex-wrap gap-3 p-4 bg-gradient-to-br from-brand-50 to-brand-100 rounded-xl border border-brand-200/50"
+                  initial={{ scale: 0.98 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.5, duration: 0.4 }}
+                >
                   {wordItems
                     .filter((item) => !item.isUsed)
-                    .map((item) => (
-                      <DraggableWord
+                    .map((item, idx) => (
+                      <motion.div
                         key={item.id}
-                        id={item.id}
-                        word={item.word}
-                        isUsed={item.isUsed}
-                      />
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 + idx * 0.05, duration: 0.3 }}
+                      >
+                        <DraggableWord id={item.id} word={item.word} isUsed={item.isUsed} />
+                      </motion.div>
                     ))}
-                </div>
+                </motion.div>
               </SortableContext>
-            </div>
+            </motion.div>
 
             {/* Check answers button */}
             {!isCompleted && (
-              <div className="text-center mb-8">
-                <button
+              <motion.div
+                className="text-center mb-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.4 }}
+              >
+                <motion.button
                   onClick={checkAnswers}
                   disabled={Object.keys(userAnswers).length !== config.blanks.length}
-                  className="px-8 py-4 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-lg"
+                  className="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl shadow-md hover:shadow-lg disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   Check Answers
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             )}
 
             {/* Feedback */}
             {showFeedback && (
-              <div
-                className={`p-6 rounded-2xl border shadow-lg mb-8 ${
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className={`p-5 border rounded-xl mb-6 ${
                   isCompleted
-                    ? "bg-gradient-to-r from-green-50 to-emerald-100 border-green-200 text-green-800"
-                    : "bg-gradient-to-r from-yellow-50 to-orange-100 border-yellow-200 text-yellow-800"
+                    ? "bg-gradient-to-r from-green-50 to-green-100 border-green-200 text-green-800"
+                    : "bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200 text-yellow-800"
                 }`}
               >
-                <h4 className="font-bold mb-2 text-lg">
-                  {isCompleted ? "🎉 Excellent!" : "📝 Keep trying!"}
-                </h4>
+                <h4 className="font-bold mb-2">{isCompleted ? "Excellent!" : "Keep trying!"}</h4>
                 <p className="mb-4">
                   {isCompleted
                     ? config.success_message || "You got all the answers correct!"
                     : "Some answers need adjustment. Check the highlighted blanks."}
                 </p>
                 {!isCompleted && (
-                  <div className="flex justify-center">
-                    <button
+                  <motion.div className="flex justify-center">
+                    <motion.button
                       onClick={handleReset}
-                      className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-base flex items-center"
+                      className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl shadow-md flex items-center"
+                      whileHover={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       <RotateCcw className="w-4 h-4 mr-2" />
                       Try Again
-                    </button>
-                  </div>
+                    </motion.button>
+                  </motion.div>
                 )}
-              </div>
+              </motion.div>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <NavigationButtons
-          onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
-          disabled={!isCompleted}
-        />
-      </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7, duration: 0.4 }}
+        >
+          <NavigationButtons
+            onNext={onNext}
+            onPrevious={onPrevious}
+            showNavigation={showNavigation}
+            disabled={!isCompleted}
+          />
+        </motion.div>
+      </motion.div>
 
-      <DragOverlay dropAnimation={null}>
+      <DragOverlay>
         {activeId && wordItems.find((item) => item.id === activeId) ? (
-          <div className="px-4 py-2 bg-gradient-to-r from-brand-200 to-teal-200 text-brand-900 rounded-full shadow-2xl border-2 border-brand-300 scale-110 font-semibold pointer-events-none">
+          <motion.div
+            initial={{ scale: 1.05 }}
+            className="px-4 py-2 bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border border-brand-300 shadow-lg rounded-lg pointer-events-none"
+          >
             <div className="flex items-center">
               <GripVertical className="w-4 h-4 mr-2 opacity-60" />
               {wordItems.find((item) => item.id === activeId)?.word}
             </div>
-          </div>
+          </motion.div>
         ) : null}
       </DragOverlay>
     </DndContext>
@@ -1105,29 +1310,60 @@ function MatchingActivity({
   };
 
   return (
-    <div className="h-full">
-      <div className="relative z-10">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent mb-8">
-          {activity.title}
-        </h2>
+    <motion.div
+      className="h-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="relative z-10"
+        initial={{ y: 20 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
-        <div className="mb-8">
-          <p className="text-lg text-gray-600 mb-8">{config.instruction}</p>
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+        >
+          <p className="text-gray-600 mb-6">{config.instruction}</p>
 
           {/* Selection instructions */}
-          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-100 rounded-xl border border-blue-200">
-            <p className="text-sm text-blue-800 font-medium">
-              💡 Click on a term and then click on its matching definition to connect them. Click on
+          <motion.div
+            className="mb-6 p-4 bg-gradient-to-r from-brand-50 to-brand-100/50 border border-brand-200 rounded-xl shadow-sm"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            whileHover={{ boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+          >
+            <p className="text-sm text-brand-800 font-medium flex items-center">
+              <motion.span
+                animate={{ rotate: [0, 10, 0] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="mr-2"
+              >
+                💡
+              </motion.span>
+              Click on a term and then click on its matching definition to connect them. Click on
               connected pairs to break the connection.
             </p>
-          </div>
+          </motion.div>
 
           {/* Matching interface */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             {/* Left column - Terms */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-700 mb-4">Terms</h3>
-              {config.pairs.map((pair) => {
+            <motion.div
+              className="space-y-3"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              <h3 className="text-lg font-semibold text-gray-700 mb-3">Terms</h3>
+              {config.pairs.map((pair, index) => {
                 const matchedRightId = matches[pair.left.id];
                 const isSelected = selectedLeft === pair.left.id;
                 const isCorrect = showFeedback && matchedRightId === pair.right.id;
@@ -1135,412 +1371,205 @@ function MatchingActivity({
                   showFeedback && matchedRightId && matchedRightId !== pair.right.id;
 
                 return (
-                  <div
+                  <motion.div
                     key={pair.left.id}
                     onClick={() => handleLeftClick(pair.left.id)}
-                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 transform hover:scale-[1.02] ${
+                    className={`p-3 border-2 cursor-pointer rounded-xl shadow-sm ${
                       isSelected
-                        ? "border-blue-500 bg-blue-100 shadow-lg scale-[1.02]"
+                        ? "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
                         : matchedRightId
                           ? isCorrect
-                            ? "border-green-500 bg-green-50 shadow-md"
+                            ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
                             : isIncorrect
-                              ? "border-red-500 bg-red-50 shadow-md"
-                              : "border-brand-500 bg-brand-50 shadow-md"
-                          : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md"
+                              ? "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
+                              : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
+                          : "border-gray-200 bg-gradient-to-r from-white to-gray-50 hover:border-brand-300"
                     }`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+                    whileHover={{ scale: 1.02, boxShadow: "0 4px 8px rgba(0,0,0,0.05)" }}
+                    whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-gray-800">{pair.left.content}</span>
                       <div className="flex items-center">
                         {matchedRightId && (
                           <>
-                            <span className="ml-2 px-3 py-1 bg-white/70 rounded-full text-sm border">
+                            <motion.span
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              className="ml-2 px-2 py-1 bg-white text-sm border rounded-lg shadow-sm"
+                            >
                               {
                                 shuffledRightItems.find((item) => item.id === matchedRightId)
                                   ?.content
                               }
-                            </span>
-                            <button
+                            </motion.span>
+                            <motion.button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 removeMatch(pair.left.id);
                               }}
-                              className="ml-2 text-gray-400 hover:text-red-500 transition-colors"
+                              className="ml-2 text-gray-400 hover:text-red-500"
+                              whileHover={{ scale: 1.2 }}
+                              whileTap={{ scale: 0.9 }}
                             >
                               ✕
-                            </button>
+                            </motion.button>
                           </>
                         )}
                         {isSelected && (
-                          <span className="ml-2 text-blue-600 font-bold animate-pulse">→</span>
+                          <motion.span
+                            animate={{ x: [0, 5, 0] }}
+                            transition={{ repeat: Infinity, duration: 1 }}
+                            className="ml-2 text-brand-600 font-bold"
+                          >
+                            →
+                          </motion.span>
                         )}
                         {showFeedback && matchedRightId && (
-                          <span className={`ml-2 ${isCorrect ? "text-green-600" : "text-red-600"}`}>
+                          <motion.span
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className={`ml-2 ${isCorrect ? "text-green-600" : "text-red-600"}`}
+                          >
                             {isCorrect ? "✓" : "✗"}
-                          </span>
+                          </motion.span>
                         )}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
 
             {/* Right column - Definitions */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-700 mb-4">Definitions</h3>
-              {shuffledRightItems.map((item) => {
+            <motion.div
+              className="space-y-3"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+            >
+              <h3 className="text-lg font-semibold text-gray-700 mb-3">Definitions</h3>
+              {shuffledRightItems.map((item, index) => {
                 const isMatched = Object.values(matches).includes(item.id);
                 const isSelected = selectedRight === item.id;
 
                 return (
-                  <div
+                  <motion.div
                     key={item.id}
                     onClick={() => handleRightClick(item.id)}
-                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 transform hover:scale-[1.02] ${
+                    className={`p-3 border-2 cursor-pointer rounded-xl shadow-sm ${
                       isSelected
-                        ? "border-blue-500 bg-blue-100 shadow-lg scale-[1.02]"
+                        ? "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
                         : isMatched
-                          ? "border-gray-300 bg-gray-100 opacity-60 cursor-not-allowed"
-                          : "border-teal-200 bg-teal-50 hover:border-teal-300 hover:shadow-md"
+                          ? "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 opacity-60"
+                          : "border-brand-200 bg-gradient-to-r from-brand-50 to-brand-100 hover:border-brand-300"
                     }`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 + index * 0.1, duration: 0.4 }}
+                    whileHover={
+                      !isMatched ? { scale: 1.02, boxShadow: "0 4px 8px rgba(0,0,0,0.05)" } : {}
+                    }
+                    whileTap={!isMatched ? { scale: 0.98 } : {}}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-gray-800">{item.content}</span>
                       {isSelected && (
-                        <span className="text-blue-600 font-bold animate-pulse">←</span>
+                        <motion.span
+                          animate={{ x: [0, -5, 0] }}
+                          transition={{ repeat: Infinity, duration: 1 }}
+                          className="text-brand-600 font-bold"
+                        >
+                          ←
+                        </motion.span>
                       )}
-                      {isMatched && <span className="text-gray-500 text-sm">Matched</span>}
+                      {isMatched && (
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-gray-500 text-sm"
+                        >
+                          Matched
+                        </motion.span>
+                      )}
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           </div>
 
           {/* Check matches button */}
           {!isCompleted && (
-            <div className="text-center mb-8">
-              <button
+            <motion.div
+              className="text-center mb-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.4 }}
+            >
+              <motion.button
                 onClick={checkMatches}
                 disabled={Object.keys(matches).length !== config.pairs.length}
-                className="px-8 py-4 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-lg"
+                className="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl shadow-md disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed"
+                whileHover={{ scale: 1.05, boxShadow: "0 6px 15px rgba(0,0,0,0.1)" }}
+                whileTap={{ scale: 0.98 }}
               >
                 Check Matches
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           )}
 
           {/* Feedback */}
           {showFeedback && (
-            <div
-              className={`p-6 rounded-2xl border shadow-lg mb-8 ${
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className={`p-5 border rounded-xl mb-6 ${
                 isCompleted
-                  ? "bg-gradient-to-r from-green-50 to-emerald-100 border-green-200 text-green-800"
-                  : "bg-gradient-to-r from-yellow-50 to-orange-100 border-yellow-200 text-yellow-800"
+                  ? "bg-gradient-to-r from-green-50 to-green-100 border-green-200 text-green-800"
+                  : "bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200 text-yellow-800"
               }`}
             >
-              <h4 className="font-bold mb-2 text-lg">
-                {isCompleted ? "🎯 Perfect Match!" : "🔄 Try Again!"}
-              </h4>
+              <h4 className="font-bold mb-2">{isCompleted ? "Perfect Match!" : "Try Again!"}</h4>
               <p className="mb-4">
                 {isCompleted
                   ? config.success_message || "You matched all pairs correctly!"
                   : "Some matches need adjustment. Check the highlighted pairs."}
               </p>
               {!isCompleted && (
-                <div className="flex justify-center">
-                  <button
+                <motion.div className="flex justify-center">
+                  <motion.button
                     onClick={handleReset}
-                    className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-base flex items-center"
+                    className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg shadow-md flex items-center"
+                    whileHover={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Try Again
-                  </button>
-                </div>
+                  </motion.button>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
           )}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      <NavigationButtons
-        onNext={onNext}
-        onPrevious={onPrevious}
-        showNavigation={showNavigation}
-        disabled={!isCompleted}
-      />
-    </div>
-  );
-}
-
-// Helper component for draggable sequence items (available items)
-function DraggableSequenceItem({
-  id,
-  content,
-  onClick,
-}: {
-  id: string;
-  content: string;
-  onClick: () => void;
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id,
-  });
-
-  const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      onClick={onClick}
-      className="p-4 bg-gradient-to-r from-teal-100 to-brand-100 text-teal-800 rounded-xl cursor-move shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-teal-200/50 select-none"
-    >
-      <div className="flex items-center">
-        <GripVertical className="w-4 h-4 mr-2 opacity-60" />
-        {content}
-      </div>
-    </div>
-  );
-}
-
-function SequenceActivity({
-  activity,
-  onComplete,
-  onNext,
-  onPrevious,
-  showNavigation,
-}: ActivityRendererProps) {
-  const config = activity.config as SequenceConfig;
-  const [orderedItems, setOrderedItems] = useState<string[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(false);
-
-  // Create sensors for drag and drop
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
-  );
-
-  // Shuffle items initially
-  const [shuffledItems] = useState(() => [...config.items].sort(() => Math.random() - 0.5));
-
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over) {
-      setActiveId(null);
-      return;
-    }
-
-    const activeId = active.id as string;
-    const overId = over.id as string;
-
-    // Handle dropping from available items to sequence
-    if (!orderedItems.includes(activeId) && overId === "sequence-container") {
-      setOrderedItems((prev) => [...prev, activeId]);
-    }
-    // Handle reordering within sequence
-    else if (orderedItems.includes(activeId) && orderedItems.includes(overId)) {
-      const oldIndex = orderedItems.indexOf(activeId);
-      const newIndex = orderedItems.indexOf(overId);
-      setOrderedItems(arrayMove(orderedItems, oldIndex, newIndex));
-    }
-    // Handle dropping on another sortable item in sequence
-    else if (!orderedItems.includes(activeId) && orderedItems.includes(overId)) {
-      const targetIndex = orderedItems.indexOf(overId);
-      setOrderedItems((prev) => {
-        const newItems = [...prev];
-        newItems.splice(targetIndex, 0, activeId);
-        return newItems;
-      });
-    }
-
-    setActiveId(null);
-  };
-
-  const addToSequence = (itemId: string) => {
-    if (!orderedItems.includes(itemId)) {
-      setOrderedItems((prev) => [...prev, itemId]);
-    }
-  };
-
-  const removeFromSequence = (itemId: string) => {
-    setOrderedItems((prev) => prev.filter((id) => id !== itemId));
-  };
-
-  const checkSequence = () => {
-    const isCorrect =
-      orderedItems.length === config.items.length &&
-      orderedItems.every((itemId, index) => {
-        const item = config.items.find((i) => i.id === itemId);
-        return item && item.correct_position === index + 1;
-      });
-
-    setShowFeedback(true);
-    if (isCorrect) {
-      setIsCompleted(true);
-      onComplete?.();
-    }
-  };
-
-  const handleReset = () => {
-    setOrderedItems([]);
-    setShowFeedback(false);
-    setIsCompleted(false);
-    setActiveId(null);
-  };
-
-  const availableItems = shuffledItems.filter((item) => !orderedItems.includes(item.id));
-
-  return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="h-full">
-        <div className="relative z-10">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-brand-600 bg-clip-text text-transparent mb-8">
-            {activity.title}
-          </h2>
-
-          <div className="mb-8">
-            <p className="text-lg text-gray-600 mb-8">{config.instruction}</p>
-
-            {/* Sequence building area */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-700 mb-4">Build the Sequence:</h3>
-              <SequenceDropContainer isEmpty={orderedItems.length === 0}>
-                {orderedItems.length > 0 && (
-                  <SortableContext items={orderedItems} strategy={verticalListSortingStrategy}>
-                    <div className="space-y-3">
-                      {orderedItems.map((itemId, index) => {
-                        const item = config.items.find((i) => i.id === itemId);
-                        if (!item) return null;
-
-                        const isCorrectPosition =
-                          showFeedback && item.correct_position === index + 1;
-
-                        return (
-                          <SortableSequenceItem
-                            key={itemId}
-                            id={itemId}
-                            content={item.content}
-                            index={index}
-                            isCorrect={isCorrectPosition}
-                            showFeedback={showFeedback}
-                            showNumbers={config.show_numbers}
-                            onRemove={() => removeFromSequence(itemId)}
-                          />
-                        );
-                      })}
-                    </div>
-                  </SortableContext>
-                )}
-              </SequenceDropContainer>
-            </div>
-
-            {/* Available items */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-700 mb-4">Available Items:</h3>
-              <SortableContext items={availableItems.map((item) => item.id)}>
-                <div className="flex flex-wrap gap-3">
-                  {availableItems.map((item) => (
-                    <DraggableSequenceItem
-                      key={item.id}
-                      id={item.id}
-                      content={item.content}
-                      onClick={() => addToSequence(item.id)}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </div>
-
-            {/* Check sequence button */}
-            {!isCompleted && (
-              <div className="text-center mb-8">
-                <button
-                  onClick={checkSequence}
-                  disabled={orderedItems.length !== config.items.length}
-                  className="px-8 py-4 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-lg"
-                >
-                  Check Sequence
-                </button>
-              </div>
-            )}
-
-            {/* Feedback */}
-            {showFeedback && (
-              <div
-                className={`p-6 rounded-2xl border shadow-lg mb-8 ${
-                  isCompleted
-                    ? "bg-gradient-to-r from-green-50 to-emerald-100 border-green-200 text-green-800"
-                    : "bg-gradient-to-r from-yellow-50 to-orange-100 border-yellow-200 text-yellow-800"
-                }`}
-              >
-                <h4 className="font-bold mb-2 text-lg">
-                  {isCompleted ? "🎯 Perfect Sequence!" : "🔄 Try Again!"}
-                </h4>
-                <p className="mb-4">
-                  {isCompleted
-                    ? config.success_message || "You got the sequence exactly right!"
-                    : "The sequence needs adjustment. Check the highlighted positions."}
-                </p>
-                {!isCompleted && (
-                  <div className="flex justify-center">
-                    <button
-                      onClick={handleReset}
-                      className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 font-bold text-base flex items-center"
-                    >
-                      <RotateCcw className="w-4 h-4 mr-2" />
-                      Try Again
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7, duration: 0.4 }}
+      >
         <NavigationButtons
           onNext={onNext}
           onPrevious={onPrevious}
           showNavigation={showNavigation}
           disabled={!isCompleted}
         />
-      </div>
-
-      <DragOverlay dropAnimation={null}>
-        {activeId ? (
-          <div className="p-4 bg-gradient-to-r from-teal-200 to-brand-200 text-teal-900 rounded-xl shadow-2xl border-2 border-teal-300 scale-110 font-semibold transform rotate-3">
-            <div className="flex items-center">
-              <GripVertical className="w-4 h-4 mr-2 opacity-60" />
-              {config.items.find((item) => item.id === activeId)?.content}
-            </div>
-          </div>
-        ) : null}
-      </DragOverlay>
-    </DndContext>
+      </motion.div>
+    </motion.div>
   );
 }
-
-export default ActivityRenderer;

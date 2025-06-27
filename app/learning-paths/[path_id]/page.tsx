@@ -1,9 +1,10 @@
 "use client";
 
-import ActivityRenderer from "@/components/ActivityRenderer";
+import { ActivityRenderer } from "@/components/ActivityRenderer";
 import { LearningChatComponent } from "@/components/LearningChat";
 import { getLearningPath } from "@/lib/api";
 import { LearningPath } from "@/types/learning-path";
+import { motion } from "framer-motion";
 import { CheckCircle, ChevronLeft, ChevronRight, Circle, Home } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -19,7 +20,6 @@ export default function LearningPathPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
 
   useEffect(() => {
@@ -60,109 +60,97 @@ export default function LearningPathPage() {
       // Mark current activity as complete when moving to next
       const currentActivityId = learningPath.activities[currentActivityIndex].activity_id;
       handleActivityComplete(currentActivityId);
-
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentActivityIndex((prev) => prev + 1);
-        setIsTransitioning(false);
-      }, 150);
+      setCurrentActivityIndex((prev) => prev + 1);
     }
   };
 
   const handlePrevious = () => {
     if (currentActivityIndex > 0) {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentActivityIndex((prev) => prev - 1);
-        setIsTransitioning(false);
-      }, 150);
+      setCurrentActivityIndex((prev) => prev - 1);
     }
   };
 
   const handleActivitySelect = (index: number) => {
     if (index !== currentActivityIndex) {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentActivityIndex(index);
-        setIsTransitioning(false);
-      }, 150);
+      setCurrentActivityIndex(index);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 to-indigo-100 flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="h-12 w-12 border-4 border-brand-500/30 border-t-brand-600 rounded-full"
+        />
       </div>
     );
   }
 
   if (error || !learningPath) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 to-indigo-100 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg"
+        >
           <div className="text-red-600 text-xl mb-2">⚠️ Error</div>
           <p className="text-gray-700">{error || "Learning path not found"}</p>
           <Link
             href="/learning-paths"
-            className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors shadow-md"
           >
             <Home className="w-4 h-4 mr-2" />
             Back to Learning Paths
           </Link>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   const currentActivity = learningPath.activities[currentActivityIndex];
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-600 via-slate-500 to-slate-600 relative overflow-hidden">
-      {/* Fireworks Celebration */}
+    <div className="h-screen bg-gradient-to-br from-slate-700 to-slate-900 relative overflow-hidden">
+      {/* Celebration */}
       {showCelebration && (
-        <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden">
-          {/* Fireworks particles */}
-          {[...Array(50)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-2 h-2 rounded-full animate-ping"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                backgroundColor: ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8", "#F7DC6F"][
-                  Math.floor(Math.random() * 6)
-                ],
-                animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${1 + Math.random()}s`,
-              }}
-            />
-          ))}
-
-          {/* Celebration message */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] pointer-events-none overflow-hidden"
+        >
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-12 py-8 rounded-3xl shadow-2xl animate-bounce">
+            <motion.div
+              animate={{
+                y: [0, -10, 0],
+                boxShadow: [
+                  "0 0 0 rgba(34, 197, 94, 0)",
+                  "0 0 20px rgba(34, 197, 94, 0.5)",
+                  "0 0 0 rgba(34, 197, 94, 0)",
+                ],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-10 py-8 rounded-xl shadow-lg"
+            >
               <div className="text-center">
-                <div className="text-6xl mb-4">🎉</div>
-                <h2 className="text-3xl font-bold mb-2">Congratulations!</h2>
-                <p className="text-xl">You&apos;ve completed the learning path!</p>
+                <div className="text-5xl mb-3">🎉</div>
+                <h2 className="text-2xl font-bold mb-2">Congratulations!</h2>
+                <p className="text-lg">You&apos;ve completed the learning path!</p>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       )}
-
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-brand-500/20 to-teal-500/20"></div>
-      </div>
 
       {/* Top Navigation Bar */}
       <div className="absolute top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-sm border-b border-white/20">
-        <div className="flex items-center justify-between px-6 py-4">
+        <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center space-x-4">
             <Link
               href="/learning-paths"
-              className="flex items-center text-white/80 hover:text-white transition-all duration-300 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg backdrop-blur-sm"
+              className="flex items-center text-white/80 hover:text-white transition-all duration-300 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-md"
             >
               <ChevronLeft className="w-4 h-4 mr-2" />
               <span className="text-sm font-medium">Back</span>
@@ -179,53 +167,58 @@ export default function LearningPathPage() {
             </div>
 
             {/* Sidebar toggle */}
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all duration-300"
+              className="p-2 bg-white/10 hover:bg-white/20 text-white transition-all duration-300 rounded-md"
             >
               {sidebarCollapsed ? (
                 <ChevronRight className="w-4 h-4" />
               ) : (
                 <ChevronLeft className="w-4 h-4" />
               )}
-            </button>
+            </motion.button>
           </div>
         </div>
 
         {/* Progress bar */}
-        <div className="px-6 pb-4">
-          <div className="w-full bg-white/20 rounded-full h-1">
-            <div
-              className="bg-gradient-to-r from-brand-500 to-teal-500 h-1 rounded-full transition-all duration-500"
-              style={{
+        <div className="px-4 pb-3">
+          <div className="w-full bg-white/20 h-1 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{
                 width: `${((currentActivityIndex + 1) / learningPath.activities.length) * 100}%`,
               }}
+              className="bg-gradient-to-r from-brand-400 to-brand-600 h-1 rounded-full"
+              transition={{ duration: 0.3 }}
             />
           </div>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex h-full pt-20">
+      <div className="flex h-full pt-16">
         {/* Sidebar - Activity List */}
-        <div
-          className={`bg-white/20 backdrop-blur-sm border-r border-white/10 overflow-y-auto custom-scrollbar flex flex-col transition-all duration-300 ${
-            sidebarCollapsed ? "w-16" : "w-80"
-          }`}
+        <motion.div
+          animate={{ width: sidebarCollapsed ? "3rem" : "18rem" }}
+          className="bg-white/5 backdrop-blur-sm border-r border-white/10 overflow-y-auto flex flex-col transition-all duration-300"
         >
           {!sidebarCollapsed ? (
             // Full Sidebar
             <>
-              <div className="p-6 flex-1">
-                <h3 className="text-white font-bold text-lg mb-6">Activities</h3>
-                <div className="space-y-3">
+              <div className="p-4 flex-1">
+                <h3 className="text-white font-bold text-lg mb-4">Activities</h3>
+                <div className="space-y-2">
                   {learningPath.activities.map((activity, index) => (
-                    <button
+                    <motion.button
                       key={activity.activity_id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => handleActivitySelect(index)}
-                      className={`w-full text-left p-4 rounded-xl transition-all duration-300 ${
+                      className={`w-full text-left p-3 transition-all duration-300 rounded-lg ${
                         index === currentActivityIndex
-                          ? "bg-gradient-to-r from-brand-500/20 to-teal-500/20 border border-brand-400/30 text-white"
+                          ? "bg-gradient-to-r from-brand-500/20 to-brand-600/20 border border-brand-400/30 text-white"
                           : "bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10"
                       }`}
                     >
@@ -240,34 +233,38 @@ export default function LearningPathPage() {
                           <p className="text-xs opacity-70 capitalize">{activity.type}</p>
                         </div>
                       </div>
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
 
               {/* Collapse Button */}
-              <div className="p-4 border-t border-white/10">
-                <button
+              <div className="p-3 border-t border-white/10">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => setSidebarCollapsed(true)}
-                  className="w-full flex items-center justify-center px-4 py-3 text-white/70 hover:text-white transition-all duration-300 bg-white/5 hover:bg-white/10 rounded-xl backdrop-blur-sm"
+                  className="w-full flex items-center justify-center px-3 py-2 text-white/70 hover:text-white transition-all duration-300 bg-white/5 hover:bg-white/10 rounded-lg"
                 >
                   <ChevronLeft className="w-4 h-4 mr-2" />
                   <span className="text-sm font-medium">Collapse</span>
-                </button>
+                </motion.button>
               </div>
             </>
           ) : (
             // Minimal Sidebar
             <>
-              <div className="p-3 flex-1">
-                <div className="space-y-3">
+              <div className="p-2 flex-1">
+                <div className="space-y-2">
                   {learningPath.activities.map((activity, index) => (
-                    <button
+                    <motion.button
                       key={activity.activity_id}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={() => handleActivitySelect(index)}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      className={`w-8 h-8 flex items-center justify-center transition-all duration-300 rounded-full ${
                         index === currentActivityIndex
-                          ? "bg-gradient-to-r from-brand-500/30 to-teal-500/30 border border-brand-400/50 text-white"
+                          ? "bg-gradient-to-r from-brand-500/30 to-brand-600/30 border border-brand-400/50 text-white"
                           : "bg-white/10 hover:bg-white/20 text-white/70 hover:text-white border border-white/20"
                       }`}
                       title={activity.title}
@@ -277,65 +274,55 @@ export default function LearningPathPage() {
                       ) : (
                         <Circle className="w-4 h-4" />
                       )}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
 
               {/* Expand Button */}
-              <div className="p-3 border-t border-white/10">
-                <button
+              <div className="p-2 border-t border-white/10">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={() => setSidebarCollapsed(false)}
-                  className="w-10 h-10 flex items-center justify-center text-white/70 hover:text-white transition-all duration-300 bg-white/5 hover:bg-white/10 rounded-full backdrop-blur-sm"
+                  className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white transition-all duration-300 bg-white/5 hover:bg-white/10 rounded-full"
                   title="Expand sidebar"
                 >
                   <ChevronRight className="w-4 h-4" />
-                </button>
+                </motion.button>
               </div>
             </>
           )}
-        </div>
+        </motion.div>
 
-        {/* Main Slide Content */}
-        <div className={`flex-1 relative`}>
-          {/* Previous Button - Left Edge */}
-          <button
+        {/* Main Slide Content Area with Navigation */}
+        <div className="flex-1 flex">
+          {/* Previous Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handlePrevious}
             disabled={currentActivityIndex === 0}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-3 text-white/70 hover:text-white disabled:text-white/20 disabled:cursor-not-allowed transition-all duration-300 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm disabled:bg-white/5"
+            className="p-2 text-white/50 hover:text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-all duration-200 bg-white/5 hover:bg-white/10 disabled:bg-white/5 rounded"
           >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-
-          {/* Next Button - Right Edge */}
-          {currentActivityIndex < learningPath.activities.length - 1 ? (
-            <button
-              onClick={handleNext}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-3 bg-gradient-to-r from-brand-500 to-teal-600 text-white rounded-full hover:from-brand-600 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          ) : (
-            <button
-              onClick={() => handleActivityComplete(currentActivity.activity_id)}
-              disabled={completedActivities.has(currentActivity.activity_id)}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl font-semibold text-sm"
-            >
-              {completedActivities.has(currentActivity.activity_id)
-                ? "✓ Completed"
-                : "Mark Complete"}
-            </button>
-          )}
+            <ChevronLeft className="w-5 h-5" />
+          </motion.button>
 
           {/* Activity Content */}
-          <div className="flex-1 h-full overflow-hidden p-6">
-            <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-white to-brand-50/30 backdrop-blur-sm rounded-2xl shadow-xl p-10 border border-white/50 transform transition-all duration-500 hover:shadow-2xl relative overflow-y-auto custom-scrollbar">
-              <div
-                className={`transition-all duration-300 ease-in-out transform h-full  ${
-                  isTransitioning
-                    ? "opacity-0 scale-95 translate-y-4"
-                    : "opacity-100 scale-100 translate-y-0"
-                }`}
+          <div className="flex-1 h-full overflow-hidden p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="h-full w-full flex items-center justify-center bg-white shadow-lg p-6 border border-white/50 rounded-xl overflow-y-auto"
+            >
+              <motion.div
+                key={currentActivityIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="h-full w-full"
               >
                 <ActivityRenderer
                   activity={currentActivity}
@@ -344,13 +331,24 @@ export default function LearningPathPage() {
                   onPrevious={handlePrevious}
                   showNavigation={false}
                 />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
+
+          {/* Next Button */}
+          <motion.button
+            whileHover={{ opacity: 0.9 }}
+            whileTap={{ opacity: 0.7 }}
+            onClick={handleNext}
+            className="p-2 text-white/50 hover:text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-all duration-200 bg-white/5 hover:bg-white/10 disabled:bg-white/5 rounded"
+            disabled={currentActivityIndex >= learningPath.activities.length - 1}
+          >
+            <ChevronRight className="w-5 h-5" />
+          </motion.button>
         </div>
 
         {/* Chat Sidebar - Fixed Right */}
-        <div className="w-96 bg-white/20 backdrop-blur-sm border-l border-white/10">
+        <div className="w-80 bg-white/5 backdrop-blur-sm border-l border-white/10 rounded-tl-xl">
           <div className="h-full">
             <LearningChatComponent
               learningPathId={pathId}

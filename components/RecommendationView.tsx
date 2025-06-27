@@ -1,5 +1,4 @@
 import useCombinedTranscriptions from "@/hooks/useCombinedTranscriptions";
-import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useRef } from "react";
 import {
   LuLightbulb,
@@ -10,9 +9,7 @@ import {
   LuTriangleAlert,
   LuZap,
 } from "react-icons/lu";
-
-// Motion components
-const MotionDiv = motion.div;
+import { motion } from "framer-motion";
 
 interface MessageEvaluation {
   type: "suggestion" | "improvement" | "warning" | "positive";
@@ -183,45 +180,6 @@ export function RecommendationView() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Theme colors for light/dark mode
-  const isDarkMode = false; // This would be replaced with your theme detection logic
-
-  // Evaluation styles
-  const evaluationStyles = {
-    positive: {
-      bg: isDarkMode ? "bg-green-900/20" : "bg-green-50",
-      borderColor: isDarkMode ? "border-green-700" : "border-green-200",
-      iconBg: isDarkMode ? "bg-green-400" : "bg-green-500",
-      iconColor: "text-white",
-      textColor: isDarkMode ? "text-green-200" : "text-green-800",
-      glowColor: isDarkMode ? "border-green-600" : "border-green-200",
-    },
-    warning: {
-      bg: isDarkMode ? "bg-orange-900/20" : "bg-orange-50",
-      borderColor: isDarkMode ? "border-orange-700" : "border-orange-200",
-      iconBg: isDarkMode ? "bg-orange-400" : "bg-orange-500",
-      iconColor: "text-white",
-      textColor: isDarkMode ? "text-orange-200" : "text-orange-800",
-      glowColor: isDarkMode ? "border-orange-600" : "border-orange-200",
-    },
-    improvement: {
-      bg: isDarkMode ? "bg-blue-900/20" : "bg-blue-50",
-      borderColor: isDarkMode ? "border-blue-700" : "border-blue-200",
-      iconBg: isDarkMode ? "bg-blue-400" : "bg-blue-500",
-      iconColor: "text-white",
-      textColor: isDarkMode ? "text-blue-200" : "text-blue-800",
-      glowColor: isDarkMode ? "border-blue-600" : "border-blue-200",
-    },
-    suggestion: {
-      bg: isDarkMode ? "bg-purple-900/20" : "bg-purple-50",
-      borderColor: isDarkMode ? "border-purple-700" : "border-purple-200",
-      iconBg: isDarkMode ? "bg-purple-400" : "bg-purple-500",
-      iconColor: "text-white",
-      textColor: isDarkMode ? "text-purple-200" : "text-purple-800",
-      glowColor: isDarkMode ? "border-purple-600" : "border-purple-200",
-    },
-  };
-
   const getEvaluationStyle = (type: string) => {
     return evaluationStyles[type as keyof typeof evaluationStyles] || evaluationStyles.improvement;
   };
@@ -234,225 +192,138 @@ export function RecommendationView() {
     scrollToBottom();
   }, [messages]);
 
-  // Animation variants
-  const containerVariants = {
-    initial: { opacity: 0, scale: 0.98 },
-    animate: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.4,
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
+  // Evaluation styles
+  const evaluationStyles = {
+    positive: {
+      bg: "bg-gradient-to-r from-green-50 to-green-100",
+      borderColor: "border-green-200",
+      iconBg: "bg-green-500",
+      iconColor: "text-white",
+      textColor: "text-green-800",
     },
-  };
-
-  const headerVariants = {
-    initial: { opacity: 0, y: -30, scale: 0.95 },
-    animate: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 30,
-        duration: 0.6,
-      },
+    warning: {
+      bg: "bg-gradient-to-r from-orange-50 to-orange-100",
+      borderColor: "border-orange-200",
+      iconBg: "bg-orange-500",
+      iconColor: "text-white",
+      textColor: "text-orange-800",
     },
-  };
-
-  const messageVariants = {
-    initial: { opacity: 0, y: 40, scale: 0.9 },
-    animate: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-        duration: 0.5,
-      },
+    improvement: {
+      bg: "bg-gradient-to-r from-blue-50 to-blue-100",
+      borderColor: "border-blue-200",
+      iconBg: "bg-blue-500",
+      iconColor: "text-white",
+      textColor: "text-blue-800",
     },
-    exit: {
-      opacity: 0,
-      y: -30,
-      scale: 0.95,
-      transition: {
-        duration: 0.3,
-      },
-    },
-  };
-
-  const pulseAnimation = {
-    animate: {
-      scale: [1, 1.02, 1],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeInOut",
-      },
+    suggestion: {
+      bg: "bg-gradient-to-r from-purple-50 to-purple-100",
+      borderColor: "border-purple-200",
+      iconBg: "bg-purple-500",
+      iconColor: "text-white",
+      textColor: "text-purple-800",
     },
   };
 
   return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      variants={containerVariants}
-      className="h-full flex flex-col gap-0 dark:bg-gray-900 rounded-xl overflow-hidden shadow-lg relative backdrop-blur-md"
-    >
-      {/* Animated background gradients */}
-      <div className="absolute top-0 left-0 right-0 h-full bg-gradient-to-br from-blue-50/40 via-purple-50/20 to-transparent dark:from-blue-900/10 dark:via-purple-900/5 dark:to-transparent pointer-events-none z-0" />
-
-      {/* Floating orbs for decoration */}
-      <MotionDiv
-        className="absolute top-[20%] right-[10%] w-[100px] h-[100px] bg-blue-100/30 dark:bg-blue-800/10 rounded-full blur-3xl pointer-events-none z-0"
-        {...pulseAnimation}
-      />
-      <MotionDiv
-        className="absolute bottom-[30%] left-[5%] w-[80px] h-[80px] bg-purple-100/30 dark:bg-purple-800/10 rounded-full blur-2xl pointer-events-none z-0"
-        {...pulseAnimation}
-        transition={{ delay: 1 }}
-      />
-
+    <div className="h-full flex flex-col gap-0 rounded-lg overflow-hidden shadow-md relative">
       {/* Header */}
       <motion.div
-        variants={headerVariants}
-        className="w-full p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800/80 backdrop-blur-xl relative z-10"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="w-full p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 relative z-10"
       >
         <div className="flex flex-col items-start gap-0 flex-1">
-          <p className="font-bold text-lg text-gray-800 dark:text-gray-100">AI Voice Coach</p>
-          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+          <p className="font-bold text-lg text-gray-800">AI Voice Coach</p>
+          <p className="text-sm text-gray-600 font-medium">
             Real-time guidance & intelligent feedback
           </p>
         </div>
       </motion.div>
 
       {/* Messages Container */}
-      <div className="flex-1 w-full overflow-y-auto p-4 relative z-5 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+      <div className="flex-1 w-full overflow-y-auto p-4 relative z-5 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
         {messages.length === 0 ? (
-          <MotionDiv
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
             className="text-center py-16"
           >
             <div className="flex flex-col items-center gap-4">
-              <MotionDiv
-                whileHover={{ scale: 1.1, rotate: 10 }}
-                transition={{ type: "spring", stiffness: 300 }}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="p-4 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-300 shadow-md"
               >
-                <div className="p-4 rounded-2xl bg-gray-100 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 shadow-lg">
-                  <LuMessageSquare className="w-10 h-10 text-gray-400 dark:text-gray-500" />
-                </div>
-              </MotionDiv>
+                <LuMessageSquare className="w-10 h-10 text-gray-400" />
+              </motion.div>
               <div className="flex flex-col items-center gap-2">
-                <p className="text-xl font-bold text-gray-800 dark:text-gray-100">
-                  Start your voice practice
-                </p>
-                <p className="text-md text-gray-600 dark:text-gray-400 max-w-[400px] text-center leading-relaxed">
+                <p className="text-xl font-bold text-gray-800">Start your voice practice</p>
+                <p className="text-md text-gray-600 max-w-[400px] text-center leading-relaxed">
                   Your AI coach is ready to provide real-time feedback and intelligent suggestions
                   as you practice customer service scenarios
                 </p>
               </div>
             </div>
-          </MotionDiv>
+          </motion.div>
         ) : (
           <div className="flex flex-col gap-4 items-stretch">
-            <AnimatePresence mode="popLayout">
-              {messages.map((message, index) => {
-                const content = typeof message.text === "string" ? message.text : "";
-                const evaluation =
-                  message.role === "user"
-                    ? generateUserEvaluation(content)
-                    : generatePartnerEvaluation(content);
+            {messages.map((message, index) => {
+              const content = typeof message.text === "string" ? message.text : "";
+              const evaluation =
+                message.role === "user"
+                  ? generateUserEvaluation(content)
+                  : generatePartnerEvaluation(content);
 
-                if (!evaluation) return null;
-                const style = getEvaluationStyle(evaluation.type);
+              if (!evaluation) return null;
+              const style = getEvaluationStyle(evaluation.type);
 
-                return (
-                  <MotionDiv
-                    key={`message-${index}`}
-                    variants={messageVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    layout
+              return (
+                <motion.div
+                  key={`message-${index}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  <div
+                    className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                   >
-                    <div
-                      className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-                    >
-                      <div className="max-w-[90%] w-full">
-                        <motion.div
-                          initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          whileHover={{ scale: 1.02, y: -2 }}
-                          transition={{
-                            delay: index * 0.1,
-                            duration: 0.5,
-                            type: "spring",
-                            stiffness: 300,
-                          }}
-                        >
-                          <div
-                            className={`${style.bg} border-2 ${style.borderColor} rounded-2xl p-3 shadow-xl relative overflow-hidden backdrop-blur-md hover:shadow-2xl hover:${style.glowColor} transition-all duration-300`}
-                          >
-                            {/* Animated gradient overlay */}
-                            <div
-                              className={`absolute top-0 left-0 right-0 h-full bg-gradient-to-br from-${style.bg.replace("bg-", "")} to-transparent opacity-40 pointer-events-none`}
-                            />
-
-                            <div className="flex gap-2 items-start relative z-2">
-                              <div className="flex flex-col items-start gap-2 flex-1">
-                                <div className="flex items-center gap-2">
-                                  <MotionDiv
-                                    whileHover={{ scale: 1.1, rotate: 10 }}
-                                    transition={{ type: "spring", stiffness: 400 }}
-                                  >
-                                    <div
-                                      className={`p-2 rounded-xl ${style.iconBg} ${style.iconColor} flex-shrink-0 shadow-lg border-2 border-white`}
-                                    >
-                                      {evaluation.icon}
-                                    </div>
-                                  </MotionDiv>
-                                  <span
-                                    className={`bg-${evaluation.color}-500 text-white rounded-full text-xs font-semibold uppercase tracking-wide px-3 py-1 shadow-md`}
-                                  >
-                                    {evaluation.type}
-                                  </span>
-                                  {evaluation.type === "positive" && (
-                                    <MotionDiv
-                                      animate={{ rotate: [0, 10, -10, 0] }}
-                                      transition={{ duration: 2, repeat: Infinity }}
-                                    >
-                                      <LuSparkles
-                                        className={`w-4 h-4 ${style.iconBg.replace("bg-", "text-")}`}
-                                      />
-                                    </MotionDiv>
-                                  )}
-                                </div>
-                                <p
-                                  className={`text-sm ${style.textColor} leading-relaxed font-medium`}
-                                >
-                                  {evaluation.message}
-                                </p>
-                              </div>
+                    <div className="max-w-[90%] w-full">
+                      <motion.div
+                        whileHover={{ scale: 1.01 }}
+                        className={`${style.bg} border ${style.borderColor} rounded-xl p-3 shadow-md relative overflow-hidden`}
+                      >
+                        <div className="flex gap-2 items-start relative z-2">
+                          <div className="flex flex-col items-start gap-2 flex-1">
+                            <div className="flex items-center gap-2">
+                              <motion.div
+                                whileHover={{ scale: 1.1 }}
+                                className={`p-2 rounded-full ${style.iconBg} ${style.iconColor} flex-shrink-0 shadow-sm`}
+                              >
+                                {evaluation.icon}
+                              </motion.div>
+                              <motion.span
+                                whileHover={{ y: -2 }}
+                                className={`bg-${evaluation.color}-500 text-white rounded-full text-xs font-semibold uppercase tracking-wide px-3 py-1 shadow-sm`}
+                              >
+                                {evaluation.type}
+                              </motion.span>
                             </div>
+                            <p className={`text-sm ${style.textColor} leading-relaxed font-medium`}>
+                              {evaluation.message}
+                            </p>
                           </div>
-                        </motion.div>
-                      </div>
+                        </div>
+                      </motion.div>
                     </div>
-                  </MotionDiv>
-                );
-              })}
-            </AnimatePresence>
+                  </div>
+                </motion.div>
+              );
+            })}
             <div ref={messagesEndRef} />
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

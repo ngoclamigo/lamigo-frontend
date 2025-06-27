@@ -9,8 +9,14 @@ export interface LearningPath {
 export interface LearningActivity {
   activity_id: string;
   title: string;
-  type: 'slide' | 'quiz' | 'flashcard' | 'embed' | 'fill_blanks' | 'matching' | 'sequence';
-  config: SlideConfig | QuizConfig | FlashcardConfig | EmbedConfig | FillBlanksConfig | MatchingConfig | SequenceConfig;
+  type: "slide" | "quiz" | "flashcard" | "embed" | "fill_blanks" | "matching";
+  config:
+    | SlideConfig
+    | QuizConfig
+    | FlashcardConfig
+    | EmbedConfig
+    | FillBlanksConfig
+    | MatchingConfig;
 }
 
 export interface LearningChat {
@@ -18,7 +24,7 @@ export interface LearningChat {
   path_id: string;
   learner_id: string;
   timestamp: string;
-  sender_type: 'learner' | 'system' | 'instructor';
+  sender_type: "learner" | "system" | "instructor";
   content: string;
 }
 
@@ -27,7 +33,7 @@ export interface SlideConfig {
   content: string;
   title: string;
   media_url?: string;
-  media_type?: 'image' | 'video';
+  media_type?: "image" | "video";
 }
 
 export interface QuizConfig {
@@ -52,7 +58,7 @@ export interface EmbedConfig {
   url: string;
   title: string;
   description?: string;
-  embed_type: 'video' | 'article' | 'interactive';
+  embed_type: "video" | "article" | "interactive";
 }
 
 export interface FillBlanksConfig {
@@ -74,7 +80,7 @@ export interface MatchingConfig {
   instruction: string;
   pairs: MatchingPair[];
   success_message?: string;
-  layout?: 'two_columns' | 'grid';
+  layout?: "two_columns" | "grid";
 }
 
 export interface MatchingPair {
@@ -86,23 +92,8 @@ export interface MatchingPair {
 export interface MatchingItem {
   id: string;
   content: string;
-  type?: 'text' | 'image' | 'formula';
+  type?: "text" | "image" | "formula";
   category?: string;
-}
-
-export interface SequenceConfig {
-  instruction: string;
-  items: SequenceItem[];
-  success_message?: string;
-  show_numbers?: boolean;
-}
-
-export interface SequenceItem {
-  id: string;
-  content: string;
-  correct_position: number;
-  hint?: string;
-  type?: 'text' | 'image' | 'step';
 }
 
 // Progress and Achievement types
@@ -111,7 +102,7 @@ export interface LearningProgress {
   learner_id: string;
   path_id: string;
   activity_id: string;
-  status: 'not_started' | 'in_progress' | 'completed';
+  status: "not_started" | "in_progress" | "completed";
   completion_percentage: number;
   time_spent_minutes: number;
   last_accessed: string;
@@ -124,7 +115,7 @@ export interface LearningAchievement {
   learner_id: string;
   title: string;
   description: string;
-  type: 'completion' | 'streak' | 'time_based' | 'skill_based';
+  type: "completion" | "streak" | "time_based" | "skill_based";
   earned_at: string;
   badge_url?: string;
   points?: number;
