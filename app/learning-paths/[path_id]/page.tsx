@@ -1,14 +1,14 @@
 "use client";
 
-import { ActivityRenderer } from "@/components/ActivityRenderer";
-import { LearningChatComponent } from "@/components/LearningChat";
-import { getLearningPath } from "@/lib/api";
-import { LearningPath } from "@/types/learning-path";
-import { motion } from "framer-motion";
 import { CheckCircle, ChevronLeft, ChevronRight, Circle, Home } from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ActivityRenderer } from "~/components/ActivityRenderer";
+import { LearningChatComponent } from "~/components/LearningChat";
+import { getLearningPath } from "~/lib/api";
+import { LearningPath } from "~/types/learning-path";
 
 export default function LearningPathPage() {
   const params = useParams();
@@ -78,11 +78,11 @@ export default function LearningPathPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-brand-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <motion.div
+          className="rounded-full h-16 w-16 border-4 border-indigo-200 border-b-brand-500"
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="h-12 w-12 border-4 border-brand-500/30 border-t-brand-600 rounded-full"
         />
       </div>
     );

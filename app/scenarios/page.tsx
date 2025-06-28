@@ -1,11 +1,11 @@
 "use client";
 
-import { type GetScenariosResponse, getScenarios } from "@/lib/api";
-import { motion } from "framer-motion";
 import { BookOpen } from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { type GetScenariosResponse, getScenarios } from "~/lib/api";
 
 export default function ScenariosPage() {
   const [scenarioId, setScenarioId] = useState("");
@@ -55,7 +55,13 @@ export default function ScenariosPage() {
         Available Scenarios
       </motion.h1>
 
-      {isLoading && <p className="text-gray-500">Loading scenarios...</p>}
+      {isLoading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-36 bg-gray-200 rounded-xl animate-pulse"></div>
+          ))}
+        </div>
+      )}
 
       {isError && (
         <motion.div

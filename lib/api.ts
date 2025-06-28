@@ -1,14 +1,18 @@
-import { ApiResponse, ListResponse } from "@/types/api";
-import { Program, Scenario } from "@/types/scenario";
-import { LearningPath, LearningChat, LearningProgress, LearningAchievement } from "@/types/learning-path";
-import { mockLearningPaths, mockProgress, mockAchievements } from "@/lib/mock-data";
+import { mockAchievements, mockLearningPaths, mockProgress, mockScenarios } from "~/lib/mock-data";
+import type { ApiResponse, ListResponse } from "~/types/api";
+import type {
+  LearningAchievement,
+  LearningChat,
+  LearningPath,
+  LearningProgress,
+} from "~/types/learning-path";
+import type { Program, Scenario } from "~/types/scenario";
 
 const API_BASE_URL = "https://lamigo-api.rockship.co/api";
 
-// Helper function to create mock responses
 const createMockResponse = <T>(data: T): ApiResponse<T> => ({
   data,
-  status: "success"
+  status: "success",
 });
 
 const createMockListResponse = <T>(data: T[]): ListResponse<T> => ({
@@ -17,13 +21,23 @@ const createMockListResponse = <T>(data: T[]): ListResponse<T> => ({
   paging: {
     page: 1,
     per_page: data.length,
-    total: data.length
-  }
+    total: data.length,
+  },
 });
 
 export async function getScenario(scenarioId: string): Promise<ApiResponse<Scenario>> {
-  const response = await fetch(`${API_BASE_URL}/v1/scenarios/${scenarioId}`);
-  return response.json();
+  try {
+    const response = await fetch(`${API_BASE_URL}/v1/scenarios/${scenarioId}`);
+    if (!response.ok) throw new Error("API not available");
+    return response.json();
+  } catch (error) {
+    console.warn("Using mock data for scenario:", error);
+    const mockScenario = mockScenarios.find((s) => s.id === scenarioId);
+    if (!mockScenario) {
+      throw new Error("Scenario not found");
+    }
+    return createMockResponse(mockScenario);
+  }
 }
 
 export type GetScenariosResponse = Omit<Scenario, "program"> & {
@@ -31,18 +45,27 @@ export type GetScenariosResponse = Omit<Scenario, "program"> & {
 };
 
 export async function getScenarios(): Promise<ListResponse<GetScenariosResponse>> {
-  const response = await fetch(`${API_BASE_URL}/v1/scenarios`);
-  return response.json();
+  try {
+    const response = await fetch(`${API_BASE_URL}/v1/scenarios`);
+    if (!response.ok) throw new Error("API not available");
+    return response.json();
+  } catch (error) {
+    console.warn("Using mock data for scenarios:", error);
+    const _mockScenarios = mockScenarios.map((scenario) => ({
+      ...scenario,
+      program_id: scenario.program.id,
+    }));
+    return createMockListResponse(_mockScenarios);
+  }
 }
 
-// Learning Path API functions
 export async function getLearningPaths(): Promise<ListResponse<LearningPath>> {
   try {
     const response = await fetch(`${API_BASE_URL}/learning-paths`);
-    if (!response.ok) throw new Error('API not available');
+    if (!response.ok) throw new Error("API not available");
     return response.json();
   } catch (error) {
-    console.warn('Using mock data for learning paths:', error);
+    console.warn("Using mock data for learning paths:", error);
     return createMockListResponse(mockLearningPaths);
   }
 }
@@ -50,13 +73,13 @@ export async function getLearningPaths(): Promise<ListResponse<LearningPath>> {
 export async function getLearningPath(pathId: string): Promise<ApiResponse<LearningPath>> {
   try {
     const response = await fetch(`${API_BASE_URL}/learning-paths/${pathId}`);
-    if (!response.ok) throw new Error('API not available');
+    if (!response.ok) throw new Error("API not available");
     return response.json();
   } catch (error) {
-    console.warn('Using mock data for learning path:', error);
-    const mockPath = mockLearningPaths.find(path => path.path_id === pathId);
+    console.warn("Using mock data for learning path:", error);
+    const mockPath = mockLearningPaths.find((path) => path.path_id === pathId);
     if (!mockPath) {
-      throw new Error('Learning path not found');
+      throw new Error("Learning path not found");
     }
     return createMockResponse(mockPath);
   }
@@ -65,11 +88,10 @@ export async function getLearningPath(pathId: string): Promise<ApiResponse<Learn
 export async function getLearningPathChat(pathId: string): Promise<ListResponse<LearningChat>> {
   try {
     const response = await fetch(`${API_BASE_URL}/learning-paths/${pathId}/chat`);
-    if (!response.ok) throw new Error('API not available');
+    if (!response.ok) throw new Error("API not available");
     return response.json();
   } catch (error) {
-    console.warn('Using mock data for chat:', error);
-    // Return empty chat for now
+    console.warn("Using mock data for chat:", error);
     return createMockListResponse([]);
   }
 }
@@ -81,41 +103,39 @@ export async function sendLearningPathMessage(
 ): Promise<ApiResponse<LearningChat>> {
   try {
     const response = await fetch(`${API_BASE_URL}/learning-paths/${pathId}/chat`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         content,
         learner_id: learnerId,
-        sender_type: 'learner',
+        sender_type: "learner",
       }),
     });
-    if (!response.ok) throw new Error('API not available');
+    if (!response.ok) throw new Error("API not available");
     return response.json();
   } catch (error) {
-    console.warn('Using mock response for chat message:', error);
-    // Create a mock response
+    console.warn("Using mock response for chat message:", error);
     const mockMessage: LearningChat = {
       message_id: `msg-${Date.now()}`,
       path_id: pathId,
       learner_id: learnerId,
       timestamp: new Date().toISOString(),
-      sender_type: 'learner',
-      content: content
+      sender_type: "learner",
+      content: content,
     };
     return createMockResponse(mockMessage);
   }
 }
 
-// Progress and Achievement API functions
 export async function getLearningProgress(): Promise<ListResponse<LearningProgress>> {
   try {
     const response = await fetch(`${API_BASE_URL}/learning-paths/progress`);
-    if (!response.ok) throw new Error('API not available');
+    if (!response.ok) throw new Error("API not available");
     return response.json();
   } catch (error) {
-    console.warn('Using mock data for learning progress:', error);
+    console.warn("Using mock data for learning progress:", error);
     return createMockListResponse(mockProgress);
   }
 }
@@ -123,10 +143,10 @@ export async function getLearningProgress(): Promise<ListResponse<LearningProgre
 export async function getLearningAchievements(): Promise<ListResponse<LearningAchievement>> {
   try {
     const response = await fetch(`${API_BASE_URL}/learning-paths/achievements`);
-    if (!response.ok) throw new Error('API not available');
+    if (!response.ok) throw new Error("API not available");
     return response.json();
   } catch (error) {
-    console.warn('Using mock data for achievements:', error);
+    console.warn("Using mock data for achievements:", error);
     return createMockListResponse(mockAchievements);
   }
 }

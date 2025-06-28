@@ -22,7 +22,7 @@ export type PerformanceMetric = {
   score: number;
   feedback: string;
   insight: string;
-  color?: 'emerald' | 'yellow' | 'red';
+  color?: "emerald" | "yellow" | "red";
 };
 
 export type UserData = {

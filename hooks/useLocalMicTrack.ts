@@ -1,4 +1,4 @@
-import { TrackReferenceOrPlaceholder, useLocalParticipant } from "@livekit/components-react";
+import { type TrackReferenceOrPlaceholder, useLocalParticipant } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import { useMemo } from "react";
 

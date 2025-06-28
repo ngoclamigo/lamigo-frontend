@@ -1,13 +1,13 @@
 "use client";
 
-import { AppLayout } from "@/components/AppLayout";
-import { ProgressDashboard } from "@/components/ProgressDashboard";
-import { getLearningPaths } from "@/lib/api";
-import { LearningPath } from "@/types/learning-path";
-import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, Clock } from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { AppLayout } from "~/components/AppLayout";
+import { ProgressDashboard } from "~/components/ProgressDashboard";
+import { getLearningPaths } from "~/lib/api";
+import { LearningPath } from "~/types/learning-path";
 
 export default function LearningPathsPage() {
   const [learningPaths, setLearningPaths] = useState<LearningPath[]>([]);

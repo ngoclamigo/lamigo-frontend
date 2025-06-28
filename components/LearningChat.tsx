@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Bot, MessageCircle, Mic, MicOff, Send, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 interface Message {

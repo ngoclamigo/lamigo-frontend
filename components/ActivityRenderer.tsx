@@ -1,13 +1,4 @@
 import {
-  EmbedConfig,
-  FillBlanksConfig,
-  FlashcardConfig,
-  LearningActivity,
-  MatchingConfig,
-  QuizConfig,
-  SlideConfig,
-} from "@/types/learning-path";
-import {
   DndContext,
   DragEndEvent,
   DragOverlay,
@@ -18,7 +9,6 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
-import { motion } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
@@ -27,8 +17,18 @@ import {
   RotateCcw,
   Shuffle,
 } from "lucide-react";
+import { motion } from "motion/react";
 import Image from "next/image";
 import { useState } from "react";
+import {
+  EmbedConfig,
+  FillBlanksConfig,
+  FlashcardConfig,
+  LearningActivity,
+  MatchingConfig,
+  QuizConfig,
+  SlideConfig,
+} from "~/types/learning-path";
 
 // Draggable Word Component
 function DraggableWord({ id, word, isUsed }: { id: string; word: string; isUsed: boolean }) {

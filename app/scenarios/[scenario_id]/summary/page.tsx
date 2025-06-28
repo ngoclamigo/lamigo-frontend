@@ -1,10 +1,10 @@
 "use client";
 
-import { getScenario } from "@/lib/api";
-import { generateEvaluation } from "@/lib/evaluation";
-import { EvaluationResult, Transcription } from "@/types/evaluation";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { getScenario } from "~/lib/api";
+import { generateEvaluation } from "~/lib/evaluation";
+import { EvaluationResult, Transcription } from "~/types/evaluation";
 
 export default function ScenarioSummaryPage({ params }: { params: { scenario_id: string } }) {
   const [isLoading, setIsLoading] = useState(false);

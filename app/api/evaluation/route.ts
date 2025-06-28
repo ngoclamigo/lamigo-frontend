@@ -1,7 +1,7 @@
-import { EvaluationResult, Transcription } from "@/types/evaluation";
-import { Persona, ScenarioDetail } from "@/types/scenario";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { EvaluationResult, Transcription } from "~/types/evaluation";
+import { Persona, ScenarioDetail } from "~/types/scenario";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

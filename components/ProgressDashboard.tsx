@@ -1,10 +1,10 @@
 "use client";
 
-import { getLearningAchievements, getLearningProgress } from "@/lib/api";
-import { LearningAchievement, LearningProgress } from "@/types/learning-path";
-import { motion } from "framer-motion";
 import { CheckCircle, Clock, Target, Trophy } from "lucide-react";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { getLearningAchievements, getLearningProgress } from "~/lib/api";
+import { LearningAchievement, LearningProgress } from "~/types/learning-path";
 
 export function ProgressDashboard() {
   const [progress, setProgress] = useState<LearningProgress[]>([]);

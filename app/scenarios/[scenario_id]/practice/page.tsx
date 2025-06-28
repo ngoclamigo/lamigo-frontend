@@ -1,12 +1,5 @@
 "use client";
 
-import type { ConnectionDetails } from "@/app/api/connection-details/route";
-import { NoAgentNotification } from "@/components/NoAgentNotification";
-import { RecommendationView } from "@/components/RecommendationView";
-import { TranscriptionView } from "@/components/TranscriptionView";
-import useCombinedTranscriptions from "@/hooks/useCombinedTranscriptions";
-import { getScenario } from "@/lib/api";
-import { Scenario } from "@/types/scenario";
 import {
   BarVisualizer,
   DisconnectButton,
@@ -16,11 +9,18 @@ import {
   VoiceAssistantControlBar,
   useVoiceAssistant,
 } from "@livekit/components-react";
-import { AnimatePresence, motion } from "framer-motion";
 import { Room, RoomEvent } from "livekit-client";
+import { MessagesSquare, Phone } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { LuMessagesSquare, LuPhone } from "react-icons/lu";
+import type { ConnectionDetails } from "~/app/api/connection-details/route";
+import { NoAgentNotification } from "~/components/NoAgentNotification";
+import { RecommendationView } from "~/components/RecommendationView";
+import { TranscriptionView } from "~/components/TranscriptionView";
+import useCombinedTranscriptions from "~/hooks/useCombinedTranscriptions";
+import { getScenario } from "~/lib/api";
+import { Scenario } from "~/types/scenario";
 
 export default function ScenarioPracticePage({ params }: { params: { scenario_id: string } }) {
   const [room] = useState(new Room());
@@ -173,7 +173,7 @@ export default function ScenarioPracticePage({ params }: { params: { scenario_id
                   className="p-2 bg-white rounded-full shadow-md"
                   onClick={() => setIsOpen((prev) => !prev)}
                 >
-                  <LuMessagesSquare />
+                  <MessagesSquare />
                 </button>
               </div>
             </div>
@@ -315,7 +315,7 @@ function ControlBar(props: {
           >
             <VoiceAssistantControlBar controls={{ leave: false }} />
             <DisconnectButton onClick={handleDisconnect}>
-              <LuPhone />
+              <Phone />
             </DisconnectButton>
           </motion.div>
         )}

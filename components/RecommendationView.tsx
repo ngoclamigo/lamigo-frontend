@@ -1,15 +1,15 @@
-import useCombinedTranscriptions from "@/hooks/useCombinedTranscriptions";
-import React, { useEffect, useRef } from "react";
 import {
-  LuLightbulb,
-  LuMessageSquare,
-  LuSparkles,
-  LuThumbsUp,
-  LuTrendingUp,
-  LuTriangleAlert,
-  LuZap,
-} from "react-icons/lu";
-import { motion } from "framer-motion";
+  Lightbulb,
+  MessageSquare,
+  Sparkles,
+  ThumbsUp,
+  TrendingUp,
+  TriangleAlert,
+  Zap,
+} from "lucide-react";
+import { motion } from "motion/react";
+import { useEffect, useRef } from "react";
+import useCombinedTranscriptions from "~/hooks/useCombinedTranscriptions";
 
 interface MessageEvaluation {
   type: "suggestion" | "improvement" | "warning" | "positive";
@@ -25,7 +25,7 @@ function generatePartnerEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "suggestion" as const,
         message: "You can acknowledge their concern first, then explain your policy clearly",
-        icon: <LuLightbulb size={14} />,
+        icon: <Lightbulb size={14} />,
         color: "blue",
       },
     },
@@ -34,7 +34,7 @@ function generatePartnerEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "suggestion" as const,
         message: "You need to show empathy and use calming language",
-        icon: <LuLightbulb size={14} />,
+        icon: <Lightbulb size={14} />,
         color: "blue",
       },
     },
@@ -43,7 +43,7 @@ function generatePartnerEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "suggestion" as const,
         message: "You can emphasize the value and benefits rather than just defending the price",
-        icon: <LuLightbulb size={14} />,
+        icon: <Lightbulb size={14} />,
         color: "blue",
       },
     },
@@ -52,7 +52,7 @@ function generatePartnerEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "suggestion" as const,
         message: "You need to be proactive and offer specific solutions",
-        icon: <LuLightbulb size={14} />,
+        icon: <Lightbulb size={14} />,
         color: "blue",
       },
     },
@@ -76,7 +76,7 @@ function generateUserEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "positive" as const,
         message: "Acknowledging responsibility builds trust with customers and shows humility",
-        icon: <LuThumbsUp size={14} />,
+        icon: <ThumbsUp size={14} />,
         color: "green",
       },
     },
@@ -85,7 +85,7 @@ function generateUserEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "positive" as const,
         message: "Excellent empathy! Shows you're actively listening and processing their concerns",
-        icon: <LuThumbsUp size={14} />,
+        icon: <ThumbsUp size={14} />,
         color: "green",
       },
     },
@@ -94,7 +94,7 @@ function generateUserEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "warning" as const,
         message: "Avoid flat rejections - focus on what you CAN do and offer alternatives",
-        icon: <LuTriangleAlert size={14} />,
+        icon: <TriangleAlert size={14} />,
         color: "orange",
       },
     },
@@ -103,7 +103,7 @@ function generateUserEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "improvement" as const,
         message: "Explain the reasoning behind policies in customer-friendly language",
-        icon: <LuZap size={14} />,
+        icon: <Zap size={14} />,
         color: "blue",
       },
     },
@@ -112,7 +112,7 @@ function generateUserEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "positive" as const,
         message: "Great initiative! Taking time to find the right answer shows dedication",
-        icon: <LuTrendingUp size={14} />,
+        icon: <TrendingUp size={14} />,
         color: "green",
       },
     },
@@ -121,7 +121,7 @@ function generateUserEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "positive" as const,
         message: "Gratitude sets a positive tone and builds mutual respect",
-        icon: <LuSparkles size={14} />,
+        icon: <Sparkles size={14} />,
         color: "green",
       },
     },
@@ -130,7 +130,7 @@ function generateUserEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "warning" as const,
         message: "This can sound dismissive - acknowledge their feelings instead",
-        icon: <LuTriangleAlert size={14} />,
+        icon: <TriangleAlert size={14} />,
         color: "orange",
       },
     },
@@ -139,7 +139,7 @@ function generateUserEvaluation(content: string): MessageEvaluation | null {
       evaluation: {
         type: "positive" as const,
         message: "Friendly affirmations create a supportive and approachable tone",
-        icon: <LuThumbsUp size={14} />,
+        icon: <ThumbsUp size={14} />,
         color: "green",
       },
     },
@@ -158,7 +158,7 @@ function generateUserEvaluation(content: string): MessageEvaluation | null {
     return {
       type: "improvement",
       message: "Try providing more detailed and thoughtful responses",
-      icon: <LuZap size={14} />,
+      icon: <Zap size={14} />,
       color: "blue",
     };
   }
@@ -167,7 +167,7 @@ function generateUserEvaluation(content: string): MessageEvaluation | null {
     return {
       type: "positive",
       message: "Asking questions shows engagement and helps clarify needs",
-      icon: <LuLightbulb size={14} />,
+      icon: <Lightbulb size={14} />,
       color: "green",
     };
   }
@@ -255,7 +255,7 @@ export function RecommendationView() {
                 whileHover={{ scale: 1.05 }}
                 className="p-4 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-300 shadow-md"
               >
-                <LuMessageSquare className="w-10 h-10 text-gray-400" />
+                <MessageSquare className="w-10 h-10 text-gray-400" />
               </motion.div>
               <div className="flex flex-col items-center gap-2">
                 <p className="text-xl font-bold text-gray-800">Start your voice practice</p>

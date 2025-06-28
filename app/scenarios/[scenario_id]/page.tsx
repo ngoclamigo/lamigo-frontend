@@ -1,15 +1,15 @@
 "use client";
 
-import { getScenario } from "@/lib/api";
-import type { Scenario } from "@/types/scenario";
 import { useMediaDeviceSelect } from "@livekit/components-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiChevronDown, FiChevronUp, FiClock, FiMic, FiMicOff, FiPlay } from "react-icons/fi";
 import { PiSmileyMeh } from "react-icons/pi";
 import { RiUserVoiceLine } from "react-icons/ri";
 import { TbBrain, TbFlame, TbHeartCode, TbMessage, TbUser } from "react-icons/tb";
+import { getScenario } from "~/lib/api";
+import type { Scenario } from "~/types/scenario";
 
 export default function ScenarioPage({ params }: { params: { scenario_id: string } }) {
   const router = useRouter();
