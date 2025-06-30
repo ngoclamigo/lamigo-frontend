@@ -30,112 +30,6 @@ import {
   SlideConfig,
 } from "~/types/learning-path";
 
-// Draggable Word Component
-function DraggableWord({ id, word, isUsed }: { id: string; word: string; isUsed: boolean }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id,
-    disabled: isUsed,
-  });
-
-  const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    transition,
-    opacity: isDragging ? 0.5 : isUsed ? 0.4 : 1,
-  };
-
-  return (
-    <motion.div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className={`px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 select-none ${
-        isUsed
-          ? "cursor-not-allowed opacity-60 bg-gray-100"
-          : "cursor-move bg-gradient-to-r from-brand-50 to-brand-100 border border-brand-200 text-brand-800"
-      }`}
-      whileHover={!isUsed ? { scale: 1.03 } : {}}
-      whileTap={!isUsed ? { scale: 0.98 } : {}}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      <div className="flex items-center">
-        <GripVertical className="w-4 h-4 mr-2 opacity-60" />
-        {word}
-      </div>
-    </motion.div>
-  );
-}
-
-// Droppable Blank Component
-function DroppableBlank({
-  id,
-  word,
-  isCorrect,
-  showFeedback,
-  onRemove,
-}: {
-  id: string;
-  word?: string;
-  isCorrect?: boolean;
-  showFeedback: boolean;
-  onRemove: () => void;
-}) {
-  const { setNodeRef, isOver } = useSortable({
-    id: `blank-${id}`,
-  });
-
-  return (
-    <motion.span
-      className="inline-block mx-1"
-      initial={{ opacity: 0, y: 5 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      <motion.div
-        ref={setNodeRef}
-        className={`inline-flex items-center justify-center min-w-[100px] h-10 border-2 border-dashed rounded-md ${
-          word
-            ? showFeedback
-              ? isCorrect
-                ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100 text-green-800"
-                : "border-red-500 bg-gradient-to-r from-red-50 to-red-100 text-red-800"
-              : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100 text-brand-800"
-            : isOver
-              ? "border-brand-400 bg-gradient-to-r from-brand-50 to-brand-100"
-              : "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 hover:border-brand-400"
-        }`}
-        whileHover={{ scale: 1.02, boxShadow: "0 2px 4px rgba(0,0,0,0.05)" }}
-        whileTap={{ scale: 0.98 }}
-      >
-        {word ? (
-          <div className="flex items-center">
-            <span>{word}</span>
-            {!showFeedback && (
-              <motion.button
-                onClick={onRemove}
-                className="ml-2 text-xs text-gray-500 hover:text-red-500"
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                ✕
-              </motion.button>
-            )}
-          </div>
-        ) : (
-          <motion.span
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-          >
-            Drop here
-          </motion.span>
-        )}
-      </motion.div>
-    </motion.span>
-  );
-}
-
 interface ActivityRendererProps {
   activity: LearningActivity;
   onComplete?: () => void;
@@ -470,7 +364,7 @@ function FlashcardActivity({
   const config = activity.config as FlashcardConfig;
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const [studiedCards, setStudiedCards] = useState<Set<string>>(new Set());
+  const [studiedCards, setStudiedCards] = useState<Set<number>>(new Set());
 
   const currentCard = config.cards[currentCardIndex];
   const totalCards = config.cards.length;
@@ -478,7 +372,7 @@ function FlashcardActivity({
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
     if (!isFlipped) {
-      setStudiedCards((prev) => new Set(prev).add(currentCard.id));
+      setStudiedCards((prev) => new Set(prev).add(currentCardIndex));
       // Complete the activity if all cards have been studied
       if (studiedCards.size + 1 === totalCards) {
         onComplete?.();
@@ -648,7 +542,7 @@ function FlashcardActivity({
               <div className="flex space-x-2 mb-1">
                 {config.cards.map((card, index) => (
                   <motion.button
-                    key={card.id}
+                    key={index}
                     onClick={() => {
                       setCurrentCardIndex(index);
                       setIsFlipped(false);
@@ -656,7 +550,7 @@ function FlashcardActivity({
                     className={`w-3 h-3 rounded-full ${
                       index === currentCardIndex
                         ? "bg-gradient-to-r from-brand-400 to-brand-500"
-                        : studiedCards.has(card.id)
+                        : studiedCards.has(index)
                           ? "bg-gradient-to-r from-green-400 to-green-500"
                           : "bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400"
                     }`}
@@ -907,6 +801,113 @@ function NavigationButtons({
   );
 }
 
+// Draggable Word Component
+function DraggableWord({ id, word, isUsed }: { id: string; word: string; isUsed: boolean }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+    disabled: isUsed,
+  });
+
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transition,
+    opacity: isDragging ? 0.3 : isUsed ? 0.4 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <motion.div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 select-none ${
+        isUsed
+          ? "cursor-not-allowed opacity-60 bg-gray-100"
+          : "cursor-move bg-gradient-to-r from-brand-50 to-brand-100 border border-brand-200 text-brand-800"
+      }`}
+      whileHover={!isUsed ? { scale: 1.03 } : {}}
+      whileTap={!isUsed ? { scale: 0.98 } : {}}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div className="flex items-center">
+        <GripVertical className="w-4 h-4 mr-2 opacity-60" />
+        {word}
+      </div>
+    </motion.div>
+  );
+}
+
+// Droppable Blank Component
+function DroppableBlank({
+  id,
+  word,
+  isCorrect,
+  showFeedback,
+  onRemove,
+}: {
+  id: string;
+  word?: string;
+  isCorrect?: boolean;
+  showFeedback: boolean;
+  onRemove: () => void;
+}) {
+  const { setNodeRef, isOver } = useSortable({
+    id: `blank-${id}`,
+  });
+
+  return (
+    <motion.span
+      className="inline-block mx-1"
+      initial={{ opacity: 0, y: 5 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <motion.div
+        ref={setNodeRef}
+        className={`inline-flex items-center justify-center min-w-[100px] h-10 border-2 border-dashed rounded-md ${
+          word
+            ? showFeedback
+              ? isCorrect
+                ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100 text-green-800"
+                : "border-red-500 bg-gradient-to-r from-red-50 to-red-100 text-red-800"
+              : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100 text-brand-800"
+            : isOver
+              ? "border-brand-400 bg-gradient-to-r from-brand-50 to-brand-100"
+              : "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 hover:border-brand-400"
+        }`}
+        whileHover={{ scale: 1.02, boxShadow: "0 2px 4px rgba(0,0,0,0.05)" }}
+        whileTap={{ scale: 0.98 }}
+      >
+        {word ? (
+          <div className="flex items-center">
+            <span>{word}</span>
+            {!showFeedback && (
+              <motion.button
+                onClick={onRemove}
+                className="ml-2 text-xs text-gray-500 hover:text-red-500"
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                ✕
+              </motion.button>
+            )}
+          </div>
+        ) : (
+          <motion.span
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+          >
+            Drop here
+          </motion.span>
+        )}
+      </motion.div>
+    </motion.span>
+  );
+}
+
 function FillBlanksActivity({
   activity,
   onComplete,
@@ -931,7 +932,7 @@ function FillBlanksActivity({
 
   // Extract available words from correct answers
   const availableWords = Array.from(
-    new Set(config.blanks.flatMap((blank) => blank.correct_answers))
+    new Set(config.blanks.map((blank) => blank.correct_answers).flat())
   ).sort(() => Math.random() - 0.5); // Shuffle
 
   // Add some distractors
@@ -956,9 +957,11 @@ function FillBlanksActivity({
     const activeWordId = active.id as string;
     const overTarget = over.id as string;
 
-    // Get the actual word from the wordItems
-    const wordItem = wordItems.find((item) => item.id === activeWordId);
-    if (!wordItem) {
+    // Find the actual word directly from allWords using the id pattern
+    const wordIndex = parseInt(activeWordId.replace("word-", ""));
+    const word = allWords[wordIndex];
+
+    if (!word) {
       setActiveId(null);
       return;
     }
@@ -970,13 +973,13 @@ function FillBlanksActivity({
       // Remove this word from any existing blank first
       const updatedAnswers = { ...userAnswers };
       Object.keys(updatedAnswers).forEach((key) => {
-        if (updatedAnswers[key] === wordItem.word) {
+        if (updatedAnswers[key] === word) {
           delete updatedAnswers[key];
         }
       });
 
       // Add word to new blank
-      updatedAnswers[blankId] = wordItem.word;
+      updatedAnswers[blankId] = word;
       setUserAnswers(updatedAnswers);
     }
 
@@ -992,8 +995,8 @@ function FillBlanksActivity({
   };
 
   const checkAnswers = () => {
-    const isAllCorrect = config.blanks.every((blank) => {
-      const userAnswer = userAnswers[blank.id];
+    const isAllCorrect = config.blanks.every((blank, index) => {
+      const userAnswer = userAnswers[index.toString()];
       return (
         userAnswer &&
         blank.correct_answers.some((correct) => correct.toLowerCase() === userAnswer.toLowerCase())
@@ -1014,7 +1017,7 @@ function FillBlanksActivity({
     setActiveId(null);
   };
 
-  // Create word items with proper IDs
+  // Create word items with proper IDs (keep the order stable)
   const wordItems = allWords.map((word, index) => ({
     id: `word-${index}`,
     word,
@@ -1022,7 +1025,7 @@ function FillBlanksActivity({
   }));
 
   // Create blank items with proper IDs
-  const blankItems = config.blanks.map((blank) => `blank-${blank.id}`);
+  const blankItems = config.blanks.map((blank, index) => `blank-${index}`);
 
   return (
     <DndContext
@@ -1073,19 +1076,19 @@ function FillBlanksActivity({
                       {textPart}
                       {index < config.blanks.length && (
                         <DroppableBlank
-                          id={config.blanks[index].id}
-                          word={userAnswers[config.blanks[index].id]}
+                          id={index.toString()}
+                          word={userAnswers[index.toString()]}
                           isCorrect={
-                            userAnswers[config.blanks[index].id]
+                            userAnswers[index.toString()]
                               ? config.blanks[index].correct_answers.some(
                                   (correct) =>
                                     correct.toLowerCase() ===
-                                    userAnswers[config.blanks[index].id]?.toLowerCase()
+                                    userAnswers[index.toString()]?.toLowerCase()
                                 )
                               : undefined
                           }
                           showFeedback={showFeedback}
-                          onRemove={() => removeWordFromBlank(config.blanks[index].id)}
+                          onRemove={() => removeWordFromBlank(index.toString())}
                         />
                       )}
                     </motion.span>
@@ -1102,29 +1105,25 @@ function FillBlanksActivity({
               transition={{ delay: 0.4, duration: 0.5 }}
             >
               <h3 className="text-lg font-semibold text-gray-700 mb-4">Available Words:</h3>
-              <SortableContext
-                items={wordItems.filter((item) => !item.isUsed).map((item) => item.id)}
+              <motion.div
+                className="flex flex-wrap gap-3 p-4 bg-gradient-to-br from-brand-50 to-brand-100 rounded-xl border border-brand-200/50"
+                initial={{ scale: 0.98 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.4 }}
               >
-                <motion.div
-                  className="flex flex-wrap gap-3 p-4 bg-gradient-to-br from-brand-50 to-brand-100 rounded-xl border border-brand-200/50"
-                  initial={{ scale: 0.98 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.5, duration: 0.4 }}
-                >
-                  {wordItems
-                    .filter((item) => !item.isUsed)
-                    .map((item, idx) => (
-                      <motion.div
-                        key={item.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 + idx * 0.05, duration: 0.3 }}
-                      >
-                        <DraggableWord id={item.id} word={item.word} isUsed={item.isUsed} />
-                      </motion.div>
-                    ))}
-                </motion.div>
-              </SortableContext>
+                {wordItems
+                  .filter((item) => !item.isUsed)
+                  .map((item, idx) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 + idx * 0.05, duration: 0.3 }}
+                    >
+                      <DraggableWord id={item.id} word={item.word} isUsed={item.isUsed} />
+                    </motion.div>
+                  ))}
+              </motion.div>
             </motion.div>
 
             {/* Check answers button */}
@@ -1198,14 +1197,14 @@ function FillBlanksActivity({
       </motion.div>
 
       <DragOverlay>
-        {activeId && wordItems.find((item) => item.id === activeId) ? (
+        {activeId && activeId.startsWith("word-") ? (
           <motion.div
             initial={{ scale: 1.05 }}
             className="px-4 py-2 bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border border-brand-300 shadow-lg rounded-lg pointer-events-none"
           >
             <div className="flex items-center">
               <GripVertical className="w-4 h-4 mr-2 opacity-60" />
-              {wordItems.find((item) => item.id === activeId)?.word}
+              {allWords[parseInt(activeId.replace("word-", ""))]}
             </div>
           </motion.div>
         ) : null}
@@ -1227,28 +1226,47 @@ function MatchingActivity({
   const [selectedRight, setSelectedRight] = useState<string | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [itemRefs, setItemRefs] = useState<Record<string, HTMLDivElement | null>>({});
+
+  // Generate IDs for each pair to use in matching
+  const leftItems = config.pairs.map((pair, index) => ({
+    id: `left-${index}`,
+    content: pair.left,
+    originalIndex: index,
+  }));
+
+  const rightItems = config.pairs.map((pair, index) => ({
+    id: `right-${index}`,
+    content: pair.right,
+    originalIndex: index,
+  }));
 
   // Shuffle right side items
-  const [shuffledRightItems] = useState(() =>
-    [...config.pairs.map((pair) => pair.right)].sort(() => Math.random() - 0.5)
-  );
+  const [shuffledRightItems] = useState(() => [...rightItems].sort(() => Math.random() - 0.5));
 
   const handleLeftClick = (leftId: string) => {
     if (showFeedback) return;
 
-    setSelectedLeft(leftId);
-    setSelectedRight(null);
+    if (selectedLeft === leftId) {
+      setSelectedLeft(null);
+    } else {
+      setSelectedLeft(leftId);
 
-    // If there's already a match for this left item, auto-select the corresponding right item
-    if (matches[leftId]) {
-      setSelectedRight(matches[leftId]);
+      // If there's already a match for this left item, auto-select the corresponding right item
+      if (matches[leftId]) {
+        setSelectedRight(matches[leftId]);
+      } else {
+        setSelectedRight(null);
+      }
     }
   };
 
   const handleRightClick = (rightId: string) => {
     if (showFeedback) return;
 
-    if (selectedLeft) {
+    if (selectedRight === rightId) {
+      setSelectedRight(null);
+    } else if (selectedLeft) {
       // Create or update the match
       const updatedMatches = { ...matches };
 
@@ -1269,7 +1287,6 @@ function MatchingActivity({
     } else {
       // Just select the right item
       setSelectedRight(rightId);
-      setSelectedLeft(null);
 
       // If there's a match for this right item, auto-select the corresponding left item
       const leftItemId = Object.keys(matches).find((key) => matches[key] === rightId);
@@ -1290,8 +1307,9 @@ function MatchingActivity({
   };
 
   const checkMatches = () => {
-    const isAllCorrect = config.pairs.every((pair) => {
-      return matches[pair.left.id] === pair.right.id;
+    const isAllCorrect = leftItems.every((leftItem) => {
+      const rightItem = shuffledRightItems.find((r) => matches[leftItem.id] === r.id);
+      return rightItem && leftItem.originalIndex === rightItem.originalIndex;
     });
 
     setShowFeedback(true);
@@ -1307,6 +1325,116 @@ function MatchingActivity({
     setIsCompleted(false);
     setSelectedLeft(null);
     setSelectedRight(null);
+  };
+
+  // Reference callback to store refs to each card
+  const setRef = (id: string, element: HTMLDivElement | null) => {
+    setItemRefs(prev => ({
+      ...prev,
+      [id]: element
+    }));
+  };
+
+  // Function to render connections between matched pairs
+  const renderConnections = () => {
+    return Object.entries(matches).map(([leftId, rightId]) => {
+      const leftElement = itemRefs[leftId];
+      const rightElement = itemRefs[rightId];
+
+      if (!leftElement || !rightElement) return null;
+
+      // Get the center points of each element
+      const leftRect = leftElement.getBoundingClientRect();
+      const rightRect = rightElement.getBoundingClientRect();
+
+      const leftCenter = {
+        x: leftRect.right,
+        y: leftRect.top + leftRect.height / 2
+      };
+
+      const rightCenter = {
+        x: rightRect.left,
+        y: rightRect.top + rightRect.height / 2
+      };
+
+      // Calculate positions relative to the container
+      const containerRect = document.getElementById('matching-container')?.getBoundingClientRect() || { left: 0, top: 0 };
+
+      const x1 = leftCenter.x - containerRect.left;
+      const y1 = leftCenter.y - containerRect.top;
+      const x2 = rightCenter.x - containerRect.left;
+      const y2 = rightCenter.y - containerRect.top;
+
+      // Determine if the match is correct (only if showing feedback)
+      const leftItem = leftItems.find(item => item.id === leftId);
+      const rightItem = shuffledRightItems.find(item => item.id === rightId);
+      const isCorrect = showFeedback && leftItem && rightItem && leftItem.originalIndex === rightItem.originalIndex;
+      const isIncorrect = showFeedback && leftItem && rightItem && leftItem.originalIndex !== rightItem.originalIndex;
+
+      const lineColor = isCorrect ? 'green' : isIncorrect ? 'red' : '#6366f1';
+      const strokeWidth = isCorrect || isIncorrect ? 3 : 2;
+      const dashArray = selectedLeft === leftId && selectedRight === rightId ? "5,5" : "none";
+
+      return (
+        <motion.svg
+          key={`${leftId}-${rightId}`}
+          className="absolute top-0 left-0 w-full h-full pointer-events-none z-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.line
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke={lineColor}
+            strokeWidth={strokeWidth}
+            strokeDasharray={dashArray}
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.5 }}
+          />
+
+          {/* Small circle at each end of the line */}
+          <motion.circle cx={x1} cy={y1} r={4} fill={lineColor} />
+          <motion.circle cx={x2} cy={y2} r={4} fill={lineColor} />
+
+          {/* Show check or x mark on the line if showing feedback */}
+          {showFeedback && (
+            <motion.g
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              {isCorrect ? (
+                <motion.text
+                  x={(x1 + x2) / 2}
+                  y={(y1 + y2) / 2 - 10}
+                  textAnchor="middle"
+                  fontSize="16"
+                  fill="green"
+                  fontWeight="bold"
+                >
+                  ✓
+                </motion.text>
+              ) : isIncorrect ? (
+                <motion.text
+                  x={(x1 + x2) / 2}
+                  y={(y1 + y2) / 2 - 10}
+                  textAnchor="middle"
+                  fontSize="16"
+                  fill="red"
+                  fontWeight="bold"
+                >
+                  ✗
+                </motion.text>
+              ) : null}
+            </motion.g>
+          )}
+        </motion.svg>
+      );
+    });
   };
 
   return (
@@ -1348,68 +1476,74 @@ function MatchingActivity({
               >
                 💡
               </motion.span>
-              Click on a term and then click on its matching definition to connect them. Click on
-              connected pairs to break the connection.
+              Click on a term and then click on its matching definition to connect them with a line.
+              Click on the same item again to unselect it.
             </p>
           </motion.div>
 
-          {/* Matching interface */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            {/* Left column - Terms */}
-            <motion.div
-              className="space-y-3"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-            >
-              <h3 className="text-lg font-semibold text-gray-700 mb-3">Terms</h3>
-              {config.pairs.map((pair, index) => {
-                const matchedRightId = matches[pair.left.id];
-                const isSelected = selectedLeft === pair.left.id;
-                const isCorrect = showFeedback && matchedRightId === pair.right.id;
-                const isIncorrect =
-                  showFeedback && matchedRightId && matchedRightId !== pair.right.id;
+          {/* Matching interface - Container for both columns and connections */}
+          <div id="matching-container" className="relative">
+            {/* Connection lines between matched pairs */}
+            {renderConnections()}
 
-                return (
-                  <motion.div
-                    key={pair.left.id}
-                    onClick={() => handleLeftClick(pair.left.id)}
-                    className={`p-3 border-2 cursor-pointer rounded-xl shadow-sm ${
-                      isSelected
-                        ? "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
-                        : matchedRightId
-                          ? isCorrect
-                            ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
-                            : isIncorrect
-                              ? "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
-                              : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
-                          : "border-gray-200 bg-gradient-to-r from-white to-gray-50 hover:border-brand-300"
-                    }`}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
-                    whileHover={{ scale: 1.02, boxShadow: "0 4px 8px rgba(0,0,0,0.05)" }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-gray-800">{pair.left.content}</span>
-                      <div className="flex items-center">
-                        {matchedRightId && (
-                          <>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              {/* Left column - Terms */}
+              <motion.div
+                className="space-y-3"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">Terms</h3>
+                {leftItems.map((item, index) => {
+                  const isMatched = !!matches[item.id];
+                  const isSelected = selectedLeft === item.id;
+                  const matchedRightId = matches[item.id];
+                  const matchedRight = shuffledRightItems.find((r) => r.id === matchedRightId);
+                  const isCorrect =
+                    showFeedback && matchedRight && item.originalIndex === matchedRight.originalIndex;
+                  const isIncorrect =
+                    showFeedback && matchedRight && item.originalIndex !== matchedRight.originalIndex;
+
+                  return (
+                    <motion.div
+                      key={item.id}
+                      ref={(el) => setRef(item.id, el)}
+                      onClick={() => handleLeftClick(item.id)}
+                      className={`p-3 border-2 cursor-pointer rounded-xl shadow-sm ${
+                        isSelected
+                          ? "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
+                          : isMatched
+                            ? isCorrect
+                              ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
+                              : isIncorrect
+                                ? "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
+                                : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
+                            : "border-gray-200 bg-gradient-to-r from-white to-gray-50 hover:border-brand-300"
+                      }`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+                      whileHover={{ scale: 1.02, boxShadow: "0 4px 8px rgba(0,0,0,0.05)" }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-gray-800">{item.content}</span>
+                        <div className="flex items-center">
+                          {isSelected && (
                             <motion.span
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              className="ml-2 px-2 py-1 bg-white text-sm border rounded-lg shadow-sm"
+                              animate={{ x: [0, 5, 0] }}
+                              transition={{ repeat: Infinity, duration: 1 }}
+                              className="ml-2 text-brand-600 font-bold"
                             >
-                              {
-                                shuffledRightItems.find((item) => item.id === matchedRightId)
-                                  ?.content
-                              }
+                              →
                             </motion.span>
+                          )}
+                          {isMatched && (
                             <motion.button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                removeMatch(pair.left.id);
+                                removeMatch(item.id);
                               }}
                               className="ml-2 text-gray-400 hover:text-red-500"
                               whileHover={{ scale: 1.2 }}
@@ -1417,89 +1551,69 @@ function MatchingActivity({
                             >
                               ✕
                             </motion.button>
-                          </>
-                        )}
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+
+              {/* Right column - Definitions */}
+              <motion.div
+                className="space-y-3"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">Definitions</h3>
+                {shuffledRightItems.map((item, index) => {
+                  const isMatched = Object.values(matches).includes(item.id);
+                  const isSelected = selectedRight === item.id;
+                  const matchedLeftId = Object.keys(matches).find(key => matches[key] === item.id);
+                  const matchedLeft = leftItems.find(left => left.id === matchedLeftId);
+                  const isCorrect = showFeedback && matchedLeft && matchedLeft.originalIndex === item.originalIndex;
+                  const isIncorrect = showFeedback && matchedLeft && matchedLeft.originalIndex !== item.originalIndex;
+
+                  return (
+                    <motion.div
+                      key={item.id}
+                      ref={(el) => setRef(item.id, el)}
+                      onClick={() => handleRightClick(item.id)}
+                      className={`p-3 border-2 cursor-pointer rounded-xl shadow-sm ${
+                        isSelected
+                          ? "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
+                          : isMatched
+                            ? isCorrect
+                              ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
+                              : isIncorrect
+                                ? "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
+                                : "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100"
+                            : "border-brand-200 bg-gradient-to-r from-brand-50 to-brand-100 hover:border-brand-300"
+                      }`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 + index * 0.1, duration: 0.4 }}
+                      whileHover={{ scale: 1.02, boxShadow: "0 4px 8px rgba(0,0,0,0.05)" }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-gray-800">{item.content}</span>
                         {isSelected && (
                           <motion.span
-                            animate={{ x: [0, 5, 0] }}
+                            animate={{ x: [0, -5, 0] }}
                             transition={{ repeat: Infinity, duration: 1 }}
-                            className="ml-2 text-brand-600 font-bold"
+                            className="text-brand-600 font-bold"
                           >
-                            →
-                          </motion.span>
-                        )}
-                        {showFeedback && matchedRightId && (
-                          <motion.span
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className={`ml-2 ${isCorrect ? "text-green-600" : "text-red-600"}`}
-                          >
-                            {isCorrect ? "✓" : "✗"}
+                            ←
                           </motion.span>
                         )}
                       </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-
-            {/* Right column - Definitions */}
-            <motion.div
-              className="space-y-3"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-            >
-              <h3 className="text-lg font-semibold text-gray-700 mb-3">Definitions</h3>
-              {shuffledRightItems.map((item, index) => {
-                const isMatched = Object.values(matches).includes(item.id);
-                const isSelected = selectedRight === item.id;
-
-                return (
-                  <motion.div
-                    key={item.id}
-                    onClick={() => handleRightClick(item.id)}
-                    className={`p-3 border-2 cursor-pointer rounded-xl shadow-sm ${
-                      isSelected
-                        ? "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
-                        : isMatched
-                          ? "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 opacity-60"
-                          : "border-brand-200 bg-gradient-to-r from-brand-50 to-brand-100 hover:border-brand-300"
-                    }`}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 + index * 0.1, duration: 0.4 }}
-                    whileHover={
-                      !isMatched ? { scale: 1.02, boxShadow: "0 4px 8px rgba(0,0,0,0.05)" } : {}
-                    }
-                    whileTap={!isMatched ? { scale: 0.98 } : {}}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-gray-800">{item.content}</span>
-                      {isSelected && (
-                        <motion.span
-                          animate={{ x: [0, -5, 0] }}
-                          transition={{ repeat: Infinity, duration: 1 }}
-                          className="text-brand-600 font-bold"
-                        >
-                          ←
-                        </motion.span>
-                      )}
-                      {isMatched && (
-                        <motion.span
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="text-gray-500 text-sm"
-                        >
-                          Matched
-                        </motion.span>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </div>
           </div>
 
           {/* Check matches button */}

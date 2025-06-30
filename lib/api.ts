@@ -77,7 +77,7 @@ export async function getLearningPath(pathId: string): Promise<ApiResponse<Learn
     return response.json();
   } catch (error) {
     console.warn("Using mock data for learning path:", error);
-    const mockPath = mockLearningPaths.find((path) => path.path_id === pathId);
+    const mockPath = mockLearningPaths.find((path) => path.id === pathId);
     if (!mockPath) {
       throw new Error("Learning path not found");
     }

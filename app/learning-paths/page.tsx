@@ -75,12 +75,12 @@ export default function LearningPathsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {learningPaths.map((path, index) => (
           <motion.div
-            key={path.path_id}
+            key={path.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, duration: 0.5 }}
           >
-            <Link href={`/learning-paths/${path.path_id}`} className="group block">
+            <Link href={`/learning-paths/${path.id}`} className="group block">
               <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 border border-gray-100 overflow-hidden relative">
                 <div className="p-6 relative">
                   <div className="flex items-start justify-between mb-4">

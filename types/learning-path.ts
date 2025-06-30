@@ -1,5 +1,5 @@
 export interface LearningPath {
-  path_id: string;
+  id: string;
   title: string;
   description: string;
   duration_estimate_hours: number;
@@ -7,7 +7,7 @@ export interface LearningPath {
 }
 
 export interface LearningActivity {
-  activity_id: string;
+  id: string;
   title: string;
   type: "slide" | "quiz" | "flashcard" | "embed" | "fill_blanks" | "matching";
   config:
@@ -48,7 +48,6 @@ export interface FlashcardConfig {
 }
 
 export interface FlashcardData {
-  id: string;
   front: string;
   back: string;
   tags?: string[];
@@ -58,7 +57,7 @@ export interface EmbedConfig {
   url: string;
   title: string;
   description?: string;
-  embed_type: "video" | "article" | "interactive";
+  embed_type: "video" | "article";
 }
 
 export interface FillBlanksConfig {
@@ -69,10 +68,8 @@ export interface FillBlanksConfig {
 }
 
 export interface FillBlank {
-  id: string;
   position: number; // Position in the text where this blank appears
   correct_answers: string[]; // Multiple correct answers possible
-  hint?: string;
   feedback?: string;
 }
 
@@ -80,20 +77,11 @@ export interface MatchingConfig {
   instruction: string;
   pairs: MatchingPair[];
   success_message?: string;
-  layout?: "two_columns" | "grid";
 }
 
 export interface MatchingPair {
-  id: string;
-  left: MatchingItem;
-  right: MatchingItem;
-}
-
-export interface MatchingItem {
-  id: string;
-  content: string;
-  type?: "text" | "image" | "formula";
-  category?: string;
+  left: string;
+  right: string;
 }
 
 // Progress and Achievement types

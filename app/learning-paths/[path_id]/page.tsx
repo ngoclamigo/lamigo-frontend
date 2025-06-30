@@ -48,7 +48,7 @@ export default function LearningPathPage() {
     // Check if this is the last activity and show celebration
     if (
       learningPath &&
-      activityId === learningPath.activities[learningPath.activities.length - 1].activity_id
+      activityId === learningPath.activities[learningPath.activities.length - 1].id
     ) {
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 4000); // Hide after 4 seconds
@@ -58,7 +58,7 @@ export default function LearningPathPage() {
   const handleNext = () => {
     if (learningPath && currentActivityIndex < learningPath.activities.length - 1) {
       // Mark current activity as complete when moving to next
-      const currentActivityId = learningPath.activities[currentActivityIndex].activity_id;
+      const currentActivityId = learningPath.activities[currentActivityIndex].id;
       handleActivityComplete(currentActivityId);
       setCurrentActivityIndex((prev) => prev + 1);
     }
@@ -212,7 +212,7 @@ export default function LearningPathPage() {
                 <div className="space-y-2">
                   {learningPath.activities.map((activity, index) => (
                     <motion.button
-                      key={activity.activity_id}
+                      key={activity.id}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleActivitySelect(index)}
@@ -223,7 +223,7 @@ export default function LearningPathPage() {
                       }`}
                     >
                       <div className="flex items-center space-x-3">
-                        {completedActivities.has(activity.activity_id) ? (
+                        {completedActivities.has(activity.id) ? (
                           <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
                         ) : (
                           <Circle className="w-5 h-5 flex-shrink-0" />
@@ -258,7 +258,7 @@ export default function LearningPathPage() {
                 <div className="space-y-2">
                   {learningPath.activities.map((activity, index) => (
                     <motion.button
-                      key={activity.activity_id}
+                      key={activity.id}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleActivitySelect(index)}
@@ -269,7 +269,7 @@ export default function LearningPathPage() {
                       }`}
                       title={activity.title}
                     >
-                      {completedActivities.has(activity.activity_id) ? (
+                      {completedActivities.has(activity.id) ? (
                         <CheckCircle className="w-4 h-4 text-green-400" />
                       ) : (
                         <Circle className="w-4 h-4" />
@@ -326,7 +326,7 @@ export default function LearningPathPage() {
               >
                 <ActivityRenderer
                   activity={currentActivity}
-                  onComplete={() => handleActivityComplete(currentActivity.activity_id)}
+                  onComplete={() => handleActivityComplete(currentActivity.id)}
                   onNext={handleNext}
                   onPrevious={handlePrevious}
                   showNavigation={false}
