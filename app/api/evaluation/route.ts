@@ -31,25 +31,23 @@ You are an expert sales coach analyzing a practice sales conversation. Based on 
 
 PERSONA DETAILS:
 - Name: ${persona.name}
-- Role: ${persona.role}
-- Company Size: ${persona.company_size}
-- Pain Points: ${persona.pain_points.join(", ")}
-- Budget Range: ${persona.budget_range}
-- Decision Style: ${persona.decision_style}
-- Objections: ${persona.objections.join(", ")}
-- Personality Traits: ${persona.personality_traits.join(", ")}
-- Background: ${persona.background}
-- Communication Style: ${persona.communication_style}
-- Current Challenge: ${persona.current_challenge}
-- Emotional State: ${persona.emotional_state}
+- Job Title: ${persona.job_title}
+- Company: ${persona.company}
+- Industry: ${persona.industry}
+- Location: ${persona.location}
 
 SCENARIO:
 - Name: ${scenarioDetail.name}
 - Description: ${scenarioDetail.description}
-- Customer Mood: ${scenarioDetail.customer_mood}
-- Context: ${scenarioDetail.context}
-- Urgency: ${scenarioDetail.urgency}
-- Objected: ${scenarioDetail.objectives.join(", ")}
+- Type: ${scenarioDetail.type}
+- Category: ${scenarioDetail.category}
+- Call Type: ${scenarioDetail.call_type}
+- Intent: ${scenarioDetail.intent}
+- Persona: ${scenarioDetail.persona.join(", ")}
+- Objections: ${scenarioDetail.objections.join(", ")}
+- Specialty: ${scenarioDetail.specialty}
+- Time Limit: ${scenarioDetail.time_limit}
+- Roleplay Tips: ${scenarioDetail.roleplay_tips.join(", ")}
 
 CONVERSATION TRANSCRIPT:
 ${conversationHistory}

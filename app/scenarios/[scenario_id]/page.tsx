@@ -1,13 +1,20 @@
 "use client";
 
 import { useMediaDeviceSelect } from "@livekit/components-react";
+import {
+  AlarmClock,
+  BriefcaseBusiness,
+  Building2,
+  Factory,
+  FolderKanban,
+  Headset,
+  MapPin,
+  TableProperties,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FiChevronDown, FiChevronUp, FiClock, FiMic, FiMicOff, FiPlay } from "react-icons/fi";
-import { PiSmileyMeh } from "react-icons/pi";
-import { RiUserVoiceLine } from "react-icons/ri";
-import { TbBrain, TbFlame, TbHeartCode, TbMessage, TbUser } from "react-icons/tb";
+import { FiChevronDown, FiChevronUp, FiMic, FiMicOff, FiPlay } from "react-icons/fi";
 import { getScenario } from "~/lib/api";
 import type { Scenario } from "~/types/scenario";
 
@@ -149,24 +156,24 @@ export default function ScenarioPage({ params }: { params: { scenario_id: string
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {[
                         {
-                          icon: TbUser,
-                          name: "Customer",
-                          topDesc: scenario.persona.name + ", " + scenario.persona.role || "N/A",
+                          icon: Headset,
+                          name: "Call Type",
+                          topDesc: scenario.scenarios[0].call_type || "N/A",
                         },
                         {
-                          icon: FiClock,
-                          name: "Context",
-                          topDesc: scenario.scenarios[0].context || "N/A",
+                          icon: FolderKanban,
+                          name: "Intent",
+                          topDesc: scenario.scenarios[0].intent || "N/A",
                         },
                         {
-                          icon: TbFlame,
-                          name: "Urgency",
-                          topDesc: scenario.scenarios[0].urgency || "N/A",
+                          icon: TableProperties,
+                          name: "Objections",
+                          topDesc: scenario.scenarios[0].objections.join(", ") || "N/A",
                         },
                         {
-                          icon: PiSmileyMeh,
-                          name: "Mood",
-                          topDesc: scenario.scenarios[0].customer_mood || "N/A",
+                          icon: AlarmClock,
+                          name: "Time Limit",
+                          topDesc: scenario.scenarios[0].time_limit || "N/A",
                         },
                       ].map((detail, index) => (
                         <motion.div
@@ -344,8 +351,7 @@ export default function ScenarioPage({ params }: { params: { scenario_id: string
                         <div className="ml-4">
                           <p className="text-lg font-bold">{scenario.persona.name}</p>
                           <p className="text-gray-600 dark:text-gray-400">
-                            {scenario.persona.role || "Customer"} -{" "}
-                            {scenario.persona.background || "N/A"}
+                            {scenario.persona.job_title}, {scenario.persona.company}
                           </p>
                         </div>
                       </div>
@@ -353,24 +359,24 @@ export default function ScenarioPage({ params }: { params: { scenario_id: string
                     <div className="grid grid-cols-2 gap-3">
                       {[
                         {
-                          icon: RiUserVoiceLine,
-                          title: "Voice",
-                          desc: scenario.persona.voice,
+                          icon: BriefcaseBusiness,
+                          title: "Job Title",
+                          desc: scenario.persona.job_title,
                         },
                         {
-                          icon: TbBrain,
-                          title: "Decision Style",
-                          desc: scenario.persona.decision_style,
+                          icon: Building2,
+                          title: "Company",
+                          desc: scenario.persona.company,
                         },
                         {
-                          icon: TbHeartCode,
-                          title: "Emotional State",
-                          desc: scenario.persona.emotional_state,
+                          icon: Factory,
+                          title: "Industry",
+                          desc: scenario.persona.industry,
                         },
                         {
-                          icon: TbMessage,
-                          title: "Communication Style",
-                          desc: scenario.persona.communication_style,
+                          icon: MapPin,
+                          title: "Location",
+                          desc: scenario.persona.location,
                         },
                       ].map((item, index) => (
                         <motion.div

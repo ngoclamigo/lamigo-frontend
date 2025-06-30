@@ -6,7 +6,7 @@ import type {
   LearningPath,
   LearningProgress,
 } from "~/types/learning-path";
-import type { Program, Scenario } from "~/types/scenario";
+import type { Scenario } from "~/types/scenario";
 
 const API_BASE_URL = "https://lamigo-api.rockship.co/api";
 
@@ -40,22 +40,14 @@ export async function getScenario(scenarioId: string): Promise<ApiResponse<Scena
   }
 }
 
-export type GetScenariosResponse = Omit<Scenario, "program"> & {
-  program_id: Program["id"];
-};
-
-export async function getScenarios(): Promise<ListResponse<GetScenariosResponse>> {
+export async function getScenarios(): Promise<ListResponse<Scenario>> {
   try {
     const response = await fetch(`${API_BASE_URL}/v1/scenarios`);
     if (!response.ok) throw new Error("API not available");
     return response.json();
   } catch (error) {
     console.warn("Using mock data for scenarios:", error);
-    const _mockScenarios = mockScenarios.map((scenario) => ({
-      ...scenario,
-      program_id: scenario.program.id,
-    }));
-    return createMockListResponse(_mockScenarios);
+    return createMockListResponse(mockScenarios);
   }
 }
 

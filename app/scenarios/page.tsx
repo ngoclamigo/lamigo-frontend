@@ -5,13 +5,14 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { type GetScenariosResponse, getScenarios } from "~/lib/api";
+import { getScenarios } from "~/lib/api";
+import { Scenario } from "~/types/scenario";
 
 export default function ScenariosPage() {
   const [scenarioId, setScenarioId] = useState("");
   const router = useRouter();
 
-  const [scenarios, setScenarios] = useState<GetScenariosResponse[]>([]);
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
