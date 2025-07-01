@@ -1,9 +1,9 @@
 import "@livekit/components-styles";
 import { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const fontSans = Montserrat({
   weight: ["400", "500", "600", "700"],
   variable: "--font-sans",
   subsets: ["latin"],
@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full ${spaceGrotesk.className}`}>
+    <html lang="en" className={`h-full ${fontSans.className}`}>
       <body className="h-full">{children}</body>
     </html>
   );

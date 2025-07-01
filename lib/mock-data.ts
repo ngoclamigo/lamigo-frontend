@@ -72,17 +72,17 @@ export const mockLearningPaths: LearningPath[] = [
             },
             {
               front: "What is the EV/EBITDA multiple?",
-              back: "Enterprise Value to EBITDA (EV/EBITDA) is a valuation ratio that compares a company's enterprise value to its earnings before interest, taxes, depreciation, and amortization. It's commonly used to determine the value of a company and compare it to similar businesses.",
+              back: "Enterprise Value to EBITDA (EV/EBITDA) is a valuation ratio that compares a company's enterprise value to its earnings before interest, taxes, depreciation, and amortization.",
               tags: ["Valuation Multiples", "Financial Analysis"],
             },
             {
               front: "What is a DCF model?",
-              back: "Discounted Cash Flow (DCF) is a valuation method used to estimate the value of an investment based on its expected future cash flows. DCF analysis attempts to determine the value of an investment today, based on projections of how much money it will generate in the future.",
+              back: "Discounted Cash Flow (DCF) is a valuation method used to estimate the value of an investment based on its expected future cash flows.",
               tags: ["Valuation", "Financial Modeling"],
             },
             {
               front: "What is a comp table?",
-              back: "A comparable company analysis (comp table) is a valuation methodology that compares the current financial metrics of similar companies to determine the relative value of a target company. Common metrics include EV/EBITDA, P/E ratio, and revenue multiples.",
+              back: "A comparable company analysis (comp table) is a valuation methodology that compares the current financial metrics of similar companies to determine the relative value of a target company.",
               tags: ["Valuation", "Financial Analysis", "Comps"],
             },
           ],
@@ -310,17 +310,17 @@ export const mockLearningPaths: LearningPath[] = [
           cards: [
             {
               front: "What is WACC?",
-              back: "WACC (Weighted Average Cost of Capital) represents a company's average cost of financing its assets, weighted according to the proportion of debt and equity in its capital structure. It's used as the discount rate in DCF valuation models.",
+              back: "WACC (Weighted Average Cost of Capital) represents a company's average cost of financing its assets, weighted according to the proportion of debt and equity in its capital structure.",
               tags: ["WACC", "Valuation", "DCF"],
             },
             {
               front: "What is a LBO model?",
-              back: "A Leveraged Buyout (LBO) model is a financial model used to evaluate the acquisition of a company through significant use of debt financing. The model projects cash flows to determine if the acquired company can generate sufficient returns to service the debt and provide adequate returns to equity investors.",
+              back: "A Leveraged Buyout (LBO) model is a financial model used to evaluate the acquisition of a company through significant use of debt financing.",
               tags: ["LBO", "Financial Modeling", "Private Equity"],
             },
             {
               front: "What is a sensitivity analysis?",
-              back: "Sensitivity analysis is a technique used in financial modeling to determine how different values of an independent variable affect a particular dependent variable under specific conditions. It helps assess how changes in key assumptions impact valuation outcomes.",
+              back: "Sensitivity analysis is a technique used in financial modeling to determine how different values of an independent variable affect a particular dependent variable under specific conditions.",
               tags: ["Financial Modeling", "Valuation", "Analysis"],
             },
           ],
