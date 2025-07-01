@@ -8,6 +8,7 @@ import type {
 } from "~/types/learning-path";
 import type { Scenario } from "~/types/scenario";
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 const API_BASE_URL = "https://lamigo-api.rockship.co/api";
 
 const createMockResponse = <T>(data: T): ApiResponse<T> => ({
@@ -140,5 +141,29 @@ export async function getLearningAchievements(): Promise<ListResponse<LearningAc
   } catch (error) {
     console.warn("Using mock data for achievements:", error);
     return createMockListResponse(mockAchievements);
+  }
+}
+
+export async function sendMessage(message: string, topic?: string): Promise<ApiResponse<string>> {
+  try {
+    const response = await fetch(`${APP_URL}/api/ai/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message, topic }),
+    });
+    if (!response.ok) throw new Error("API not available");
+    const data = await response.json();
+    return {
+      data: data || "No response from AI",
+      status: "success",
+    };
+  } catch (error) {
+    console.warn("Using mock response for chat message:", error);
+    return {
+      data: "This is a mock response. The AI service is currently unavailable.",
+      status: "success",
+    };
   }
 }

@@ -1329,9 +1329,9 @@ function MatchingActivity({
 
   // Reference callback to store refs to each card
   const setRef = (id: string, element: HTMLDivElement | null) => {
-    setItemRefs(prev => ({
+    setItemRefs((prev) => ({
       ...prev,
-      [id]: element
+      [id]: element,
     }));
   };
 
@@ -1349,16 +1349,18 @@ function MatchingActivity({
 
       const leftCenter = {
         x: leftRect.right,
-        y: leftRect.top + leftRect.height / 2
+        y: leftRect.top + leftRect.height / 2,
       };
 
       const rightCenter = {
         x: rightRect.left,
-        y: rightRect.top + rightRect.height / 2
+        y: rightRect.top + rightRect.height / 2,
       };
 
       // Calculate positions relative to the container
-      const containerRect = document.getElementById('matching-container')?.getBoundingClientRect() || { left: 0, top: 0 };
+      const containerRect = document
+        .getElementById("matching-container")
+        ?.getBoundingClientRect() || { left: 0, top: 0 };
 
       const x1 = leftCenter.x - containerRect.left;
       const y1 = leftCenter.y - containerRect.top;
@@ -1366,12 +1368,14 @@ function MatchingActivity({
       const y2 = rightCenter.y - containerRect.top;
 
       // Determine if the match is correct (only if showing feedback)
-      const leftItem = leftItems.find(item => item.id === leftId);
-      const rightItem = shuffledRightItems.find(item => item.id === rightId);
-      const isCorrect = showFeedback && leftItem && rightItem && leftItem.originalIndex === rightItem.originalIndex;
-      const isIncorrect = showFeedback && leftItem && rightItem && leftItem.originalIndex !== rightItem.originalIndex;
+      const leftItem = leftItems.find((item) => item.id === leftId);
+      const rightItem = shuffledRightItems.find((item) => item.id === rightId);
+      const isCorrect =
+        showFeedback && leftItem && rightItem && leftItem.originalIndex === rightItem.originalIndex;
+      const isIncorrect =
+        showFeedback && leftItem && rightItem && leftItem.originalIndex !== rightItem.originalIndex;
 
-      const lineColor = isCorrect ? 'green' : isIncorrect ? 'red' : '#6366f1';
+      const lineColor = isCorrect ? "green" : isIncorrect ? "red" : "#6366f1";
       const strokeWidth = isCorrect || isIncorrect ? 3 : 2;
       const dashArray = selectedLeft === leftId && selectedRight === rightId ? "5,5" : "none";
 
@@ -1402,11 +1406,7 @@ function MatchingActivity({
 
           {/* Show check or x mark on the line if showing feedback */}
           {showFeedback && (
-            <motion.g
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.3 }}
-            >
+            <motion.g initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }}>
               {isCorrect ? (
                 <motion.text
                   x={(x1 + x2) / 2}
@@ -1501,9 +1501,13 @@ function MatchingActivity({
                   const matchedRightId = matches[item.id];
                   const matchedRight = shuffledRightItems.find((r) => r.id === matchedRightId);
                   const isCorrect =
-                    showFeedback && matchedRight && item.originalIndex === matchedRight.originalIndex;
+                    showFeedback &&
+                    matchedRight &&
+                    item.originalIndex === matchedRight.originalIndex;
                   const isIncorrect =
-                    showFeedback && matchedRight && item.originalIndex !== matchedRight.originalIndex;
+                    showFeedback &&
+                    matchedRight &&
+                    item.originalIndex !== matchedRight.originalIndex;
 
                   return (
                     <motion.div
@@ -1570,10 +1574,14 @@ function MatchingActivity({
                 {shuffledRightItems.map((item, index) => {
                   const isMatched = Object.values(matches).includes(item.id);
                   const isSelected = selectedRight === item.id;
-                  const matchedLeftId = Object.keys(matches).find(key => matches[key] === item.id);
-                  const matchedLeft = leftItems.find(left => left.id === matchedLeftId);
-                  const isCorrect = showFeedback && matchedLeft && matchedLeft.originalIndex === item.originalIndex;
-                  const isIncorrect = showFeedback && matchedLeft && matchedLeft.originalIndex !== item.originalIndex;
+                  const matchedLeftId = Object.keys(matches).find(
+                    (key) => matches[key] === item.id
+                  );
+                  const matchedLeft = leftItems.find((left) => left.id === matchedLeftId);
+                  const isCorrect =
+                    showFeedback && matchedLeft && matchedLeft.originalIndex === item.originalIndex;
+                  const isIncorrect =
+                    showFeedback && matchedLeft && matchedLeft.originalIndex !== item.originalIndex;
 
                   return (
                     <motion.div

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { ActivityRenderer } from "~/components/ActivityRenderer";
 import { LearningChatComponent } from "~/components/LearningChat";
 import { getLearningPath } from "~/lib/api";
-import { LearningPath } from "~/types/learning-path";
+import type { LearningPath, SlideConfig } from "~/types/learning-path";
 
 export default function LearningPathPage() {
   const params = useParams();
@@ -21,6 +21,7 @@ export default function LearningPathPage() {
   const [error, setError] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
   useEffect(() => {
     const fetchLearningPath = async () => {
@@ -302,7 +303,7 @@ export default function LearningPathPage() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handlePrevious}
-            disabled={currentActivityIndex === 0}
+            disabled={currentActivityIndex === 0 || isAudioPlaying}
             className="p-2 text-white/50 hover:text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-all duration-200 bg-white/5 hover:bg-white/10 disabled:bg-white/5 rounded"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -341,18 +342,23 @@ export default function LearningPathPage() {
             whileTap={{ opacity: 0.7 }}
             onClick={handleNext}
             className="p-2 text-white/50 hover:text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-all duration-200 bg-white/5 hover:bg-white/10 disabled:bg-white/5 rounded"
-            disabled={currentActivityIndex >= learningPath.activities.length - 1}
+            disabled={currentActivityIndex >= learningPath.activities.length - 1 || isAudioPlaying}
           >
             <ChevronRight className="w-5 h-5" />
           </motion.button>
         </div>
 
         {/* Chat Sidebar - Fixed Right */}
-        <div className="w-80 bg-white/5 backdrop-blur-sm border-l border-white/10 rounded-tl-xl">
+        <div className="w-96 bg-white/5 backdrop-blur-sm border-l border-white/10 rounded-tl-xl">
           <div className="h-full">
             <LearningChatComponent
-              learningPathId={pathId}
-              currentActivity={currentActivity?.title}
+              topic={learningPath.title}
+              narration={
+                currentActivity.type === "slide"
+                  ? (currentActivity.config as SlideConfig).narration
+                  : undefined
+              }
+              onPlayingStateChange={setIsAudioPlaying}
             />
           </div>
         </div>

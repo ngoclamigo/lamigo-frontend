@@ -34,6 +34,7 @@ export interface SlideConfig {
   title: string;
   media_url?: string;
   media_type?: "image" | "video";
+  narration?: string;
 }
 
 export interface QuizConfig {

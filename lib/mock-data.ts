@@ -30,6 +30,8 @@ export const mockLearningPaths: LearningPath[] = [
             <h3 class="text-xl font-semibold mb-3 text-brand-700">Why Use Capital IQ Pro?</h3>
             <p class="mb-4">Capital IQ Pro offers unparalleled depth of financial information, making it essential for financial analysts, investment bankers, private equity professionals, and corporate strategists.</p>
           `,
+          narration:
+            "S&P Capital IQ Pro is a powerful all‑in‑one market intelligence platform designed for finance professionals, analysts, and corporate teams. It also integrates seamlessly with Excel, PowerPoint, and Word via Office Tools for one‑click model refreshes, offers mobile access, real‑time market monitoring dashboards, ESG and supply‑chain intelligence from Sustainable1, and curated news from top outlets like Dow Jones and WSJ.",
         },
       },
       {
@@ -193,6 +195,8 @@ export const mockLearningPaths: LearningPath[] = [
               <li class="mb-2">Build custom templates for recurring analyses</li>
             </ol>
           `,
+          narration:
+            "Excel Integration with Capital IQ Pro enables users to seamlessly access and analyze real-time financial data directly within Microsoft Excel. By leveraging the powerful add-in, professionals can pull in key metrics, financial statements, market data, and proprietary Capital IQ analytics into customizable spreadsheets. This integration streamlines workflows for investment research, valuation modeling, and financial analysis by ensuring data is accurate, up-to-date, and easily refreshable without switching platforms.",
         },
       },
       {
@@ -353,6 +357,8 @@ export const mockLearningPaths: LearningPath[] = [
             <h3 class="text-xl font-semibold mb-3 text-purple-700">Analytical Framework:</h3>
             <p class="mb-4">A comprehensive sector analysis typically includes examination of market structure, competitive dynamics, regulatory environment, growth drivers, and financial performance metrics specific to the industry.</p>
           `,
+          narration:
+            "Industry Research with Capital IQ Pro provides comprehensive data, analytics, and insights to help users understand market dynamics, assess competitive landscapes, and identify growth opportunities across sectors. It combines in-depth industry reports, financial metrics, macroeconomic indicators, and proprietary forecasts, all accessible through a customizable platform. This empowers investment professionals, corporate strategists, and analysts to make informed decisions backed by reliable and up-to-date information.",
         },
       },
       {

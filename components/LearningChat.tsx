@@ -3,6 +3,7 @@
 import { Bot, MessageCircle, Mic, MicOff, Send, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { sendMessage } from "~/lib/api";
 
 interface Message {
   id: string;
@@ -12,19 +13,22 @@ interface Message {
 }
 
 interface LearningChatProps {
-  learningPathId?: string;
-  currentActivity?: string;
   className?: string;
+  topic?: string; // Learning path name
+  narration?: string; // Optional slide activity narration
+  onPlayingStateChange?: (isPlaying: boolean) => void; // Callback when playback state changes
 }
 
 export function LearningChatComponent({
-  learningPathId,
-  currentActivity,
   className = "",
+  topic,
+  narration,
+  onPlayingStateChange,
 }: LearningChatProps) {
   const [latestMessage, setLatestMessage] = useState<Message>({
     id: "1",
     content:
+      narration ||
       "Hi! I'm David. I'm here to help you understand the concepts and answer any questions you might have about this learning path. How can I help you today?",
     sender: "assistant",
     timestamp: new Date(),
@@ -36,6 +40,25 @@ export function LearningChatComponent({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [recognition, setRecognition] = useState<any>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-play when latest message changes
+  useEffect(() => {
+    if (!isLoading && latestMessage.sender === "assistant") {
+      // Cancel any existing speech
+      if (isPlaying) {
+        window.speechSynthesis.cancel();
+      }
+
+      // Small delay to ensure UI updates first
+      const timer = setTimeout(() => {
+        playMessage();
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }
+    // We only want to trigger this effect when the message ID changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [latestMessage.id]);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -79,6 +102,7 @@ export function LearningChatComponent({
       if (isPlaying) {
         window.speechSynthesis.cancel();
         setIsPlaying(false);
+        onPlayingStateChange?.(false);
       } else {
         const utterance = new SpeechSynthesisUtterance(latestMessage.content);
         utterance.rate = 0.9;
@@ -97,9 +121,18 @@ export function LearningChatComponent({
           utterance.voice = femaleVoice;
         }
 
-        utterance.onstart = () => setIsPlaying(true);
-        utterance.onend = () => setIsPlaying(false);
-        utterance.onerror = () => setIsPlaying(false);
+        utterance.onstart = () => {
+          setIsPlaying(true);
+          onPlayingStateChange?.(true);
+        };
+        utterance.onend = () => {
+          setIsPlaying(false);
+          onPlayingStateChange?.(false);
+        };
+        utterance.onerror = () => {
+          setIsPlaying(false);
+          onPlayingStateChange?.(false);
+        };
 
         window.speechSynthesis.speak(utterance);
       }
@@ -119,39 +152,34 @@ export function LearningChatComponent({
     setInputValue("");
     setIsLoading(true);
 
-    // Simulate AI response (replace with actual API call)
-    setTimeout(
-      () => {
+    try {
+      // Call the API with the topic (learning path name)
+      const response = await sendMessage(userMessage.content, topic);
+
+      if (response.status === "success") {
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
-          content: generateResponse(userMessage.content),
+          content: response.data,
           sender: "assistant",
           timestamp: new Date(),
         };
         setLatestMessage(assistantMessage);
-        setIsLoading(false);
-      },
-      1000 + Math.random() * 2000
-    );
-  };
-
-  const generateResponse = (userInput: string): string => {
-    // Context-aware responses based on learning path and current activity
-    const contextualResponses = [
-      `That's a great question about ${currentActivity || "this topic"}! Let me explain that concept in more detail...`,
-      "I can help you understand this better. Here's what you need to know...",
-      "That's an important point to clarify. Let me break it down for you...",
-      "Excellent observation! This relates to the core concepts we're covering...",
-      `I see you're thinking deeply about this${learningPathId ? " learning path" : ""}. Here's my perspective...`,
-      "That's a common area of confusion. Let me provide some clarity...",
-    ];
-
-    // Simple keyword matching for more relevant responses
-    if (userInput.toLowerCase().includes("help") || userInput.toLowerCase().includes("explain")) {
-      return contextualResponses[0];
+      } else {
+        throw new Error("Failed to get response from AI");
+      }
+    } catch (error) {
+      console.error("Error getting AI response:", error);
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content:
+          "I'm sorry, I'm having trouble processing your request right now. Please try again later.",
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+      setLatestMessage(assistantMessage);
+    } finally {
+      setIsLoading(false);
     }
-
-    return contextualResponses[Math.floor(Math.random() * contextualResponses.length)];
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

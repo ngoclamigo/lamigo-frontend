@@ -95,7 +95,7 @@ export default function ScenariosPage() {
               </motion.div>
               <h2 className="text-xl font-semibold">{scenario.scenarios[0].name}</h2>
             </div>
-            <p className="text-gray-600 text-sm mb-3">
+            <p className="text-gray-600 text-sm mb-3 line-clamp-3 leading-relaxed">
               {scenario.scenarios[0].description || "No description available"}
             </p>
             <Link
