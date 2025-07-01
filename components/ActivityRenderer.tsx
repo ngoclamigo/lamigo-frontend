@@ -1199,7 +1199,10 @@ function MatchingActivity({
   };
 
   const checkMatches = () => {
-    if (!answered) setAnswered(true);
+    if (!answered) {
+      setAnswered(true);
+      // Only check the answers when the button is explicitly clicked
+    }
   };
 
   const handleReset = () => {
@@ -1207,8 +1210,23 @@ function MatchingActivity({
     setSelectedLeft(null);
     setSelectedRight(null);
     setAnswered(false);
-    setItemRefs({});
+
+    // Don't clear item refs when resetting to ensure connections still work
+    // on subsequent attempts
   };
+
+  // Effect to ensure line rendering on connection changes
+  useEffect(() => {
+    // This will trigger a re-render when user answers change
+    // helping ensure the connection lines are properly drawn
+    if (Object.keys(userAnswer).length > 0) {
+      // Small delay to ensure refs are properly set
+      const timer = setTimeout(() => {
+        setItemRefs((prev) => ({ ...prev }));
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [userAnswer]);
 
   // Check if all matches are correct
   const isAllCorrect = () => {
@@ -1223,14 +1241,20 @@ function MatchingActivity({
 
   // Reference callback to store refs to each card
   const setRef = (id: string, element: HTMLDivElement | null) => {
-    setItemRefs((prev) => ({
-      ...prev,
-      [id]: element,
-    }));
+    if (element) {
+      // Only update if the element exists to avoid null refs
+      setItemRefs((prev) => ({
+        ...prev,
+        [id]: element,
+      }));
+    }
   };
 
   // Function to render connections between matched pairs
   const renderConnections = () => {
+    // Skip rendering if we have no user answers
+    if (Object.keys(userAnswer).length === 0) return null;
+
     return Object.entries(userAnswer).map(([leftId, rightId]) => {
       const leftElement = itemRefs[leftId];
       const rightElement = itemRefs[rightId];
@@ -1242,12 +1266,12 @@ function MatchingActivity({
       const rightRect = rightElement.getBoundingClientRect();
 
       const leftCenter = {
-        x: leftRect.right,
+        x: leftRect.right + 10, // Increased from 15px to 20px offset
         y: leftRect.top + leftRect.height / 2,
       };
 
       const rightCenter = {
-        x: rightRect.left,
+        x: rightRect.left - 10, // Increased from 15px to 20px offset
         y: rightRect.top + rightRect.height / 2,
       };
 
@@ -1259,7 +1283,11 @@ function MatchingActivity({
       const x1 = leftCenter.x - containerRect.left;
       const y1 = leftCenter.y - containerRect.top;
       const x2 = rightCenter.x - containerRect.left;
-      const y2 = rightCenter.y - containerRect.top;
+      const y2 = rightCenter.y - containerRect.top; // Create a direct straight line between points
+      const d = `
+        M ${x1} ${y1}
+        L ${x2} ${y2}
+      `;
 
       // Determine if the match is correct (only if showing feedback)
       const leftItem = leftItems.find((item) => item.id === leftId);
@@ -1267,9 +1295,16 @@ function MatchingActivity({
       const isCorrect = leftItem && rightItem && leftItem.originalIndex === rightItem.originalIndex;
       const isIncorrect =
         leftItem && rightItem && leftItem.originalIndex !== rightItem.originalIndex;
+      const showFeedback = answered;
 
-      const lineColor = isCorrect ? "green" : isIncorrect ? "red" : "#6366f1";
-      const strokeWidth = isCorrect || isIncorrect ? 3 : 2;
+      const lineColor = showFeedback
+        ? isCorrect
+          ? "#22c55e"
+          : isIncorrect
+            ? "#ef4444"
+            : "#6366f1"
+        : "#6366f1";
+      const strokeWidth = showFeedback ? (isCorrect || isIncorrect ? 3 : 2) : 2;
       const dashArray = selectedLeft === leftId && selectedRight === rightId ? "5,5" : "none";
 
       return (
@@ -1280,20 +1315,18 @@ function MatchingActivity({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <motion.line
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
+          <motion.path
+            d={d}
+            fill="none"
             stroke={lineColor}
             strokeWidth={strokeWidth}
             strokeDasharray={dashArray}
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
           />
 
-          {/* Small circle at each end of the line */}
+          {/* Small circle at each end of the path */}
           <motion.circle cx={x1} cy={y1} r={4} fill={lineColor} />
           <motion.circle cx={x2} cy={y2} r={4} fill={lineColor} />
         </motion.svg>
@@ -1307,7 +1340,6 @@ function MatchingActivity({
         <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
         <motion.div
-          className="mb-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.4 }}
@@ -1340,7 +1372,7 @@ function MatchingActivity({
             {/* Connection lines between matched pairs */}
             {renderConnections()}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
               {/* Left column - Terms */}
               <motion.div
                 className="space-y-3"
@@ -1355,9 +1387,9 @@ function MatchingActivity({
                   const matchedRightId = userAnswer[item.id];
                   const matchedRight = shuffledRightItems.find((r) => r.id === matchedRightId);
                   const isCorrect =
-                    matchedRight && item.originalIndex === matchedRight.originalIndex;
+                    answered && matchedRight && item.originalIndex === matchedRight.originalIndex;
                   const isIncorrect =
-                    matchedRight && item.originalIndex !== matchedRight.originalIndex;
+                    answered && matchedRight && item.originalIndex !== matchedRight.originalIndex;
 
                   return (
                     <motion.div
@@ -1368,11 +1400,13 @@ function MatchingActivity({
                         isSelected
                           ? "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
                           : isMatched
-                            ? isCorrect
-                              ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
-                              : isIncorrect
-                                ? "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
-                                : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
+                            ? answered
+                              ? isCorrect
+                                ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
+                                : isIncorrect
+                                  ? "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
+                                  : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
+                              : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
                             : "border-gray-200 bg-gradient-to-r from-white to-gray-50 hover:border-brand-300"
                       }`}
                       initial={{ opacity: 0, y: 10 }}
@@ -1428,9 +1462,10 @@ function MatchingActivity({
                     (key) => userAnswer[key] === item.id
                   );
                   const matchedLeft = leftItems.find((left) => left.id === matchedLeftId);
-                  const isCorrect = matchedLeft && matchedLeft.originalIndex === item.originalIndex;
+                  const isCorrect =
+                    answered && matchedLeft && matchedLeft.originalIndex === item.originalIndex;
                   const isIncorrect =
-                    matchedLeft && matchedLeft.originalIndex !== item.originalIndex;
+                    answered && matchedLeft && matchedLeft.originalIndex !== item.originalIndex;
 
                   return (
                     <motion.div
@@ -1441,11 +1476,13 @@ function MatchingActivity({
                         isSelected
                           ? "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
                           : isMatched
-                            ? isCorrect
-                              ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
-                              : isIncorrect
-                                ? "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
-                                : "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100"
+                            ? answered
+                              ? isCorrect
+                                ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
+                                : isIncorrect
+                                  ? "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
+                                  : "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100"
+                              : "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100"
                             : "border-brand-200 bg-gradient-to-r from-brand-50 to-brand-100 hover:border-brand-300"
                       }`}
                       initial={{ opacity: 0, y: 10 }}
