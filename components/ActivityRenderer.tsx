@@ -196,7 +196,7 @@ function SlideActivity({
         )}
 
         <motion.div
-          className="prose prose-lg max-w-none text-gray-700 p-6 rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 border border-brand-200/50"
+          className="prose prose-lg max-w-none text-gray-700"
           dangerouslySetInnerHTML={{ __html: config.content }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -612,7 +612,7 @@ function EmbedActivity({
       <div className="flex-1 w-full p-6 overflow-y-auto custom-scrollbar">
         <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
-        {config.description && (
+        {config.description && config.embed_type === "video" && (
           <motion.p
             className="text-gray-600 mb-6 text-base"
             initial={{ opacity: 0 }}

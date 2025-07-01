@@ -16,19 +16,36 @@ export const mockLearningPaths: LearningPath[] = [
         config: {
           title: "Getting Started with S&P Capital IQ Pro",
           content: `
-            <h2 class="text-2xl font-bold mb-4 text-brand-800">What is S&P Capital IQ Pro?</h2>
-            <p class="mb-4">S&P Capital IQ Pro is a comprehensive financial intelligence platform that provides data, analytics, and research on public and private companies, markets, and industries worldwide.</p>
+<section>
+  <p class="text-base mb-6">
+    <strong>S&P Capital IQ Pro</strong> is a comprehensive financial intelligence platform that delivers in-depth insights into companies, markets, and industries around the globe.
+  </p>
 
-            <h3 class="text-xl font-semibold mb-3 text-brand-700">Key Features:</h3>
-            <ul class="list-disc pl-6 mb-4">
-              <li class="mb-2"><strong class="font-semibold">Company Screening:</strong> Filter companies based on financial metrics and criteria</li>
-              <li class="mb-2"><strong class="font-semibold">Financial Data:</strong> Access to comprehensive financial statements and ratios</li>
-              <li class="mb-2"><strong class="font-semibold">Market Intelligence:</strong> Real-time market data and news</li>
-              <li class="mb-2"><strong class="font-semibold">Excel Integration:</strong> Pull data directly into spreadsheets for analysis</li>
-            </ul>
+  <h2 class="text-xl font-bold mb-4 text-brand-600 border-b border-gray-200 pb-2">Key Features</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
+      <h3 class="text-brand-500 font-semibold text-lg mb-1">Screening & Analytics</h3>
+      <p class="text-sm text-gray-600">Create customized screens to identify investment opportunities using precise criteria.</p>
+    </div>
+    <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
+      <h3 class="text-brand-500 font-semibold text-lg mb-1">News & Research</h3>
+      <p class="text-sm text-gray-600">Stay updated with the latest market news, analyst commentary, and industry research reports.</p>
+    </div>
+    <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
+      <h3 class="text-brand-500 font-semibold text-lg mb-1">Markets</h3>
+      <p class="text-sm text-gray-600">Track real-time market data, indices, commodities, and economic indicators globally.</p>
+    </div>
+    <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
+      <h3 class="text-brand-500 font-semibold text-lg mb-1">Office Tools</h3>
+      <p class="text-sm text-gray-600">Seamlessly integrate financial data into Excel, PowerPoint, and Word for dynamic reporting.</p>
+    </div>
+  </div>
 
-            <h3 class="text-xl font-semibold mb-3 text-brand-700">Why Use Capital IQ Pro?</h3>
-            <p class="mb-4">Capital IQ Pro offers unparalleled depth of financial information, making it essential for financial analysts, investment bankers, private equity professionals, and corporate strategists.</p>
+  <h2 class="text-xl font-bold mb-4 text-brand-600 border-b border-gray-200 pb-2">Why Use Capital IQ Pro?</h2>
+  <p class="text-base text-gray-700">
+    Capital IQ Pro offers unmatched access to financial data, powerful analytics, and actionable insights. Its intuitive interface and advanced search functionality empower finance professionals to make confident decisions with speed and precision.
+  </p>
+</section>
           `,
           narration:
             "S&P Capital IQ Pro is a powerful all‑in‑one market intelligence platform designed for finance professionals, analysts, and corporate teams. It also integrates seamlessly with Excel, PowerPoint, and Word via Office Tools for one‑click model refreshes, offers mobile access, real‑time market monitoring dashboards, ESG and supply‑chain intelligence from Sustainable1, and curated news from top outlets like Dow Jones and WSJ.",
@@ -154,7 +171,7 @@ export const mockLearningPaths: LearningPath[] = [
           url: "https://www.spglobal.com/marketintelligence/en/solutions/sp-capital-iq-pro",
           title: "S&P Capital IQ Pro Official Documentation",
           description:
-            "Explore the official documentation to deepen your understanding of the platform",
+            "This comprehensive guide provides an in-depth look at the features and functionalities of S&P Capital IQ Pro, designed to help users unlock the full potential of the platform. Whether you're conducting industry research, performing financial analysis, building models, screening for investment opportunities, or monitoring market trends, this document offers step-by-step instructions, best practices, and practical tips to streamline your workflow. Ideal for analysts, portfolio managers, and business professionals looking to make faster, smarter, and more data-driven decisions.",
           embed_type: "article" as const,
         },
       },
@@ -174,24 +191,42 @@ export const mockLearningPaths: LearningPath[] = [
         config: {
           title: "Excel Integration with Capital IQ Pro",
           content: `
-            <h2 class="text-2xl font-bold mb-4 text-green-800">Leveraging the Excel Plugin</h2>
-            <p class="mb-4">The S&P Capital IQ Pro Excel Plugin allows analysts to pull financial data directly into spreadsheets for advanced modeling and analysis.</p>
+<section>
+  <p class="text-base mb-6">
+    The <strong>Capital IQ Excel Plugin</strong> allows seamless integration of Capital IQ’s robust financial data into Excel, enhancing financial modeling and streamlining workflows.
+  </p>
 
-            <h3 class="text-xl font-semibold mb-3 text-green-700">Key Functions:</h3>
-            <ul class="list-disc pl-6 mb-4">
-              <li class="mb-2"><code class="bg-gray-100 px-2 py-1 rounded">CIQ()</code> - Retrieve specific data points for companies</li>
-              <li class="mb-2"><code class="bg-gray-100 px-2 py-1 rounded">CIQCF()</code> - Pull complete financial statements</li>
-              <li class="mb-2"><code class="bg-gray-100 px-2 py-1 rounded">CIQINDEX()</code> - Access index and market data</li>
-              <li class="mb-2"><code class="bg-gray-100 px-2 py-1 rounded">CIQTRADE()</code> - Get trading and pricing information</li>
-            </ul>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+    <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
+      <h3 class="text-brand-600 font-semibold text-lg mb-3">Key Excel Functions</h3>
+      <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
+        <li><span class="font-medium">CIQCF()</span> – Pull financial statements</li>
+        <li><span class="font-medium">CIQINDEX()</span> – Retrieve index data</li>
+        <li><span class="font-medium">CIQFINANCIALS()</span> – Access specific metrics</li>
+      </ul>
+    </div>
+    <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
+      <h3 class="text-brand-600 font-semibold text-lg mb-3">Benefits</h3>
+      <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
+        <li>Real-time data refreshes</li>
+        <li>Customizable templates</li>
+        <li>Time-series analysis</li>
+        <li>Automated reporting</li>
+      </ul>
+    </div>
+  </div>
 
-            <h3 class="text-xl font-semibold mb-3 text-green-700">Benefits of Excel Integration:</h3>
-            <ol class="list-decimal pl-6 mb-4">
-              <li class="mb-2">Automate data collection</li>
-              <li class="mb-2">Ensure data accuracy</li>
-              <li class="mb-2">Create dynamic models that update with fresh data</li>
-              <li class="mb-2">Build custom templates for recurring analyses</li>
-            </ol>
+  <div class="bg-brand-50 border-l-4 border-brand-500 p-4 rounded mb-4">
+    <p class="text-sm text-brand-700">
+      The Excel Plugin is compatible with both Windows and Mac versions of Microsoft Excel, offering direct access to S&P Capital IQ’s comprehensive financial database.
+    </p>
+  </div>
+
+  <h2 class="text-xl font-bold text-brand-700 mb-3 border-b border-gray-200 pb-2">Getting Started</h2>
+  <p class="text-base text-gray-700">
+    To begin using the Excel Plugin, install it via the S&P Capital IQ Pro platform. Once installed, launch Excel and access the plugin through the Excel ribbon. You can start retrieving data immediately using CIQ functions directly in your spreadsheets.
+  </p>
+</section>
           `,
           narration:
             "Excel Integration with Capital IQ Pro enables users to seamlessly access and analyze real-time financial data directly within Microsoft Excel. By leveraging the powerful add-in, professionals can pull in key metrics, financial statements, market data, and proprietary Capital IQ analytics into customizable spreadsheets. This integration streamlines workflows for investment research, valuation modeling, and financial analysis by ensuring data is accurate, up-to-date, and easily refreshable without switching platforms.",
@@ -230,7 +265,7 @@ export const mockLearningPaths: LearningPath[] = [
           url: "https://valuingtools.com/en/valuation-simulator",
           title: "Company Valuation Simulator",
           description:
-            "Interactive tool to practice valuation techniques and see how changing assumptions affects company value",
+            "An interactive learning tool that allows you to explore and practice real-world company valuation techniques. Adjust key assumptions—such as revenue growth, discount rates, and exit multiples—and instantly see how those changes impact the overall company valuation. Ideal for students, analysts, and finance professionals looking to strengthen their valuation skills, test scenarios, and gain a deeper understanding of the mechanics behind corporate valuation models.",
           embed_type: "article",
         },
       },
@@ -274,11 +309,6 @@ export const mockLearningPaths: LearningPath[] = [
         config: {
           instruction: "Drag each valuation metric to its correct definition.",
           pairs: [
-            {
-              left: "EV/EBITDA",
-              right:
-                "Enterprise value divided by earnings before interest, taxes, depreciation, and amortization",
-            },
             {
               left: "P/E Ratio",
               right: "Stock price divided by earnings per share",
@@ -338,20 +368,49 @@ export const mockLearningPaths: LearningPath[] = [
         config: {
           title: "Industry Research with Capital IQ Pro",
           content: `
-            <h2 class="text-2xl font-bold mb-4 text-purple-800">Sector and Industry Analysis</h2>
-            <p class="mb-4">S&P Capital IQ Pro provides powerful tools for analyzing industries, sectors, and market trends to inform investment decisions and strategic planning.</p>
+<section>
+  <p class="text-base mb-4">
+    <strong>Capital IQ Pro</strong> delivers robust industry research tools that empower users to analyze sectors, monitor trends, and uncover market opportunities with confidence.
+  </p>
 
-            <h3 class="text-xl font-semibold mb-3 text-purple-700">Key Industry Analysis Features:</h3>
-            <ul class="list-disc pl-6 mb-4">
-              <li class="mb-2">Industry Primers and Reports</li>
-              <li class="mb-2">Sector-Specific Metrics and KPIs</li>
-              <li class="mb-2">Competitive Landscape Analysis</li>
-              <li class="mb-2">Market Share Data</li>
-              <li class="mb-2">Industry Growth Projections</li>
-            </ul>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+    <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
+      <h3 class="text-brand-600 font-semibold text-lg mb-3">Key Industry Metrics</h3>
+      <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
+        <li>Market size and growth rates</li>
+        <li>Competitive landscape analysis</li>
+        <li>Industry-specific KPIs</li>
+        <li>Regulatory environment tracking</li>
+      </ul>
+    </div>
+    <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
+      <h3 class="text-brand-600 font-semibold text-lg mb-3">Research Capabilities</h3>
+      <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
+        <li>Sector-specific news alerts</li>
+        <li>Analyst reports and forecasts</li>
+        <li>Peer benchmarking</li>
+        <li>Thematic research</li>
+      </ul>
+    </div>
+  </div>
 
-            <h3 class="text-xl font-semibold mb-3 text-purple-700">Analytical Framework:</h3>
-            <p class="mb-4">A comprehensive sector analysis typically includes examination of market structure, competitive dynamics, regulatory environment, growth drivers, and financial performance metrics specific to the industry.</p>
+  <div class="bg-brand-50 border-l-4 border-brand-500 p-4 rounded mb-4">
+    <p class="text-sm text-brand-600">
+      Capital IQ Pro includes exclusive research from S&P Global analysts, offering proprietary insights not available on other platforms.
+    </p>
+  </div>
+
+  <h2 class="text-xl font-bold text-brand-600 mb-3 border-b border-gray-200 pb-2">Industry Analysis Framework</h2>
+  <p class="text-base text-gray-700 mb-4">
+    Capital IQ Pro’s industry research leverages a structured framework designed to support strategic decision-making. Key pillars include:
+  </p>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-sm">
+    <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Market Structure</div>
+    <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Growth Drivers</div>
+    <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Competitive Forces</div>
+    <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Outlook & Trends</div>
+  </div>
+</section>
           `,
           narration:
             "Industry Research with Capital IQ Pro provides comprehensive data, analytics, and insights to help users understand market dynamics, assess competitive landscapes, and identify growth opportunities across sectors. It combines in-depth industry reports, financial metrics, macroeconomic indicators, and proprietary forecasts, all accessible through a customizable platform. This empowers investment professionals, corporate strategists, and analysts to make informed decisions backed by reliable and up-to-date information.",
@@ -365,7 +424,7 @@ export const mockLearningPaths: LearningPath[] = [
           url: "https://valuingtools.com/en/valuation-simulator",
           title: "Industry Analysis Simulation",
           description:
-            "Interactive tool to analyze different industries and their key metrics, competitive landscape, and growth trends",
+            "An immersive, interactive tool designed to help you explore and analyze a wide range of industries through real-world data and scenarios. Dive into key performance metrics, assess competitive dynamics, identify major players, and uncover growth trends across sectors. This simulation equips users—whether students, analysts, or business professionals—with the hands-on experience needed to build industry expertise, sharpen strategic thinking, and make informed market assessments.",
           embed_type: "article",
         },
       },

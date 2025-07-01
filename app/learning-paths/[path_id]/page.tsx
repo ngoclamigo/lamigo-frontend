@@ -88,7 +88,7 @@ export default function LearningPathPage() {
       setCurrentActivityIndex((prev) => prev + 1);
     } else {
       setShowCelebration(true);
-      setTimeout(() => setShowCelebration(false), 4000);
+      setTimeout(() => setShowCelebration(false), 6000); // 6 seconds for fireworks display
     }
   };
 
@@ -321,13 +321,16 @@ export default function LearningPathPage() {
                 }}
                 className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none"
               >
+                {/* Fullscreen overlay for firework effects */}
+                <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" />
+
                 <motion.div
                   animate={{
                     y: [0, -8, 0],
                     scale: [1, 1.02, 1],
                   }}
                   transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 text-emerald-800 px-10 py-8 rounded-3xl shadow-xl border border-emerald-200/60 backdrop-blur-sm relative overflow-hidden"
+                  className="bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 text-emerald-800 px-10 py-8 rounded-3xl shadow-xl border border-emerald-200/60 backdrop-blur-sm relative overflow-hidden z-10"
                 >
                   {/* Subtle background pattern */}
                   <div className="absolute inset-0 opacity-10">
@@ -339,7 +342,8 @@ export default function LearningPathPage() {
                     <motion.div
                       className="text-5xl mb-4"
                       animate={{
-                        scale: [1, 1.1, 1],
+                        scale: [1, 1.3, 1],
+                        rotate: [0, 5, -5, 0],
                       }}
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
@@ -362,66 +366,134 @@ export default function LearningPathPage() {
                       You&apos;ve completed the learning path!
                     </motion.p>
                   </div>
+                </motion.div>
 
-                  {/* Firework effects */}
-                  <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
-                    {[...Array(12)].map((_, i) => (
+                {/* Enhanced firework effects */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  {/* Main firework bursts */}
+                  {[...Array(20)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute"
+                      initial={{
+                        x: "50%",
+                        y: "50%",
+                        opacity: 0,
+                      }}
+                      animate={{
+                        x: `${Math.cos((i * (Math.PI * 2)) / 20) * (100 + Math.random() * 100) + 50}%`,
+                        y: `${Math.sin((i * (Math.PI * 2)) / 20) * (100 + Math.random() * 100) + 50}%`,
+                        opacity: [0, 1, 0],
+                        scale: [0.2, 1.5, 0],
+                      }}
+                      transition={{
+                        duration: 1.5 + Math.random(),
+                        repeat: Math.floor(Math.random() * 3) + 2,
+                        repeatType: "reverse",
+                        delay: i * 0.08,
+                        ease: "easeOut",
+                      }}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full`}
+                        style={{
+                          backgroundColor: [
+                            "#F87171", // red-400
+                            "#FB923C", // orange-400
+                            "#FBBF24", // amber-400
+                            "#34D399", // emerald-400
+                            "#60A5FA", // blue-400
+                            "#A78BFA", // violet-400
+                            "#F472B6", // pink-400
+                          ][i % 7],
+                          boxShadow: `0 0 12px 4px ${
+                            [
+                              "#FCA5A5", // red-300
+                              "#FDBA74", // orange-300
+                              "#FCD34D", // amber-300
+                              "#6EE7B7", // emerald-300
+                              "#93C5FD", // blue-300
+                              "#C4B5FD", // violet-300
+                              "#F9A8D4", // pink-300
+                            ][i % 7]
+                          }`,
+                        }}
+                      ></div>
+                    </motion.div>
+                  ))}
+
+                  {/* Trailing sparkles */}
+                  {[...Array(30)].map((_, i) => (
+                    <motion.div
+                      key={`spark-${i}`}
+                      className="absolute"
+                      initial={{
+                        x: "50%",
+                        y: "50%",
+                        opacity: 0,
+                        scale: 0,
+                      }}
+                      animate={{
+                        x: `${Math.random() * 100}%`,
+                        y: `${Math.random() * 100}%`,
+                        opacity: [0, 1, 0],
+                        scale: [0, 1, 0],
+                      }}
+                      transition={{
+                        duration: 2 + Math.random(),
+                        repeat: Infinity,
+                        repeatDelay: Math.random() * 3,
+                        delay: i * 0.1,
+                      }}
+                    >
+                      <div className="text-xl">✨</div>
+                    </motion.div>
+                  ))}
+
+                  {/* Shooting fireworks */}
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={`shoot-${i}`}
+                      className="absolute bottom-0 left-0 w-full h-full"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0, 1, 0] }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        repeatDelay: 2 + Math.random() * 4,
+                        delay: i * 0.5,
+                      }}
+                    >
                       <motion.div
-                        key={i}
                         className="absolute"
-                        initial={{
-                          x: "50%",
-                          y: "50%",
-                          opacity: 0,
+                        style={{
+                          left: `${10 + Math.random() * 80}%`,
+                          bottom: "0%",
                         }}
                         animate={{
-                          x: `${Math.cos((i * (Math.PI * 2)) / 12) * 150 + 50}%`,
-                          y: `${Math.sin((i * (Math.PI * 2)) / 12) * 150 + 50}%`,
-                          opacity: [0, 1, 0],
-                          scale: [0.2, 1, 0],
+                          y: [0, -Math.random() * 500 - 200],
+                          opacity: [1, 0],
                         }}
                         transition={{
-                          duration: 1.5,
-                          repeat: 3,
-                          repeatType: "reverse",
-                          delay: i * 0.1,
+                          duration: 0.6 + Math.random() * 0.5,
                           ease: "easeOut",
                         }}
                       >
                         <div
-                          className={`w-4 h-4 rounded-full bg-${["pink", "emerald", "amber", "indigo", "blue"][i % 5]}-400`}
+                          className="w-2 h-10 rounded-full"
+                          style={{
+                            background: `linear-gradient(to top, transparent, ${
+                              ["#F87171", "#FBBF24", "#34D399", "#60A5FA", "#A78BFA"][i % 5]
+                            })`,
+                            boxShadow: `0 0 8px 2px ${
+                              ["#FCA5A5", "#FCD34D", "#6EE7B7", "#93C5FD", "#C4B5FD"][i % 5]
+                            }`,
+                          }}
                         ></div>
                       </motion.div>
-                    ))}
-
-                    {[...Array(15)].map((_, i) => (
-                      <motion.div
-                        key={`spark-${i}`}
-                        className="absolute"
-                        initial={{
-                          x: "50%",
-                          y: "50%",
-                          opacity: 0,
-                          scale: 0,
-                        }}
-                        animate={{
-                          x: `${Math.random() * 100}%`,
-                          y: `${Math.random() * 100}%`,
-                          opacity: [0, 1, 0],
-                          scale: [0, 0.8, 0],
-                        }}
-                        transition={{
-                          duration: 1.2,
-                          repeat: Infinity,
-                          repeatDelay: Math.random() * 2,
-                          delay: i * 0.2,
-                        }}
-                      >
-                        <div className="text-xl">✨</div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
+                    </motion.div>
+                  ))}
+                </div>
               </motion.div>
             )}
 

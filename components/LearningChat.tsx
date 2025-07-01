@@ -39,7 +39,7 @@ export function LearningChatComponent({
   const [isPlaying, setIsPlaying] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [recognition, setRecognition] = useState<any>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-play when latest message changes
   useEffect(() => {
@@ -299,17 +299,29 @@ export function LearningChatComponent({
         <div className="space-y-2">
           {/* Text Input */}
           <div className="w-full relative">
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask me anything..."
-              className="w-full p-3 pr-10 bg-white border rounded-full focus:outline-none focus:ring-2 focus:ring-brand-400 text-gray-800 placeholder-gray-500"
-              disabled={isLoading}
-            />
-            <MessageCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <div className="relative flex items-center w-full bg-white border rounded-lg focus-within:ring-2 focus-within:ring-brand-400">
+              <textarea
+                ref={inputRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder="Ask me anything..."
+                className="w-full p-3 pr-10 bg-transparent resize-none focus:outline-none text-gray-800 placeholder-gray-500 overflow-auto custom-scrollbar"
+                disabled={isLoading}
+                rows={1}
+                style={{
+                  minHeight: "44px",
+                  maxHeight: "120px",
+                  lineHeight: "1.5",
+                }}
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = "auto";
+                  target.style.height = `${Math.min(target.scrollHeight, 120)}px`;
+                }}
+              />
+              <MessageCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            </div>
           </div>
 
           {/* Voice and Send Buttons */}
@@ -319,7 +331,7 @@ export function LearningChatComponent({
               whileTap={{ scale: 0.95 }}
               onClick={startListening}
               disabled={isLoading}
-              className={`px-4 py-2 rounded-full font-medium disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`px-4 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed ${
                 isListening ? "bg-red-500 text-white" : "bg-gray-500 text-white hover:bg-gray-600"
               }`}
             >
@@ -330,7 +342,7 @@ export function LearningChatComponent({
               whileTap={{ scale: 0.95 }}
               onClick={handleSendMessage}
               disabled={!inputValue.trim() || isLoading}
-              className="px-4 py-2 rounded-full font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: "linear-gradient(135deg, var(--brand-500), var(--brand-600))",
               }}
