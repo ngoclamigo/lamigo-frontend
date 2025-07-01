@@ -9,18 +9,14 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
-import {
-  ChevronRight,
-  ExternalLink,
-  GripVertical,
-  RotateCcw,
-} from "lucide-react";
+import { ChevronRight, ExternalLink, GripVertical, RotateCcw } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   EmbedConfig,
   FillBlanksConfig,
+  FlashcardConfig,
   LearningActivity,
   MatchingConfig,
   QuizConfig,
@@ -66,6 +62,16 @@ export function ActivityRenderer({
     case "embed":
       return (
         <EmbedActivity
+          activity={activity}
+          onNext={onNext}
+          isCompleted={isCompleted}
+          isLastActivity={isLastActivity}
+          isAudioPlaying={isAudioPlaying}
+        />
+      );
+    case "flashcard":
+      return (
+        <FlashcardActivity
           activity={activity}
           onNext={onNext}
           isCompleted={isCompleted}
@@ -136,7 +142,7 @@ function ActionWrapper({ children }: { children: React.ReactNode }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.5 }}
-      className="mt-auto bg-white border-t border-gray-200 shadow-lg rounded-b-xl p-4"
+      className="mt-auto w-full bg-white border-t border-gray-200 shadow-lg rounded-b-xl p-4"
     >
       {children}
     </motion.div>
@@ -164,14 +170,9 @@ function SlideActivity({
   }, [isCompleted, hasInteracted]);
 
   return (
-    <div className="h-full flex flex-col">
-      <motion.div
-        className="relative z-10 flex-1"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{config.title || activity.title}</h2>
+    <>
+      <div className="flex-1 w-full p-6 overflow-y-auto custom-scrollbar">
+        <h2 className="text-xl font-bold text-gray-800 mb-6">{config.title}</h2>
 
         {config.media_url && (
           <motion.div
@@ -195,15 +196,14 @@ function SlideActivity({
         )}
 
         <motion.div
-          className="prose prose-lg max-w-none text-gray-700 mb-8 p-6 rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 border border-brand-200/50"
+          className="prose prose-lg max-w-none text-gray-700 p-6 rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 border border-brand-200/50"
           dangerouslySetInnerHTML={{ __html: config.content }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         />
-      </motion.div>
+      </div>
 
-      {/* Action Wrapper */}
       <ActionWrapper>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -226,7 +226,198 @@ function SlideActivity({
           />
         </div>
       </ActionWrapper>
-    </div>
+    </>
+  );
+}
+
+function FlashcardActivity({
+  activity,
+  onNext,
+  isCompleted,
+  isLastActivity,
+  isAudioPlaying,
+}: ActivityRendererProps) {
+  const config = activity.config as FlashcardConfig;
+  const [flippedCards, setFlippedCards] = useState<Set<number>>(new Set());
+  const [viewedCards, setViewedCards] = useState<Set<number>>(new Set());
+
+  const totalCards = config.cards.length;
+  const allCardsViewed = viewedCards.size === totalCards;
+
+  const handleCardFlip = (index: number) => {
+    setFlippedCards((prev) => {
+      const updated = new Set(prev);
+      if (updated.has(index)) {
+        updated.delete(index);
+      } else {
+        updated.add(index);
+        // Mark card as viewed when flipped
+        setViewedCards((prevViewed) => {
+          const updatedViewed = new Set(prevViewed);
+          updatedViewed.add(index);
+          return updatedViewed;
+        });
+      }
+      return updated;
+    });
+  };
+
+  const handleFlipAll = () => {
+    if (flippedCards.size === totalCards) {
+      // If all cards are flipped, unflip all
+      setFlippedCards(new Set());
+    } else {
+      // Otherwise, flip all cards
+      const allFlipped = new Set<number>();
+      const allViewed = new Set<number>(viewedCards);
+
+      config.cards.forEach((_, index) => {
+        allFlipped.add(index);
+        allViewed.add(index);
+      });
+
+      setFlippedCards(allFlipped);
+      setViewedCards(allViewed);
+    }
+  };
+
+  return (
+    <>
+      <div className="flex-1 w-full flex flex-col p-6 overflow-y-auto custom-scrollbar">
+        <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
+
+        <div className="flex flex-col items-center mb-4">
+          <motion.div
+            className="mb-4 text-sm font-medium text-gray-600 flex items-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <span className="mr-4">{totalCards} flashcards in this deck</span>
+
+            <motion.button
+              onClick={handleFlipAll}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-4 py-1.5 bg-gradient-to-r from-brand-100 to-brand-200 text-brand-700
+                rounded-lg border border-brand-300 shadow-sm text-sm font-medium flex items-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mr-1.5"
+              >
+                <path d="M21 2v6h-6" />
+                <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+                <path d="M3 22v-6h6" />
+                <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+              </svg>
+              {flippedCards.size === totalCards ? "Flip All Back" : "Flip All Cards"}
+            </motion.button>
+          </motion.div>
+
+          <motion.p
+            className="text-sm text-gray-600 text-center mb-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            Click on any card to flip it and reveal the answer
+          </motion.p>
+        </div>
+
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {config.cards.map((card, index) => {
+            const isFlipped = flippedCards.has(index);
+
+            return (
+              <motion.div
+                key={index}
+                className="perspective-1000"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+              >
+                <motion.div
+                  className="relative w-full h-full rounded-xl shadow-lg cursor-pointer transition-transform duration-500"
+                  onClick={() => handleCardFlip(index)}
+                  animate={{ rotateY: isFlipped ? 180 : 0 }}
+                  style={{ transformStyle: "preserve-3d", minHeight: "180px" }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <motion.div
+                    className={`absolute w-full h-full backface-hidden p-5 rounded-xl
+                      bg-gradient-to-br from-brand-50 to-brand-100 border border-brand-200
+                      flex items-center justify-center text-center`}
+                    style={{ backfaceVisibility: "hidden" }}
+                  >
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-2">Question</h3>
+                      <p className="text-base text-gray-700">{card.front}</p>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    className={`absolute w-full h-full backface-hidden p-5 rounded-xl
+                      bg-gradient-to-br from-brand-100 to-brand-200 border border-brand-300
+                      flex items-center justify-center text-center`}
+                    style={{
+                      backfaceVisibility: "hidden",
+                      transform: "rotateY(180deg)",
+                    }}
+                  >
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-2">Answer</h3>
+                      <p className="text-base text-gray-700">{card.back}</p>
+                    </div>
+                  </motion.div>
+                </motion.div>
+
+                <motion.div
+                  className="mt-2 text-xs font-medium text-gray-500 text-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                >
+                  Card {index + 1} {isFlipped ? "✓" : ""}
+                </motion.div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+
+      <ActionWrapper>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            {allCardsViewed ? (
+              <div className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                ✓ All cards viewed
+              </div>
+            ) : (
+              <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                {viewedCards.size} of {totalCards} cards viewed
+              </div>
+            )}
+          </div>
+
+          <NextButton
+            isCompleted={isCompleted}
+            disabled={!allCardsViewed || isAudioPlaying}
+            isLastActivity={isLastActivity}
+            onClick={onNext}
+          />
+        </div>
+      </ActionWrapper>
+    </>
   );
 }
 
@@ -256,19 +447,9 @@ function QuizActivity({
   };
 
   return (
-    <motion.div
-      className="h-full flex flex-col"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <motion.div
-        className="relative z-10 flex-1"
-        initial={{ y: 20 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{activity.title}</h2>
+    <>
+      <div className="flex-1 w-full p-6 overflow-y-auto custom-scrollbar">
+        <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
         <motion.div
           className="mb-8 p-6 rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 border border-brand-200/50"
@@ -276,7 +457,7 @@ function QuizActivity({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <h3 className="text-xl font-semibold text-gray-700 mb-6">{config.question}</h3>
+          <h3 className="text-lg font-semibold text-gray-700 mb-6">{config.question}</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {config.options.map((option, index) => (
@@ -313,7 +494,7 @@ function QuizActivity({
                   <motion.span
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="ml-auto text-green-600 font-bold flex items-center"
+                    className="ml-auto text-green-600 font-semibold flex items-center"
                   >
                     <span className="h-6 w-6 flex items-center justify-center bg-green-100 rounded-full mr-1">
                       ✓
@@ -325,7 +506,7 @@ function QuizActivity({
                   <motion.span
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="ml-auto text-red-600 font-bold flex items-center"
+                    className="ml-auto text-red-600 font-semibold flex items-center"
                   >
                     <span className="h-6 w-6 flex items-center justify-center bg-red-100 rounded-full mr-1">
                       ✗
@@ -343,15 +524,14 @@ function QuizActivity({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            className="mb-6 p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200"
+            className="p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200"
           >
             <h4 className="font-bold text-gray-800 mb-2">Explanation:</h4>
             <p className="text-gray-700">{config.explanation}</p>
           </motion.div>
         )}
-      </motion.div>
+      </div>
 
-      {/* Action Wrapper */}
       <ActionWrapper>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -399,10 +579,9 @@ function QuizActivity({
           />
         </div>
       </ActionWrapper>
-    </motion.div>
+    </>
   );
 }
-
 
 function EmbedActivity({
   activity,
@@ -429,19 +608,9 @@ function EmbedActivity({
   };
 
   return (
-    <motion.div
-      className="h-full flex flex-col"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <motion.div
-        className="relative z-10 flex-1"
-        initial={{ y: 20 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{activity.title}</h2>
+    <>
+      <div className="flex-1 w-full p-6 overflow-y-auto custom-scrollbar">
+        <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
         {config.description && (
           <motion.p
@@ -455,7 +624,6 @@ function EmbedActivity({
         )}
 
         <motion.div
-          className="mb-8"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
@@ -526,9 +694,8 @@ function EmbedActivity({
             </motion.div>
           )}
         </motion.div>
-      </motion.div>
+      </div>
 
-      {/* Action Wrapper */}
       <ActionWrapper>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -553,7 +720,7 @@ function EmbedActivity({
           />
         </div>
       </ActionWrapper>
-    </motion.div>
+    </>
   );
 }
 
@@ -770,8 +937,9 @@ function FillBlanksActivity({
 
     return config.blanks.every((blank, index) => {
       const userWord = userAnswer[index.toString()];
-      return userWord && blank.correct_answers.some(
-        (correct) => correct.toLowerCase() === userWord.toLowerCase()
+      return (
+        userWord &&
+        blank.correct_answers.some((correct) => correct.toLowerCase() === userWord.toLowerCase())
       );
     });
   };
@@ -793,149 +961,134 @@ function FillBlanksActivity({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <motion.div
-        className="h-full flex flex-col"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.div
-          className="relative z-10 flex-1"
-          initial={{ y: 20 }}
-          animate={{ y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">{activity.title}</h2>
+      <div className="flex-1 w-full p-6 overflow-y-auto custom-scrollbar">
+        <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+        >
+          <p className="text-gray-600 mb-6">{config.instruction}</p>
+
+          {/* Text with blanks */}
+          <motion.div
+            className="bg-gradient-to-br from-white to-brand-50/50 p-6 border border-brand-200/50 shadow-sm mb-6 rounded-xl"
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            whileHover={{ boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+          >
+            <SortableContext items={blankItems}>
+              <div className="text-lg leading-relaxed">
+                {config.text_with_blanks.split("_____").map((textPart, index) => (
+                  <motion.span
+                    key={index}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+                  >
+                    {textPart}
+                    {index < config.blanks.length && (
+                      <DroppableBlank
+                        id={index.toString()}
+                        word={userAnswer[index.toString()]}
+                        isCorrect={
+                          userAnswer[index.toString()]
+                            ? config.blanks[index].correct_answers.some(
+                                (correct) =>
+                                  correct.toLowerCase() ===
+                                  userAnswer[index.toString()]?.toLowerCase()
+                              )
+                            : undefined
+                        }
+                        showFeedback={showFeedback}
+                        onRemove={() => removeWordFromBlank(index.toString())}
+                      />
+                    )}
+                  </motion.span>
+                ))}
+              </div>
+            </SortableContext>
+          </motion.div>
+
+          {/* Available words */}
           <motion.div
             className="mb-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.4 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
           >
-            <p className="text-gray-600 mb-6">{config.instruction}</p>
-
-            {/* Text with blanks */}
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">Available Words:</h3>
             <motion.div
-              className="bg-gradient-to-br from-white to-brand-50/50 p-6 border border-brand-200/50 shadow-sm mb-6 rounded-xl"
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              whileHover={{ boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+              className="flex flex-wrap gap-3 p-4 bg-gradient-to-br from-brand-50 to-brand-100 rounded-xl border border-brand-200/50"
+              initial={{ scale: 0.98 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.4 }}
             >
-              <SortableContext items={blankItems}>
-                <div className="text-lg leading-relaxed">
-                  {config.text_with_blanks.split("_____").map((textPart, index) => (
-                    <motion.span
-                      key={index}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
-                    >
-                      {textPart}
-                      {index < config.blanks.length && (
-                        <DroppableBlank
-                          id={index.toString()}
-                          word={userAnswer[index.toString()]}
-                          isCorrect={
-                            userAnswer[index.toString()]
-                              ? config.blanks[index].correct_answers.some(
-                                  (correct) =>
-                                    correct.toLowerCase() ===
-                                    userAnswer[index.toString()]?.toLowerCase()
-                                )
-                              : undefined
-                          }
-                          showFeedback={showFeedback}
-                          onRemove={() => removeWordFromBlank(index.toString())}
-                        />
-                      )}
-                    </motion.span>
-                  ))}
-                </div>
-              </SortableContext>
-            </motion.div>
-
-            {/* Available words */}
-            <motion.div
-              className="mb-6"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-            >
-              <h3 className="text-lg font-semibold text-gray-700 mb-4">Available Words:</h3>
-              <motion.div
-                className="flex flex-wrap gap-3 p-4 bg-gradient-to-br from-brand-50 to-brand-100 rounded-xl border border-brand-200/50"
-                initial={{ scale: 0.98 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.5, duration: 0.4 }}
-              >
-                {wordItems
-                  .filter((item) => !item.isUsed)
-                  .map((item, idx) => (
-                    <motion.div
-                      key={item.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 + idx * 0.05, duration: 0.3 }}
-                    >
-                      <DraggableWord id={item.id} word={item.word} isUsed={item.isUsed} />
-                    </motion.div>
-                  ))}
-              </motion.div>
+              {wordItems
+                .filter((item) => !item.isUsed)
+                .map((item, idx) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 + idx * 0.05, duration: 0.3 }}
+                  >
+                    <DraggableWord id={item.id} word={item.word} isUsed={item.isUsed} />
+                  </motion.div>
+                ))}
             </motion.div>
           </motion.div>
         </motion.div>
+      </div>
 
-        {/* Action Wrapper */}
-        <ActionWrapper>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              {!answered ? (
-                <motion.button
-                  onClick={checkAnswers}
-                  disabled={Object.keys(userAnswer).length !== config.blanks.length}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm font-medium"
-                >
-                  Check Answers
-                </motion.button>
-              ) : (
-                <>
-                  {!isAllCorrect() && (
-                    <motion.button
-                      onClick={handleReset}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg shadow-sm hover:from-gray-600 hover:to-gray-700 transition-colors flex items-center text-sm font-medium"
-                    >
-                      <RotateCcw className="w-3 h-3 mr-1" />
-                      Try Again
-                    </motion.button>
-                  )}
-                  <div
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      isAllCorrect()
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
+      <ActionWrapper>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            {!answered ? (
+              <motion.button
+                onClick={checkAnswers}
+                disabled={Object.keys(userAnswer).length !== config.blanks.length}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+              >
+                Check Answers
+              </motion.button>
+            ) : (
+              <>
+                {!isAllCorrect() && (
+                  <motion.button
+                    onClick={handleReset}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg shadow-sm hover:from-gray-600 hover:to-gray-700 transition-colors flex items-center text-sm font-medium"
                   >
-                    {isAllCorrect() ? "✓ Correct" : "✗ Incorrect"}
-                  </div>
-                </>
-              )}
-            </div>
-
-            <NextButton
-              isCompleted={isCompleted}
-              disabled={!answered || isAudioPlaying}
-              isLastActivity={isLastActivity}
-              onClick={onNext}
-            />
+                    <RotateCcw className="w-3 h-3 mr-1" />
+                    Try Again
+                  </motion.button>
+                )}
+                <div
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    isAllCorrect() ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {isAllCorrect() ? "✓ Correct" : "✗ Incorrect"}
+                </div>
+              </>
+            )}
           </div>
-        </ActionWrapper>
-      </motion.div>
+
+          <NextButton
+            isCompleted={isCompleted}
+            disabled={!answered || isAudioPlaying}
+            isLastActivity={isLastActivity}
+            onClick={onNext}
+          />
+        </div>
+      </ActionWrapper>
 
       <DragOverlay>
         {activeId && activeId.startsWith("word-") ? (
@@ -1057,8 +1210,8 @@ function MatchingActivity({
     if (Object.keys(userAnswer).length !== config.pairs.length) return false;
 
     return Object.entries(userAnswer).every(([leftId, rightId]) => {
-      const leftItem = leftItems.find(item => item.id === leftId);
-      const rightItem = shuffledRightItems.find(item => item.id === rightId);
+      const leftItem = leftItems.find((item) => item.id === leftId);
+      const rightItem = shuffledRightItems.find((item) => item.id === rightId);
       return leftItem && rightItem && leftItem.originalIndex === rightItem.originalIndex;
     });
   };
@@ -1144,19 +1297,9 @@ function MatchingActivity({
   };
 
   return (
-    <motion.div
-      className="h-full flex flex-col"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <motion.div
-        className="relative z-10 flex-1"
-        initial={{ y: 20 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{activity.title}</h2>
+    <>
+      <div className="flex-1 w-full p-6 overflow-y-auto custom-scrollbar">
+        <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
         <motion.div
           className="mb-8"
@@ -1240,7 +1383,7 @@ function MatchingActivity({
                             <motion.span
                               animate={{ x: [0, 5, 0] }}
                               transition={{ repeat: Infinity, duration: 1 }}
-                              className="ml-2 text-brand-600 font-bold"
+                              className="ml-2 text-brand-600 font-semibold"
                             >
                               →
                             </motion.span>
@@ -1312,7 +1455,7 @@ function MatchingActivity({
                           <motion.span
                             animate={{ x: [0, -5, 0] }}
                             transition={{ repeat: Infinity, duration: 1 }}
-                            className="text-brand-600 font-bold"
+                            className="text-brand-600 font-semibold"
                           >
                             ←
                           </motion.span>
@@ -1325,9 +1468,8 @@ function MatchingActivity({
             </div>
           </div>
         </motion.div>
-      </motion.div>
+      </div>
 
-      {/* Action Wrapper */}
       <ActionWrapper>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -1356,9 +1498,7 @@ function MatchingActivity({
                 )}
                 <div
                   className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    isAllCorrect()
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
+                    isAllCorrect() ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                   }`}
                 >
                   {isAllCorrect() ? "✓ Correct" : "✗ Incorrect"}
@@ -1375,6 +1515,6 @@ function MatchingActivity({
           />
         </div>
       </ActionWrapper>
-    </motion.div>
+    </>
   );
 }

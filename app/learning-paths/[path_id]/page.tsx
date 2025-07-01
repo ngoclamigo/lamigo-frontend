@@ -304,7 +304,7 @@ export default function LearningPathPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="h-full w-full flex items-center justify-center bg-white shadow-lg p-6 border border-white/50 rounded-xl overflow-y-auto relative"
+            className="h-full w-full flex flex-col items-center justify-center gap-4 bg-white shadow-lg border border-white/50 rounded-xl"
           >
             {/* Celebration positioned within activity area */}
             {showCelebration && (
@@ -425,22 +425,13 @@ export default function LearningPathPage() {
               </motion.div>
             )}
 
-            <motion.div
-              key={currentActivityIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="h-full w-full"
-            >
-              <ActivityRenderer
-                activity={currentActivity}
-                onNext={() => handleNext(currentActivity.id)}
-                isCompleted={completedActivities.has(currentActivity.id)}
-                isLastActivity={currentActivityIndex === learningPath.activities.length - 1}
-                isAudioPlaying={isAudioPlaying}
-              />
-            </motion.div>
+            <ActivityRenderer
+              activity={currentActivity}
+              onNext={() => handleNext(currentActivity.id)}
+              isCompleted={completedActivities.has(currentActivity.id)}
+              isLastActivity={currentActivityIndex === learningPath.activities.length - 1}
+              isAudioPlaying={isAudioPlaying}
+            />
           </motion.div>
         </div>
 
