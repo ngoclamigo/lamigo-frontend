@@ -120,7 +120,7 @@ function NextButton({
   return (
     <motion.button
       onClick={onClick}
-      disabled={!isCompleted && disabled}
+      disabled={(!isCompleted && disabled) || (isCompleted && isLastActivity)}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={`flex items-center px-4 py-2 rounded-lg shadow-sm transition-colors text-sm font-medium ${
@@ -129,7 +129,7 @@ function NextButton({
           : "bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700"
       } text-white disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed`}
     >
-      {isLastActivity ? "Complete" : "Continue"}
+      {isLastActivity ? (isCompleted ? "Completed" : "Mark Complete") : "Continue"}
       {!isLastActivity && <ChevronRight className="w-3 h-3 ml-1" />}
       {isLastActivity && <span className="ml-2">🎉</span>}
     </motion.button>
@@ -843,6 +843,8 @@ function FillBlanksActivity({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  // Add state to store active word during drag
+  const [activeWord, setActiveWord] = useState<string | null>(null);
 
   // Create sensors for drag and drop
   const sensors = useSensors(
@@ -853,41 +855,43 @@ function FillBlanksActivity({
     })
   );
 
-  // Extract available words from correct answers
-  const availableWords = Array.from(
-    new Set(config.blanks.map((blank) => blank.correct_answers).flat())
-  ).sort(() => Math.random() - 0.5); // Shuffle
+  // Extract available words from correct answers and keep them stable with useState
+  const [availableWords] = useState(() =>
+    Array.from(new Set(config.blanks.map((blank) => blank.correct_answers).flat())).sort(
+      () => Math.random() - 0.5
+    )
+  ); // Shuffle once during initialization
 
-  // Add some distractors
+  // Add some distractors - also stable with useState
   const distractors = ["ROI", "CAGR", "Beta", "Alpha", "Yield", "Margin", "Ratio", "Index"];
-  const allWords = [...availableWords, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
+  const [allWords] = useState(() =>
+    [...availableWords, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5)
+  ); // Shuffle once during initialization
 
   // Get used words
   const usedWords = Object.values(userAnswer);
 
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
+    const activeWordId = event.active.id as string;
+    setActiveId(activeWordId);
+
+    // Store the actual word being dragged
+    if (activeWordId.startsWith("word-")) {
+      const wordIndex = parseInt(activeWordId.replace("word-", ""));
+      setActiveWord(allWords[wordIndex]);
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (!over || !active) {
+    if (!over || !active || !activeWord) {
       setActiveId(null);
+      setActiveWord(null);
       return;
     }
 
-    const activeWordId = active.id as string;
     const overTarget = over.id as string;
-
-    // Find the actual word directly from allWords using the id pattern
-    const wordIndex = parseInt(activeWordId.replace("word-", ""));
-    const word = allWords[wordIndex];
-
-    if (!word) {
-      setActiveId(null);
-      return;
-    }
 
     // Check if dropping on a blank
     if (overTarget.startsWith("blank-")) {
@@ -896,17 +900,18 @@ function FillBlanksActivity({
       // Remove this word from any existing blank first
       const updatedAnswers = { ...userAnswer };
       Object.keys(updatedAnswers).forEach((key) => {
-        if (updatedAnswers[key] === word) {
+        if (updatedAnswers[key] === activeWord) {
           delete updatedAnswers[key];
         }
       });
 
       // Add word to new blank
-      updatedAnswers[blankId] = word;
+      updatedAnswers[blankId] = activeWord;
       setUserAnswer(updatedAnswers);
     }
 
     setActiveId(null);
+    setActiveWord(null);
   };
 
   const removeWordFromBlank = (blankId: string) => {
@@ -1091,14 +1096,14 @@ function FillBlanksActivity({
       </ActionWrapper>
 
       <DragOverlay>
-        {activeId && activeId.startsWith("word-") ? (
+        {activeId && activeId.startsWith("word-") && activeWord ? (
           <motion.div
             initial={{ scale: 1.05 }}
             className="px-4 py-2 bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border border-brand-300 shadow-lg rounded-lg pointer-events-none"
           >
             <div className="flex items-center">
               <GripVertical className="w-4 h-4 mr-2 opacity-60" />
-              {allWords[parseInt(activeId.replace("word-", ""))]}
+              {activeWord}
             </div>
           </motion.div>
         ) : null}
