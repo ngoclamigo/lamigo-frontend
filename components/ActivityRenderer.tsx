@@ -10,20 +10,17 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import {
-  ChevronLeft,
   ChevronRight,
   ExternalLink,
   GripVertical,
   RotateCcw,
-  Shuffle,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   EmbedConfig,
   FillBlanksConfig,
-  FlashcardConfig,
   LearningActivity,
   MatchingConfig,
   QuizConfig,
@@ -32,78 +29,68 @@ import {
 
 interface ActivityRendererProps {
   activity: LearningActivity;
-  onComplete?: () => void;
   onNext?: () => void;
-  onPrevious?: () => void;
-  showNavigation?: boolean;
+  isCompleted?: boolean;
+  isLastActivity?: boolean;
+  isAudioPlaying?: boolean;
 }
 
 export function ActivityRenderer({
   activity,
-  onComplete,
   onNext,
-  onPrevious,
-  showNavigation = false,
+  isCompleted = false,
+  isLastActivity = false,
+  isAudioPlaying = false,
 }: ActivityRendererProps) {
   switch (activity.type) {
     case "slide":
       return (
         <SlideActivity
           activity={activity}
-          onComplete={onComplete}
           onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
+          isCompleted={isCompleted}
+          isLastActivity={isLastActivity}
+          isAudioPlaying={isAudioPlaying}
         />
       );
     case "quiz":
       return (
         <QuizActivity
           activity={activity}
-          onComplete={onComplete}
           onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
-        />
-      );
-    case "flashcard":
-      return (
-        <FlashcardActivity
-          activity={activity}
-          onComplete={onComplete}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
+          isCompleted={isCompleted}
+          isLastActivity={isLastActivity}
+          isAudioPlaying={isAudioPlaying}
         />
       );
     case "embed":
       return (
         <EmbedActivity
           activity={activity}
-          onComplete={onComplete}
           onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
+          isCompleted={isCompleted}
+          isLastActivity={isLastActivity}
+          isAudioPlaying={isAudioPlaying}
         />
       );
     case "fill_blanks":
       return (
         <FillBlanksActivity
           activity={activity}
-          onComplete={onComplete}
           onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
+          isCompleted={isCompleted}
+          isLastActivity={isLastActivity}
+          isAudioPlaying={isAudioPlaying}
         />
       );
     case "matching":
       return (
         <MatchingActivity
           activity={activity}
-          onComplete={onComplete}
           onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
+          isCompleted={isCompleted}
+          isLastActivity={isLastActivity}
+          isAudioPlaying={isAudioPlaying}
         />
       );
     default:
@@ -111,19 +98,75 @@ export function ActivityRenderer({
   }
 }
 
+interface NextButtonProps {
+  disabled?: boolean;
+  isCompleted?: boolean;
+  isLastActivity?: boolean;
+  onClick?: () => void;
+}
+
+function NextButton({
+  disabled = false,
+  isCompleted = false,
+  isLastActivity = false,
+  onClick,
+}: NextButtonProps) {
+  return (
+    <motion.button
+      onClick={onClick}
+      disabled={!isCompleted && disabled}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className={`flex items-center px-4 py-2 rounded-lg shadow-sm transition-colors text-sm font-medium ${
+        isLastActivity
+          ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+          : "bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700"
+      } text-white disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed`}
+    >
+      {isLastActivity ? "Complete" : "Continue"}
+      {!isLastActivity && <ChevronRight className="w-3 h-3 ml-1" />}
+      {isLastActivity && <span className="ml-2">🎉</span>}
+    </motion.button>
+  );
+}
+
+function ActionWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.5 }}
+      className="mt-auto bg-white border-t border-gray-200 shadow-lg rounded-b-xl p-4"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 function SlideActivity({
   activity,
-  onComplete,
   onNext,
-  onPrevious,
-  showNavigation,
+  isCompleted,
+  isLastActivity,
+  isAudioPlaying,
 }: ActivityRendererProps) {
   const config = activity.config as SlideConfig;
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    if (!isCompleted && !hasInteracted) {
+      const timer = setTimeout(() => {
+        setHasInteracted(true);
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isCompleted, hasInteracted]);
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col">
       <motion.div
-        className="relative z-10"
+        className="relative z-10 flex-1"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -160,59 +203,67 @@ function SlideActivity({
         />
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.4 }}
-      >
-        <NavigationButtons
-          onComplete={onComplete}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
-        />
-      </motion.div>
+      {/* Action Wrapper */}
+      <ActionWrapper>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            {hasInteracted || isCompleted ? (
+              <div className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                ✓ Slide Read
+              </div>
+            ) : (
+              <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                👁️‍🗨️ Read slide for 10 seconds to continue
+              </div>
+            )}
+          </div>
+
+          <NextButton
+            isCompleted={isCompleted}
+            disabled={!hasInteracted || isAudioPlaying}
+            isLastActivity={isLastActivity}
+            onClick={onNext}
+          />
+        </div>
+      </ActionWrapper>
     </div>
   );
 }
 
 function QuizActivity({
   activity,
-  onComplete,
   onNext,
-  onPrevious,
-  showNavigation,
+  isCompleted,
+  isLastActivity,
+  isAudioPlaying,
 }: ActivityRendererProps) {
   const config = activity.config as QuizConfig;
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [userAnswer, setUserAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [answered, setAnswered] = useState(false);
 
   const handleSubmit = () => {
-    if (selectedAnswer !== null) {
+    if (userAnswer !== null && !answered) {
       setShowResult(true);
       setAnswered(true);
-      if (selectedAnswer === config.correct_answer) {
-        onComplete?.();
-      }
     }
   };
 
   const handleReset = () => {
-    setSelectedAnswer(null);
+    setUserAnswer(null);
     setShowResult(false);
     setAnswered(false);
   };
 
   return (
     <motion.div
-      className="h-full"
+      className="h-full flex flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       <motion.div
-        className="relative z-10"
+        className="relative z-10 flex-1"
         initial={{ y: 20 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.4 }}
@@ -237,7 +288,7 @@ function QuizActivity({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 * index }}
                 className={`flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                  selectedAnswer === index
+                  userAnswer === index
                     ? showResult
                       ? index === config.correct_answer
                         ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
@@ -252,8 +303,8 @@ function QuizActivity({
                   type="radio"
                   name="quiz-option"
                   value={index}
-                  checked={selectedAnswer === index}
-                  onChange={() => !answered && setSelectedAnswer(index)}
+                  checked={userAnswer === index}
+                  onChange={() => !answered && setUserAnswer(index)}
                   disabled={answered}
                   className="w-4 h-4 text-brand-600 mr-3"
                 />
@@ -270,7 +321,7 @@ function QuizActivity({
                     Correct
                   </motion.span>
                 )}
-                {showResult && selectedAnswer === index && index !== config.correct_answer && (
+                {showResult && userAnswer === index && index !== config.correct_answer && (
                   <motion.span
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -298,352 +349,94 @@ function QuizActivity({
             <p className="text-gray-700">{config.explanation}</p>
           </motion.div>
         )}
-
-        <motion.div
-          className="flex justify-center space-x-4"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          {!answered ? (
-            <motion.button
-              onClick={handleSubmit}
-              disabled={selectedAnswer === null}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-md disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
-            >
-              Submit Answer
-            </motion.button>
-          ) : selectedAnswer === config.correct_answer ? (
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              className="flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg shadow-md"
-            >
-              Correct! Well done!
-            </motion.div>
-          ) : (
-            <motion.button
-              onClick={handleReset}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg shadow-md hover:from-gray-600 hover:to-gray-700 transition-colors flex items-center"
-            >
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Try Again
-            </motion.button>
-          )}
-        </motion.div>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4, delay: 0.4 }}
-      >
-        <NavigationButtons
-          onComplete={onComplete}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
-          disabled={!answered || selectedAnswer !== config.correct_answer}
-        />
-      </motion.div>
-    </motion.div>
-  );
-}
-
-function FlashcardActivity({
-  activity,
-  onComplete,
-  onNext,
-  onPrevious,
-  showNavigation,
-}: ActivityRendererProps) {
-  const config = activity.config as FlashcardConfig;
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [studiedCards, setStudiedCards] = useState<Set<number>>(new Set());
-
-  const currentCard = config.cards[currentCardIndex];
-  const totalCards = config.cards.length;
-
-  const handleFlip = () => {
-    setIsFlipped(!isFlipped);
-    if (!isFlipped) {
-      setStudiedCards((prev) => new Set(prev).add(currentCardIndex));
-      // Complete the activity if all cards have been studied
-      if (studiedCards.size + 1 === totalCards) {
-        onComplete?.();
-      }
-    }
-  };
-
-  const handleNextCard = () => {
-    if (currentCardIndex < totalCards - 1) {
-      setCurrentCardIndex((prev) => prev + 1);
-      setIsFlipped(false);
-    }
-  };
-
-  const handlePrevCard = () => {
-    if (currentCardIndex > 0) {
-      setCurrentCardIndex((prev) => prev - 1);
-      setIsFlipped(false);
-    }
-  };
-
-  const shuffleCards = () => {
-    const randomIndex = Math.floor(Math.random() * totalCards);
-    setCurrentCardIndex(randomIndex);
-    setIsFlipped(false);
-  };
-
-  return (
-    <motion.div
-      className="h-full"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <motion.div
-        className="relative z-10"
-        initial={{ y: 20 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">{activity.title}</h2>
+      {/* Action Wrapper */}
+      <ActionWrapper>
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <motion.div
-              className="bg-gradient-to-r from-brand-50 to-brand-100 px-4 py-2 rounded-lg border border-brand-200"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span className="text-sm font-bold text-brand-700">
-                {currentCardIndex + 1} of {totalCards}
-              </span>
-            </motion.div>
-            <motion.button
-              onClick={shuffleCards}
-              className="p-2 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-lg hover:from-gray-200 hover:to-gray-300 transition-colors"
-              title="Shuffle cards"
-              whileHover={{ scale: 1.1, rotate: 180 }}
-              whileTap={{ scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Shuffle className="w-5 h-5" />
-            </motion.button>
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <motion.div
-            className={`flip-card ${isFlipped ? "flipped" : ""}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <motion.div
-              className="flip-card-inner relative bg-gradient-to-br from-white to-brand-50 rounded-xl min-h-[280px] max-h-[320px] cursor-pointer shadow-md border border-brand-200 hover:shadow-lg transition-all mx-auto max-w-2xl"
-              onClick={handleFlip}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="flip-card-front absolute inset-0 rounded-xl p-6 flex flex-col items-center justify-center text-center">
-                <motion.div
-                  className="bg-gradient-to-r from-brand-500 to-brand-600 text-white px-4 py-1.5 rounded-full text-xs font-bold mb-4"
-                  initial={{ scale: 0.9 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  Question
-                </motion.div>
-                <motion.p
-                  className="text-lg font-medium text-gray-800 leading-relaxed mb-4 max-w-sm"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2, duration: 0.5 }}
-                >
-                  {currentCard.front}
-                </motion.p>
-                <motion.div
-                  className="bg-gradient-to-r from-gray-100 to-gray-200 px-4 py-1.5 rounded-full"
-                  animate={{
-                    scale: [1, 1.05, 1],
-                    backgroundColor: [
-                      "rgba(243, 244, 246, 1)",
-                      "rgba(229, 231, 235, 1)",
-                      "rgba(243, 244, 246, 1)",
-                    ],
-                  }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                >
-                  <p className="text-xs text-gray-600 font-medium flex items-center">
-                    Click to reveal answer
-                  </p>
-                </motion.div>
-              </div>
-
-              {/* Back of card */}
-              <div className="flip-card-back absolute inset-0 rounded-xl p-6 flex flex-col items-center justify-center text-center bg-gradient-to-br from-white to-green-50">
-                <motion.div
-                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-1.5 rounded-full text-xs font-bold mb-4"
-                  initial={{ scale: 0.9 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  Answer
-                </motion.div>
-                <motion.p
-                  className="text-lg font-medium text-gray-800 leading-relaxed mb-4 max-w-sm"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2, duration: 0.5 }}
-                >
-                  {currentCard.back}
-                </motion.p>
-                <motion.div
-                  className="bg-gradient-to-r from-gray-100 to-gray-200 px-4 py-1.5 rounded-full"
-                  animate={{
-                    scale: [1, 1.05, 1],
-                  }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                >
-                  <p className="text-xs text-gray-600 font-medium flex items-center">
-                    Click to flip back
-                  </p>
-                </motion.div>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* Card Navigation */}
-          <motion.div
-            className="flex items-center justify-between mt-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
-            <motion.button
-              onClick={handlePrevCard}
-              disabled={currentCardIndex === 0}
-              className="flex items-center px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 disabled:from-gray-50 disabled:to-gray-100 disabled:text-gray-400 rounded-lg transition-colors font-medium text-gray-700 text-sm"
-              whileHover={{ scale: 1.05, x: -2 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              Previous
-            </motion.button>
-
-            <div className="text-center">
-              <div className="flex space-x-2 mb-1">
-                {config.cards.map((card, index) => (
-                  <motion.button
-                    key={index}
-                    onClick={() => {
-                      setCurrentCardIndex(index);
-                      setIsFlipped(false);
-                    }}
-                    className={`w-3 h-3 rounded-full ${
-                      index === currentCardIndex
-                        ? "bg-gradient-to-r from-brand-400 to-brand-500"
-                        : studiedCards.has(index)
-                          ? "bg-gradient-to-r from-green-400 to-green-500"
-                          : "bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400"
-                    }`}
-                    whileHover={{ scale: 1.3 }}
-                    whileTap={{ scale: 0.8 }}
-                    // transition={{ duration: 0.2 }}
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: 0.1 * index }}
-                  />
-                ))}
-              </div>
-              <motion.p
-                className="text-xs font-medium text-gray-600"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
+            {!answered ? (
+              <motion.button
+                onClick={handleSubmit}
+                disabled={userAnswer === null}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm font-medium"
               >
-                {studiedCards.size} of {totalCards} studied
-              </motion.p>
-            </div>
-
-            <motion.button
-              onClick={handleNextCard}
-              disabled={currentCardIndex === totalCards - 1}
-              className="flex items-center px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg transition-colors font-medium text-sm"
-              whileHover={{ scale: 1.05, x: 2 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-            >
-              Next
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </motion.button>
-          </motion.div>
-
-          {currentCard.tags && currentCard.tags.length > 0 && (
-            <motion.div
-              className="mt-4 flex flex-wrap gap-2 justify-center"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-            >
-              {currentCard.tags.map((tag, index) => (
-                <motion.span
-                  key={index}
-                  className="px-3 py-1 bg-gradient-to-r from-brand-50 to-brand-100 text-brand-700 rounded-full text-xs font-medium border border-brand-200"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.1 * index }}
-                  whileHover={{ scale: 1.1 }}
+                Check Answer
+              </motion.button>
+            ) : (
+              <>
+                {userAnswer !== config.correct_answer && (
+                  <motion.button
+                    onClick={handleReset}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg shadow-sm hover:from-gray-600 hover:to-gray-700 transition-colors flex items-center text-sm font-medium"
+                  >
+                    <RotateCcw className="w-3 h-3 mr-1" />
+                    Try Again
+                  </motion.button>
+                )}
+                <div
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    userAnswer === config.correct_answer
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
                 >
-                  #{tag}
-                </motion.span>
-              ))}
-            </motion.div>
-          )}
-        </div>
-      </motion.div>
+                  {userAnswer === config.correct_answer ? "✓ Correct" : "✗ Incorrect"}
+                </div>
+              </>
+            )}
+          </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4, delay: 0.6 }}
-      >
-        <NavigationButtons
-          onComplete={onComplete}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
-        />
-      </motion.div>
+          <NextButton
+            isCompleted={isCompleted}
+            disabled={!answered || isAudioPlaying}
+            isLastActivity={isLastActivity}
+            onClick={onNext}
+          />
+        </div>
+      </ActionWrapper>
     </motion.div>
   );
 }
+
 
 function EmbedActivity({
   activity,
-  onComplete,
   onNext,
-  onPrevious,
-  showNavigation,
+  isCompleted,
+  isLastActivity,
+  isAudioPlaying,
 }: ActivityRendererProps) {
   const config = activity.config as EmbedConfig;
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    if (config.embed_type === "video" && !isCompleted) {
+      const timer = setTimeout(() => {
+        setHasInteracted(true);
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [config.embed_type, isCompleted]);
+
+  const handleExternalLinkClick = () => {
+    if (!isCompleted) setHasInteracted(true);
+  };
 
   return (
     <motion.div
-      className="h-full"
+      className="h-full flex flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       <motion.div
-        className="relative z-10"
+        className="relative z-10 flex-1"
         initial={{ y: 20 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.4 }}
@@ -669,7 +462,7 @@ function EmbedActivity({
         >
           {config.embed_type === "video" ? (
             <motion.div
-              className="aspect-video overflow-hidden rounded-xl shadow-md"
+              className="aspect-[21/9] overflow-hidden rounded-xl shadow-md"
               whileHover={{ scale: 1.01, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
               transition={{ duration: 0.3 }}
             >
@@ -719,6 +512,7 @@ function EmbedActivity({
                 href={config.url}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={handleExternalLinkClick}
                 className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white font-medium rounded-lg shadow-md"
                 whileHover={{ scale: 1.05, boxShadow: "0 5px 15px rgba(0,0,0,0.1)" }}
                 whileTap={{ scale: 0.98 }}
@@ -734,69 +528,31 @@ function EmbedActivity({
         </motion.div>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5, duration: 0.4 }}
-      >
-        <NavigationButtons
-          onComplete={onComplete}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
-        />
-      </motion.div>
-    </motion.div>
-  );
-}
+      {/* Action Wrapper */}
+      <ActionWrapper>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            {hasInteracted || isCompleted ? (
+              <div className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                {config.embed_type === "video" ? "✓ Video Watched" : "✓ Link Clicked"}
+              </div>
+            ) : (
+              <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                {config.embed_type === "video"
+                  ? "🎥 Watch video for 10 seconds to continue"
+                  : "🔗 Click the link to continue"}
+              </div>
+            )}
+          </div>
 
-function NavigationButtons({
-  onNext,
-  onPrevious,
-  showNavigation,
-  disabled = false,
-}: {
-  onComplete?: () => void;
-  onNext?: () => void;
-  onPrevious?: () => void;
-  showNavigation?: boolean;
-  disabled?: boolean;
-}) {
-  if (!showNavigation) return null;
-
-  return (
-    <motion.div
-      className="flex justify-between items-center mt-8"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
-      {onPrevious ? (
-        <motion.button
-          onClick={onPrevious}
-          whileHover={{ scale: 1.05, x: -2 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center px-6 py-3 rounded-lg text-gray-700 transition-colors bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 border border-gray-200 font-medium shadow-sm"
-        >
-          <ChevronLeft className="w-4 h-4 mr-1" />
-          Previous
-        </motion.button>
-      ) : (
-        <div />
-      )}
-
-      {onNext && (
-        <motion.button
-          onClick={onNext}
-          disabled={disabled}
-          whileHover={{ scale: 1.05, x: 2 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center px-8 py-3 rounded-lg bg-gradient-to-r from-brand-500 to-brand-600 text-white hover:from-brand-600 hover:to-brand-700 disabled:from-gray-300 disabled:to-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed transition-colors font-medium shadow-md"
-        >
-          Next
-          <ChevronRight className="w-4 h-4 ml-1" />
-        </motion.button>
-      )}
+          <NextButton
+            isCompleted={isCompleted}
+            disabled={!hasInteracted || isAudioPlaying}
+            isLastActivity={isLastActivity}
+            onClick={onNext}
+          />
+        </div>
+      </ActionWrapper>
     </motion.div>
   );
 }
@@ -910,15 +666,15 @@ function DroppableBlank({
 
 function FillBlanksActivity({
   activity,
-  onComplete,
   onNext,
-  onPrevious,
-  showNavigation,
+  isCompleted,
+  isLastActivity,
+  isAudioPlaying,
 }: ActivityRendererProps) {
   const config = activity.config as FillBlanksConfig;
-  const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
+  const [userAnswer, setUserAnswer] = useState<Record<string, string>>({});
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [answered, setAnswered] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
 
   // Create sensors for drag and drop
@@ -940,7 +696,7 @@ function FillBlanksActivity({
   const allWords = [...availableWords, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
 
   // Get used words
-  const usedWords = Object.values(userAnswers);
+  const usedWords = Object.values(userAnswer);
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -971,7 +727,7 @@ function FillBlanksActivity({
       const blankId = overTarget.replace("blank-", "");
 
       // Remove this word from any existing blank first
-      const updatedAnswers = { ...userAnswers };
+      const updatedAnswers = { ...userAnswer };
       Object.keys(updatedAnswers).forEach((key) => {
         if (updatedAnswers[key] === word) {
           delete updatedAnswers[key];
@@ -980,14 +736,14 @@ function FillBlanksActivity({
 
       // Add word to new blank
       updatedAnswers[blankId] = word;
-      setUserAnswers(updatedAnswers);
+      setUserAnswer(updatedAnswers);
     }
 
     setActiveId(null);
   };
 
   const removeWordFromBlank = (blankId: string) => {
-    setUserAnswers((prev) => {
+    setUserAnswer((prev) => {
       const updated = { ...prev };
       delete updated[blankId];
       return updated;
@@ -995,26 +751,29 @@ function FillBlanksActivity({
   };
 
   const checkAnswers = () => {
-    const isAllCorrect = config.blanks.every((blank, index) => {
-      const userAnswer = userAnswers[index.toString()];
-      return (
-        userAnswer &&
-        blank.correct_answers.some((correct) => correct.toLowerCase() === userAnswer.toLowerCase())
-      );
-    });
-
-    setShowFeedback(true);
-    if (isAllCorrect) {
-      setIsCompleted(true);
-      onComplete?.();
+    if (!answered) {
+      setShowFeedback(true);
+      setAnswered(true);
     }
   };
 
   const handleReset = () => {
-    setUserAnswers({});
+    setUserAnswer({});
     setShowFeedback(false);
-    setIsCompleted(false);
+    setAnswered(false);
     setActiveId(null);
+  };
+
+  // Check if all blanks are filled correctly
+  const isAllCorrect = () => {
+    if (Object.keys(userAnswer).length !== config.blanks.length) return false;
+
+    return config.blanks.every((blank, index) => {
+      const userWord = userAnswer[index.toString()];
+      return userWord && blank.correct_answers.some(
+        (correct) => correct.toLowerCase() === userWord.toLowerCase()
+      );
+    });
   };
 
   // Create word items with proper IDs (keep the order stable)
@@ -1035,13 +794,13 @@ function FillBlanksActivity({
       onDragEnd={handleDragEnd}
     >
       <motion.div
-        className="h-full"
+        className="h-full flex flex-col"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
         <motion.div
-          className="relative z-10"
+          className="relative z-10 flex-1"
           initial={{ y: 20 }}
           animate={{ y: 0 }}
           transition={{ duration: 0.4 }}
@@ -1077,13 +836,13 @@ function FillBlanksActivity({
                       {index < config.blanks.length && (
                         <DroppableBlank
                           id={index.toString()}
-                          word={userAnswers[index.toString()]}
+                          word={userAnswer[index.toString()]}
                           isCorrect={
-                            userAnswers[index.toString()]
+                            userAnswer[index.toString()]
                               ? config.blanks[index].correct_answers.some(
                                   (correct) =>
                                     correct.toLowerCase() ===
-                                    userAnswers[index.toString()]?.toLowerCase()
+                                    userAnswer[index.toString()]?.toLowerCase()
                                 )
                               : undefined
                           }
@@ -1125,75 +884,57 @@ function FillBlanksActivity({
                   ))}
               </motion.div>
             </motion.div>
-
-            {/* Check answers button */}
-            {!isCompleted && (
-              <motion.div
-                className="text-center mb-6"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.4 }}
-              >
-                <motion.button
-                  onClick={checkAnswers}
-                  disabled={Object.keys(userAnswers).length !== config.blanks.length}
-                  className="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl shadow-md hover:shadow-lg disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Check Answers
-                </motion.button>
-              </motion.div>
-            )}
-
-            {/* Feedback */}
-            {showFeedback && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className={`p-5 border rounded-xl mb-6 ${
-                  isCompleted
-                    ? "bg-gradient-to-r from-green-50 to-green-100 border-green-200 text-green-800"
-                    : "bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200 text-yellow-800"
-                }`}
-              >
-                <h4 className="font-bold mb-2">{isCompleted ? "Excellent!" : "Keep trying!"}</h4>
-                <p className="mb-4">
-                  {isCompleted
-                    ? config.success_message || "You got all the answers correct!"
-                    : "Some answers need adjustment. Check the highlighted blanks."}
-                </p>
-                {!isCompleted && (
-                  <motion.div className="flex justify-center">
-                    <motion.button
-                      onClick={handleReset}
-                      className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl shadow-md flex items-center"
-                      whileHover={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <RotateCcw className="w-4 h-4 mr-2" />
-                      Try Again
-                    </motion.button>
-                  </motion.div>
-                )}
-              </motion.div>
-            )}
           </motion.div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7, duration: 0.4 }}
-        >
-          <NavigationButtons
-            onNext={onNext}
-            onPrevious={onPrevious}
-            showNavigation={showNavigation}
-            disabled={!isCompleted}
-          />
-        </motion.div>
+        {/* Action Wrapper */}
+        <ActionWrapper>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              {!answered ? (
+                <motion.button
+                  onClick={checkAnswers}
+                  disabled={Object.keys(userAnswer).length !== config.blanks.length}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                >
+                  Check Answers
+                </motion.button>
+              ) : (
+                <>
+                  {!isAllCorrect() && (
+                    <motion.button
+                      onClick={handleReset}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg shadow-sm hover:from-gray-600 hover:to-gray-700 transition-colors flex items-center text-sm font-medium"
+                    >
+                      <RotateCcw className="w-3 h-3 mr-1" />
+                      Try Again
+                    </motion.button>
+                  )}
+                  <div
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      isAllCorrect()
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {isAllCorrect() ? "✓ Correct" : "✗ Incorrect"}
+                  </div>
+                </>
+              )}
+            </div>
+
+            <NextButton
+              isCompleted={isCompleted}
+              disabled={!answered || isAudioPlaying}
+              isLastActivity={isLastActivity}
+              onClick={onNext}
+            />
+          </div>
+        </ActionWrapper>
       </motion.div>
 
       <DragOverlay>
@@ -1215,17 +956,16 @@ function FillBlanksActivity({
 
 function MatchingActivity({
   activity,
-  onComplete,
   onNext,
-  onPrevious,
-  showNavigation,
+  isCompleted,
+  isLastActivity,
+  isAudioPlaying,
 }: ActivityRendererProps) {
   const config = activity.config as MatchingConfig;
-  const [matches, setMatches] = useState<Record<string, string>>({});
+  const [userAnswer, setUserAnswer] = useState<Record<string, string>>({});
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
   const [selectedRight, setSelectedRight] = useState<string | null>(null);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(false);
+  const [answered, setAnswered] = useState(false);
   const [itemRefs, setItemRefs] = useState<Record<string, HTMLDivElement | null>>({});
 
   // Generate IDs for each pair to use in matching
@@ -1245,16 +985,14 @@ function MatchingActivity({
   const [shuffledRightItems] = useState(() => [...rightItems].sort(() => Math.random() - 0.5));
 
   const handleLeftClick = (leftId: string) => {
-    if (showFeedback) return;
-
     if (selectedLeft === leftId) {
       setSelectedLeft(null);
     } else {
       setSelectedLeft(leftId);
 
       // If there's already a match for this left item, auto-select the corresponding right item
-      if (matches[leftId]) {
-        setSelectedRight(matches[leftId]);
+      if (userAnswer[leftId]) {
+        setSelectedRight(userAnswer[leftId]);
       } else {
         setSelectedRight(null);
       }
@@ -1262,13 +1000,11 @@ function MatchingActivity({
   };
 
   const handleRightClick = (rightId: string) => {
-    if (showFeedback) return;
-
     if (selectedRight === rightId) {
       setSelectedRight(null);
     } else if (selectedLeft) {
       // Create or update the match
-      const updatedMatches = { ...matches };
+      const updatedMatches = { ...userAnswer };
 
       // Remove this right item from any existing matches
       Object.keys(updatedMatches).forEach((key) => {
@@ -1279,7 +1015,7 @@ function MatchingActivity({
 
       // Add new match
       updatedMatches[selectedLeft] = rightId;
-      setMatches(updatedMatches);
+      setUserAnswer(updatedMatches);
 
       // Clear selections
       setSelectedLeft(null);
@@ -1289,7 +1025,7 @@ function MatchingActivity({
       setSelectedRight(rightId);
 
       // If there's a match for this right item, auto-select the corresponding left item
-      const leftItemId = Object.keys(matches).find((key) => matches[key] === rightId);
+      const leftItemId = Object.keys(userAnswer).find((key) => userAnswer[key] === rightId);
       if (leftItemId) {
         setSelectedLeft(leftItemId);
       }
@@ -1297,34 +1033,34 @@ function MatchingActivity({
   };
 
   const removeMatch = (leftId: string) => {
-    if (showFeedback) return;
-
-    const updatedMatches = { ...matches };
+    const updatedMatches = { ...userAnswer };
     delete updatedMatches[leftId];
-    setMatches(updatedMatches);
+    setUserAnswer(updatedMatches);
     setSelectedLeft(null);
     setSelectedRight(null);
   };
 
   const checkMatches = () => {
-    const isAllCorrect = leftItems.every((leftItem) => {
-      const rightItem = shuffledRightItems.find((r) => matches[leftItem.id] === r.id);
-      return rightItem && leftItem.originalIndex === rightItem.originalIndex;
-    });
-
-    setShowFeedback(true);
-    if (isAllCorrect) {
-      setIsCompleted(true);
-      onComplete?.();
-    }
+    if (!answered) setAnswered(true);
   };
 
   const handleReset = () => {
-    setMatches({});
-    setShowFeedback(false);
-    setIsCompleted(false);
+    setUserAnswer({});
     setSelectedLeft(null);
     setSelectedRight(null);
+    setAnswered(false);
+    setItemRefs({});
+  };
+
+  // Check if all matches are correct
+  const isAllCorrect = () => {
+    if (Object.keys(userAnswer).length !== config.pairs.length) return false;
+
+    return Object.entries(userAnswer).every(([leftId, rightId]) => {
+      const leftItem = leftItems.find(item => item.id === leftId);
+      const rightItem = shuffledRightItems.find(item => item.id === rightId);
+      return leftItem && rightItem && leftItem.originalIndex === rightItem.originalIndex;
+    });
   };
 
   // Reference callback to store refs to each card
@@ -1337,7 +1073,7 @@ function MatchingActivity({
 
   // Function to render connections between matched pairs
   const renderConnections = () => {
-    return Object.entries(matches).map(([leftId, rightId]) => {
+    return Object.entries(userAnswer).map(([leftId, rightId]) => {
       const leftElement = itemRefs[leftId];
       const rightElement = itemRefs[rightId];
 
@@ -1370,10 +1106,9 @@ function MatchingActivity({
       // Determine if the match is correct (only if showing feedback)
       const leftItem = leftItems.find((item) => item.id === leftId);
       const rightItem = shuffledRightItems.find((item) => item.id === rightId);
-      const isCorrect =
-        showFeedback && leftItem && rightItem && leftItem.originalIndex === rightItem.originalIndex;
+      const isCorrect = leftItem && rightItem && leftItem.originalIndex === rightItem.originalIndex;
       const isIncorrect =
-        showFeedback && leftItem && rightItem && leftItem.originalIndex !== rightItem.originalIndex;
+        leftItem && rightItem && leftItem.originalIndex !== rightItem.originalIndex;
 
       const lineColor = isCorrect ? "green" : isIncorrect ? "red" : "#6366f1";
       const strokeWidth = isCorrect || isIncorrect ? 3 : 2;
@@ -1403,35 +1138,6 @@ function MatchingActivity({
           {/* Small circle at each end of the line */}
           <motion.circle cx={x1} cy={y1} r={4} fill={lineColor} />
           <motion.circle cx={x2} cy={y2} r={4} fill={lineColor} />
-
-          {/* Show check or x mark on the line if showing feedback */}
-          {showFeedback && (
-            <motion.g initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }}>
-              {isCorrect ? (
-                <motion.text
-                  x={(x1 + x2) / 2}
-                  y={(y1 + y2) / 2 - 10}
-                  textAnchor="middle"
-                  fontSize="16"
-                  fill="green"
-                  fontWeight="bold"
-                >
-                  ✓
-                </motion.text>
-              ) : isIncorrect ? (
-                <motion.text
-                  x={(x1 + x2) / 2}
-                  y={(y1 + y2) / 2 - 10}
-                  textAnchor="middle"
-                  fontSize="16"
-                  fill="red"
-                  fontWeight="bold"
-                >
-                  ✗
-                </motion.text>
-              ) : null}
-            </motion.g>
-          )}
         </motion.svg>
       );
     });
@@ -1439,13 +1145,13 @@ function MatchingActivity({
 
   return (
     <motion.div
-      className="h-full"
+      className="h-full flex flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       <motion.div
-        className="relative z-10"
+        className="relative z-10 flex-1"
         initial={{ y: 20 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.4 }}
@@ -1496,18 +1202,14 @@ function MatchingActivity({
               >
                 <h3 className="text-lg font-semibold text-gray-700 mb-3">Terms</h3>
                 {leftItems.map((item, index) => {
-                  const isMatched = !!matches[item.id];
+                  const isMatched = !!userAnswer[item.id];
                   const isSelected = selectedLeft === item.id;
-                  const matchedRightId = matches[item.id];
+                  const matchedRightId = userAnswer[item.id];
                   const matchedRight = shuffledRightItems.find((r) => r.id === matchedRightId);
                   const isCorrect =
-                    showFeedback &&
-                    matchedRight &&
-                    item.originalIndex === matchedRight.originalIndex;
+                    matchedRight && item.originalIndex === matchedRight.originalIndex;
                   const isIncorrect =
-                    showFeedback &&
-                    matchedRight &&
-                    item.originalIndex !== matchedRight.originalIndex;
+                    matchedRight && item.originalIndex !== matchedRight.originalIndex;
 
                   return (
                     <motion.div
@@ -1572,16 +1274,15 @@ function MatchingActivity({
               >
                 <h3 className="text-lg font-semibold text-gray-700 mb-3">Definitions</h3>
                 {shuffledRightItems.map((item, index) => {
-                  const isMatched = Object.values(matches).includes(item.id);
+                  const isMatched = Object.values(userAnswer).includes(item.id);
                   const isSelected = selectedRight === item.id;
-                  const matchedLeftId = Object.keys(matches).find(
-                    (key) => matches[key] === item.id
+                  const matchedLeftId = Object.keys(userAnswer).find(
+                    (key) => userAnswer[key] === item.id
                   );
                   const matchedLeft = leftItems.find((left) => left.id === matchedLeftId);
-                  const isCorrect =
-                    showFeedback && matchedLeft && matchedLeft.originalIndex === item.originalIndex;
+                  const isCorrect = matchedLeft && matchedLeft.originalIndex === item.originalIndex;
                   const isIncorrect =
-                    showFeedback && matchedLeft && matchedLeft.originalIndex !== item.originalIndex;
+                    matchedLeft && matchedLeft.originalIndex !== item.originalIndex;
 
                   return (
                     <motion.div
@@ -1623,75 +1324,57 @@ function MatchingActivity({
               </motion.div>
             </div>
           </div>
-
-          {/* Check matches button */}
-          {!isCompleted && (
-            <motion.div
-              className="text-center mb-6"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.4 }}
-            >
-              <motion.button
-                onClick={checkMatches}
-                disabled={Object.keys(matches).length !== config.pairs.length}
-                className="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl shadow-md disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed"
-                whileHover={{ scale: 1.05, boxShadow: "0 6px 15px rgba(0,0,0,0.1)" }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Check Matches
-              </motion.button>
-            </motion.div>
-          )}
-
-          {/* Feedback */}
-          {showFeedback && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className={`p-5 border rounded-xl mb-6 ${
-                isCompleted
-                  ? "bg-gradient-to-r from-green-50 to-green-100 border-green-200 text-green-800"
-                  : "bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200 text-yellow-800"
-              }`}
-            >
-              <h4 className="font-bold mb-2">{isCompleted ? "Perfect Match!" : "Try Again!"}</h4>
-              <p className="mb-4">
-                {isCompleted
-                  ? config.success_message || "You matched all pairs correctly!"
-                  : "Some matches need adjustment. Check the highlighted pairs."}
-              </p>
-              {!isCompleted && (
-                <motion.div className="flex justify-center">
-                  <motion.button
-                    onClick={handleReset}
-                    className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg shadow-md flex items-center"
-                    whileHover={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Try Again
-                  </motion.button>
-                </motion.div>
-              )}
-            </motion.div>
-          )}
         </motion.div>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7, duration: 0.4 }}
-      >
-        <NavigationButtons
-          onNext={onNext}
-          onPrevious={onPrevious}
-          showNavigation={showNavigation}
-          disabled={!isCompleted}
-        />
-      </motion.div>
+      {/* Action Wrapper */}
+      <ActionWrapper>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            {!answered ? (
+              <motion.button
+                onClick={checkMatches}
+                disabled={Object.keys(userAnswer).length !== config.pairs.length}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+              >
+                Check Matches
+              </motion.button>
+            ) : (
+              <>
+                {!isAllCorrect() && (
+                  <motion.button
+                    onClick={handleReset}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg shadow-sm hover:from-gray-600 hover:to-gray-700 transition-colors flex items-center text-sm font-medium"
+                  >
+                    <RotateCcw className="w-3 h-3 mr-1" />
+                    Try Again
+                  </motion.button>
+                )}
+                <div
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    isAllCorrect()
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {isAllCorrect() ? "✓ Correct" : "✗ Incorrect"}
+                </div>
+              </>
+            )}
+          </div>
+
+          <NextButton
+            isCompleted={isCompleted}
+            disabled={!answered || isAudioPlaying}
+            isLastActivity={isLastActivity}
+            onClick={onNext}
+          />
+        </div>
+      </ActionWrapper>
     </motion.div>
   );
 }

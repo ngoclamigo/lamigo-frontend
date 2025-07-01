@@ -112,7 +112,6 @@ export const mockLearningPaths: LearningPath[] = [
               right: "Stay updated on market events and analyst reports",
             },
           ],
-          success_message: "Great! You understand how to use Capital IQ Pro's key features.",
         },
       },
       {
@@ -145,7 +144,6 @@ export const mockLearningPaths: LearningPath[] = [
               feedback: "The Excel plugin integrates Capital IQ data with spreadsheets.",
             },
           ],
-          success_message: "Perfect! You're becoming a Capital IQ Pro expert!",
         },
       },
       {
@@ -267,7 +265,6 @@ export const mockLearningPaths: LearningPath[] = [
               feedback: "Gross margin shows profit as a percentage of revenue.",
             },
           ],
-          success_message: "Excellent! You've mastered these key financial terms!",
         },
       },
       {
@@ -299,7 +296,6 @@ export const mockLearningPaths: LearningPath[] = [
               right: "Weighted average cost of capital used as discount rate",
             },
           ],
-          success_message: "Perfect! You understand how these valuation metrics work.",
         },
       },
       {

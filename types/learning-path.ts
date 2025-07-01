@@ -65,7 +65,6 @@ export interface FillBlanksConfig {
   instruction: string;
   text_with_blanks: string; // Text with placeholders like "The _____ of a company is calculated by..."
   blanks: FillBlank[];
-  success_message?: string;
 }
 
 export interface FillBlank {
@@ -77,7 +76,6 @@ export interface FillBlank {
 export interface MatchingConfig {
   instruction: string;
   pairs: MatchingPair[];
-  success_message?: string;
 }
 
 export interface MatchingPair {
