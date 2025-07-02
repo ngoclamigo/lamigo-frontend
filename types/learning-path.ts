@@ -1,32 +1,34 @@
-export interface LearningPath {
+type LearningPath = {
   id: string;
   title: string;
   description: string;
   duration_estimate_hours: number;
   activities: Activity[];
-}
+};
 
-export interface Activity {
+type ActivityType = "slide" | "quiz" | "flashcard" | "embed" | "fill_blanks" | "matching";
+
+type ActivityConfig =
+  | SlideConfig
+  | QuizConfig
+  | FlashcardConfig
+  | EmbedConfig
+  | FillBlanksConfig
+  | MatchingConfig;
+
+type Activity = {
   id: string;
   title: string;
   description: string;
-  type: "slide" | "quiz" | "flashcard" | "embed" | "fill_blanks" | "matching";
-  config:
-    | SlideConfig
-    | QuizConfig
-    | FlashcardConfig
-    | EmbedConfig
-    | FillBlanksConfig
-    | MatchingConfig;
-}
+  type: ActivityType;
+  config: ActivityConfig;
+};
 
-// Activity specific configs
 export interface SlideConfig {
   content: string;
-  title: string;
+  narration: string;
   media_url?: string;
   media_type?: "image" | "video";
-  narration?: string;
 }
 
 export interface QuizConfig {
@@ -43,26 +45,22 @@ export interface FlashcardConfig {
 export interface FlashcardData {
   front: string;
   back: string;
-  tags?: string[];
 }
 
 export interface EmbedConfig {
   url: string;
-  title: string;
-  description?: string;
   embed_type: "video" | "article";
 }
 
 export interface FillBlanksConfig {
   instruction: string;
-  text_with_blanks: string; // Text with placeholders like "The _____ of a company is calculated by..."
+  text_with_blanks: string;
   blanks: FillBlank[];
 }
 
 export interface FillBlank {
-  position: number; // Position in the text where this blank appears
-  correct_answers: string[]; // Multiple correct answers possible
-  feedback?: string;
+  position: number;
+  correct_answers: string[];
 }
 
 export interface MatchingConfig {
@@ -109,3 +107,5 @@ export interface LearningAchievement {
   points?: number;
   path_id?: string;
 }
+
+export type { LearningPath, Activity, ActivityConfig, ActivityType };
