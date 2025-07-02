@@ -37,10 +37,10 @@ export function AppLayout({ children }: AppLayoutProps) {
               Scenarios
             </Link>
             <Link
-              href="/demo"
+              href="/admin"
               className="text-gray-700 hover:text-brand-600 font-medium transition-colors"
             >
-              API Demos
+              Admin
             </Link>
           </nav>
         </div>
