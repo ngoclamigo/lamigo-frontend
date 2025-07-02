@@ -3,12 +3,13 @@ export interface LearningPath {
   title: string;
   description: string;
   duration_estimate_hours: number;
-  activities: LearningActivity[];
+  activities: Activity[];
 }
 
-export interface LearningActivity {
+export interface Activity {
   id: string;
   title: string;
+  description: string;
   type: "slide" | "quiz" | "flashcard" | "embed" | "fill_blanks" | "matching";
   config:
     | SlideConfig
@@ -17,15 +18,6 @@ export interface LearningActivity {
     | EmbedConfig
     | FillBlanksConfig
     | MatchingConfig;
-}
-
-export interface LearningChat {
-  message_id: string;
-  path_id: string;
-  learner_id: string;
-  timestamp: string;
-  sender_type: "learner" | "system" | "instructor";
-  content: string;
 }
 
 // Activity specific configs
@@ -81,6 +73,15 @@ export interface MatchingConfig {
 export interface MatchingPair {
   left: string;
   right: string;
+}
+
+export interface LearningChat {
+  message_id: string;
+  path_id: string;
+  learner_id: string;
+  timestamp: string;
+  sender_type: "learner" | "system" | "instructor";
+  content: string;
 }
 
 // Progress and Achievement types

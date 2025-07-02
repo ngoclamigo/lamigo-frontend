@@ -36,6 +36,12 @@ export function AppLayout({ children }: AppLayoutProps) {
             >
               Scenarios
             </Link>
+            <Link
+              href="/demo"
+              className="text-gray-700 hover:text-brand-600 font-medium transition-colors"
+            >
+              API Demos
+            </Link>
           </nav>
         </div>
       </header>

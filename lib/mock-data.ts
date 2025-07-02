@@ -12,41 +12,41 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "platform-intro-slide",
         title: "Introduction to Capital IQ Pro",
+        description: "",
         type: "slide",
         config: {
           title: "Getting Started with S&P Capital IQ Pro",
           content: `
-<section>
-  <p class="text-base mb-6">
-    <strong>S&P Capital IQ Pro</strong> is a comprehensive financial intelligence platform that delivers in-depth insights into companies, markets, and industries around the globe.
-  </p>
+          <section>
+            <p class="text-base mb-6">
+              <strong>S&P Capital IQ Pro</strong> is a comprehensive financial intelligence platform that delivers in-depth insights into companies, markets, and industries around the globe.
+            </p>
 
-  <h2 class="text-xl font-bold mb-4 text-brand-600 border-b border-gray-200 pb-2">Key Features</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
-      <h3 class="text-brand-500 font-semibold text-lg mb-1">Screening & Analytics</h3>
-      <p class="text-sm text-gray-600">Create customized screens to identify investment opportunities using precise criteria.</p>
-    </div>
-    <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
-      <h3 class="text-brand-500 font-semibold text-lg mb-1">News & Research</h3>
-      <p class="text-sm text-gray-600">Stay updated with the latest market news, analyst commentary, and industry research reports.</p>
-    </div>
-    <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
-      <h3 class="text-brand-500 font-semibold text-lg mb-1">Markets</h3>
-      <p class="text-sm text-gray-600">Track real-time market data, indices, commodities, and economic indicators globally.</p>
-    </div>
-    <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
-      <h3 class="text-brand-500 font-semibold text-lg mb-1">Office Tools</h3>
-      <p class="text-sm text-gray-600">Seamlessly integrate financial data into Excel, PowerPoint, and Word for dynamic reporting.</p>
-    </div>
-  </div>
+            <h2 class="text-xl font-bold mb-4 text-brand-600 border-b border-gray-200 pb-2">Key Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
+                <h3 class="text-brand-500 font-semibold text-lg mb-1">Screening & Analytics</h3>
+                <p class="text-sm text-gray-600">Create customized screens to identify investment opportunities using precise criteria.</p>
+              </div>
+              <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
+                <h3 class="text-brand-500 font-semibold text-lg mb-1">News & Research</h3>
+                <p class="text-sm text-gray-600">Stay updated with the latest market news, analyst commentary, and industry research reports.</p>
+              </div>
+              <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
+                <h3 class="text-brand-500 font-semibold text-lg mb-1">Markets</h3>
+                <p class="text-sm text-gray-600">Track real-time market data, indices, commodities, and economic indicators globally.</p>
+              </div>
+              <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-200">
+                <h3 class="text-brand-500 font-semibold text-lg mb-1">Office Tools</h3>
+                <p class="text-sm text-gray-600">Seamlessly integrate financial data into Excel, PowerPoint, and Word for dynamic reporting.</p>
+              </div>
+            </div>
 
-  <h2 class="text-xl font-bold mb-4 text-brand-600 border-b border-gray-200 pb-2">Why Use Capital IQ Pro?</h2>
-  <p class="text-base text-gray-700">
-    Capital IQ Pro offers unmatched access to financial data, powerful analytics, and actionable insights. Its intuitive interface and advanced search functionality empower finance professionals to make confident decisions with speed and precision.
-  </p>
-</section>
-          `,
+            <h2 class="text-xl font-bold mb-4 text-brand-600 border-b border-gray-200 pb-2">Why Use Capital IQ Pro?</h2>
+            <p class="text-base text-gray-700">
+              Capital IQ Pro offers unmatched access to financial data, powerful analytics, and actionable insights. Its intuitive interface and advanced search functionality empower finance professionals to make confident decisions with speed and precision.
+            </p>
+          </section>`,
           narration:
             "S&P Capital IQ Pro is a powerful all‑in‑one market intelligence platform designed for finance professionals, analysts, and corporate teams. It also integrates seamlessly with Excel, PowerPoint, and Word via Office Tools for one‑click model refreshes, offers mobile access, real‑time market monitoring dashboards, ESG and supply‑chain intelligence from Sustainable1, and curated news from top outlets like Dow Jones and WSJ.",
         },
@@ -54,6 +54,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "navigation-quiz",
         title: "Platform Navigation Quiz",
+        description: "",
         type: "quiz",
         config: {
           question:
@@ -67,6 +68,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "platform-tutorial-video",
         title: "Capital IQ Platform Tutorial",
+        description: "",
         type: "embed",
         config: {
           url: "https://www.youtube.com/embed/eCjqEaWZvHg?si=oTZGa3ZuRsXu77M5",
@@ -79,6 +81,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "financial-analysis-flashcard",
         title: "Financial Analysis Concepts",
+        description: "",
         type: "flashcard",
         config: {
           cards: [
@@ -108,6 +111,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "capital-iq-features-matching",
         title: "Match Capital IQ Features to Use Cases",
+        description: "",
         type: "matching",
         config: {
           instruction: "Connect each Capital IQ Pro feature with its primary use case.",
@@ -134,6 +138,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "capital-iq-terminology-blanks",
         title: "Capital IQ Pro Terminology",
+        description: "",
         type: "fill_blanks",
         config: {
           instruction: "Complete these sentences about Capital IQ Pro features and terminology.",
@@ -166,6 +171,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "capital-iq-docs-embed",
         title: "S&P Capital IQ Pro Documentation",
+        description: "",
         type: "embed",
         config: {
           url: "https://www.spglobal.com/marketintelligence/en/solutions/sp-capital-iq-pro",
@@ -187,47 +193,47 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "excel-plugin-slide",
         title: "Capital IQ Excel Plugin Basics",
+        description: "",
         type: "slide",
         config: {
           title: "Excel Integration with Capital IQ Pro",
           content: `
-<section>
-  <p class="text-base mb-6">
-    The <strong>Capital IQ Excel Plugin</strong> allows seamless integration of Capital IQ’s robust financial data into Excel, enhancing financial modeling and streamlining workflows.
-  </p>
+          <section>
+            <p class="text-base mb-6">
+              The <strong>Capital IQ Excel Plugin</strong> allows seamless integration of Capital IQ’s robust financial data into Excel, enhancing financial modeling and streamlining workflows.
+            </p>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-    <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
-      <h3 class="text-brand-600 font-semibold text-lg mb-3">Key Excel Functions</h3>
-      <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
-        <li><span class="font-medium">CIQCF()</span> – Pull financial statements</li>
-        <li><span class="font-medium">CIQINDEX()</span> – Retrieve index data</li>
-        <li><span class="font-medium">CIQFINANCIALS()</span> – Access specific metrics</li>
-      </ul>
-    </div>
-    <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
-      <h3 class="text-brand-600 font-semibold text-lg mb-3">Benefits</h3>
-      <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
-        <li>Real-time data refreshes</li>
-        <li>Customizable templates</li>
-        <li>Time-series analysis</li>
-        <li>Automated reporting</li>
-      </ul>
-    </div>
-  </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+              <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
+                <h3 class="text-brand-600 font-semibold text-lg mb-3">Key Excel Functions</h3>
+                <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
+                  <li><span class="font-medium">CIQCF()</span> – Pull financial statements</li>
+                  <li><span class="font-medium">CIQINDEX()</span> – Retrieve index data</li>
+                  <li><span class="font-medium">CIQFINANCIALS()</span> – Access specific metrics</li>
+                </ul>
+              </div>
+              <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
+                <h3 class="text-brand-600 font-semibold text-lg mb-3">Benefits</h3>
+                <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
+                  <li>Real-time data refreshes</li>
+                  <li>Customizable templates</li>
+                  <li>Time-series analysis</li>
+                  <li>Automated reporting</li>
+                </ul>
+              </div>
+            </div>
 
-  <div class="bg-brand-50 border-l-4 border-brand-500 p-4 rounded mb-4">
-    <p class="text-sm text-brand-700">
-      The Excel Plugin is compatible with both Windows and Mac versions of Microsoft Excel, offering direct access to S&P Capital IQ’s comprehensive financial database.
-    </p>
-  </div>
+            <div class="bg-brand-50 border-l-4 border-brand-500 p-4 rounded mb-4">
+              <p class="text-sm text-brand-700">
+                The Excel Plugin is compatible with both Windows and Mac versions of Microsoft Excel, offering direct access to S&P Capital IQ’s comprehensive financial database.
+              </p>
+            </div>
 
-  <h2 class="text-xl font-bold text-brand-700 mb-3 border-b border-gray-200 pb-2">Getting Started</h2>
-  <p class="text-base text-gray-700">
-    To begin using the Excel Plugin, install it via the S&P Capital IQ Pro platform. Once installed, launch Excel and access the plugin through the Excel ribbon. You can start retrieving data immediately using CIQ functions directly in your spreadsheets.
-  </p>
-</section>
-          `,
+            <h2 class="text-xl font-bold text-brand-700 mb-3 border-b border-gray-200 pb-2">Getting Started</h2>
+            <p class="text-base text-gray-700">
+              To begin using the Excel Plugin, install it via the S&P Capital IQ Pro platform. Once installed, launch Excel and access the plugin through the Excel ribbon. You can start retrieving data immediately using CIQ functions directly in your spreadsheets.
+            </p>
+          </section>`,
           narration:
             "Excel Integration with Capital IQ Pro enables users to seamlessly access and analyze real-time financial data directly within Microsoft Excel. By leveraging the powerful add-in, professionals can pull in key metrics, financial statements, market data, and proprietary Capital IQ analytics into customizable spreadsheets. This integration streamlines workflows for investment research, valuation modeling, and financial analysis by ensuring data is accurate, up-to-date, and easily refreshable without switching platforms.",
         },
@@ -235,6 +241,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "dcf-modeling-video",
         title: "DCF Modeling Using Capital IQ Data",
+        description: "",
         type: "embed",
         config: {
           url: "https://www.youtube.com/embed/nyot7FkYoqM?si=_HoasUaIip3pstEF",
@@ -247,6 +254,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "financial-model-quiz",
         title: "Financial Modeling Quiz",
+        description: "",
         type: "quiz",
         config: {
           question:
@@ -260,6 +268,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "valuation-simulator",
         title: "Interactive Valuation Simulator",
+        description: "",
         type: "embed",
         config: {
           url: "https://valuingtools.com/en/valuation-simulator",
@@ -272,6 +281,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "financial-terminology-blanks",
         title: "Financial Terminology Fill-in-the-Blanks",
+        description: "",
         type: "fill_blanks",
         config: {
           instruction:
@@ -305,6 +315,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "valuation-metrics-matching",
         title: "Match Valuation Metrics to Definitions",
+        description: "",
         type: "matching",
         config: {
           instruction: "Drag each valuation metric to its correct definition.",
@@ -331,6 +342,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "valuation-flashcard",
         title: "Valuation Concepts",
+        description: "",
         type: "flashcard",
         config: {
           cards: [
@@ -364,54 +376,54 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "sector-analysis-intro",
         title: "Sector Analysis Framework",
+        description: "",
         type: "slide",
         config: {
           title: "Industry Research with Capital IQ Pro",
           content: `
-<section>
-  <p class="text-base mb-4">
-    <strong>Capital IQ Pro</strong> delivers robust industry research tools that empower users to analyze sectors, monitor trends, and uncover market opportunities with confidence.
-  </p>
+          <section>
+            <p class="text-base mb-4">
+              <strong>Capital IQ Pro</strong> delivers robust industry research tools that empower users to analyze sectors, monitor trends, and uncover market opportunities with confidence.
+            </p>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-    <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
-      <h3 class="text-brand-600 font-semibold text-lg mb-3">Key Industry Metrics</h3>
-      <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
-        <li>Market size and growth rates</li>
-        <li>Competitive landscape analysis</li>
-        <li>Industry-specific KPIs</li>
-        <li>Regulatory environment tracking</li>
-      </ul>
-    </div>
-    <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
-      <h3 class="text-brand-600 font-semibold text-lg mb-3">Research Capabilities</h3>
-      <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
-        <li>Sector-specific news alerts</li>
-        <li>Analyst reports and forecasts</li>
-        <li>Peer benchmarking</li>
-        <li>Thematic research</li>
-      </ul>
-    </div>
-  </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+              <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
+                <h3 class="text-brand-600 font-semibold text-lg mb-3">Key Industry Metrics</h3>
+                <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
+                  <li>Market size and growth rates</li>
+                  <li>Competitive landscape analysis</li>
+                  <li>Industry-specific KPIs</li>
+                  <li>Regulatory environment tracking</li>
+                </ul>
+              </div>
+              <div class="border rounded-lg p-5 shadow-sm hover:shadow-md transition duration-200">
+                <h3 class="text-brand-600 font-semibold text-lg mb-3">Research Capabilities</h3>
+                <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
+                  <li>Sector-specific news alerts</li>
+                  <li>Analyst reports and forecasts</li>
+                  <li>Peer benchmarking</li>
+                  <li>Thematic research</li>
+                </ul>
+              </div>
+            </div>
 
-  <div class="bg-brand-50 border-l-4 border-brand-500 p-4 rounded mb-4">
-    <p class="text-sm text-brand-600">
-      Capital IQ Pro includes exclusive research from S&P Global analysts, offering proprietary insights not available on other platforms.
-    </p>
-  </div>
+            <div class="bg-brand-50 border-l-4 border-brand-500 p-4 rounded mb-4">
+              <p class="text-sm text-brand-600">
+                Capital IQ Pro includes exclusive research from S&P Global analysts, offering proprietary insights not available on other platforms.
+              </p>
+            </div>
 
-  <h2 class="text-xl font-bold text-brand-600 mb-3 border-b border-gray-200 pb-2">Industry Analysis Framework</h2>
-  <p class="text-base text-gray-700 mb-4">
-    Capital IQ Pro’s industry research leverages a structured framework designed to support strategic decision-making. Key pillars include:
-  </p>
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-sm">
-    <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Market Structure</div>
-    <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Growth Drivers</div>
-    <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Competitive Forces</div>
-    <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Outlook & Trends</div>
-  </div>
-</section>
-          `,
+            <h2 class="text-xl font-bold text-brand-600 mb-3 border-b border-gray-200 pb-2">Industry Analysis Framework</h2>
+            <p class="text-base text-gray-700 mb-4">
+              Capital IQ Pro’s industry research leverages a structured framework designed to support strategic decision-making. Key pillars include:
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-sm">
+              <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Market Structure</div>
+              <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Growth Drivers</div>
+              <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Competitive Forces</div>
+              <div class="bg-brand-100 p-3 rounded font-medium text-brand-600">Outlook & Trends</div>
+            </div>
+          </section>`,
           narration:
             "Industry Research with Capital IQ Pro provides comprehensive data, analytics, and insights to help users understand market dynamics, assess competitive landscapes, and identify growth opportunities across sectors. It combines in-depth industry reports, financial metrics, macroeconomic indicators, and proprietary forecasts, all accessible through a customizable platform. This empowers investment professionals, corporate strategists, and analysts to make informed decisions backed by reliable and up-to-date information.",
         },
@@ -419,6 +431,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "industry-analysis-interactive",
         title: "Interactive Industry Analysis Tool",
+        description: "",
         type: "embed",
         config: {
           url: "https://valuingtools.com/en/valuation-simulator",
@@ -431,6 +444,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "analyst-interview-video",
         title: "Industry Expert Interview",
+        description: "",
         type: "embed",
         config: {
           url: "https://www.youtube.com/embed/CUa30M_FPhk?si=phtpHJ211FPsnpce",
@@ -443,6 +457,7 @@ export const mockLearningPaths: LearningPath[] = [
       {
         id: "market-intelligence-quiz",
         title: "Market Intelligence Quiz",
+        description: "",
         type: "quiz",
         config: {
           question:

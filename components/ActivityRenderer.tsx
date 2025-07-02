@@ -14,17 +14,17 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
+  Activity,
   EmbedConfig,
   FillBlanksConfig,
   FlashcardConfig,
-  LearningActivity,
   MatchingConfig,
   QuizConfig,
   SlideConfig,
 } from "~/types/learning-path";
 
 interface ActivityRendererProps {
-  activity: LearningActivity;
+  activity: Activity;
   onNext?: () => void;
   isCompleted?: boolean;
   isLastActivity?: boolean;
