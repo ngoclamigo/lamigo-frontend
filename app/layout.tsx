@@ -1,6 +1,7 @@
 import "@livekit/components-styles";
 import { Metadata } from "next";
 import { Montserrat } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const fontSans = Montserrat({
@@ -21,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`h-full ${fontSans.className}`}>
-      <body className="h-full">{children}</body>
+      <body className="h-full">
+        {children}
+        <Toaster richColors position="top-center" />
+      </body>
     </html>
   );
 }
