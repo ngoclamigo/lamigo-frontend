@@ -7,7 +7,6 @@ import type {
   LearningProgress,
 } from "~/types/learning-path";
 import type { Scenario } from "~/types/scenario";
-import { Topic } from "~/types/topic";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 const API_BASE_URL = "https://lamigo-api.rockship.co/api";
@@ -164,55 +163,4 @@ export async function sendMessage(message: string, topic?: string): Promise<ApiR
       status: "success",
     };
   }
-}
-
-// Topic APIs
-export async function getTopics(): Promise<ListResponse<Topic>> {
-  const response = await fetch(`${APP_URL}/api/topics`);
-  if (!response.ok) throw new Error("API not available");
-  return response.json();
-}
-
-export async function createTopic(body: {
-  title: string;
-  description: string;
-}): Promise<ApiResponse<Topic>> {
-  const response = await fetch(`${APP_URL}/api/topics`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) throw new Error("API not available");
-  return response.json();
-}
-
-export async function getTopic(topicID: string): Promise<ApiResponse<Topic>> {
-  const response = await fetch(`${APP_URL}/api/topics/${topicID}`);
-  if (!response.ok) throw new Error("API not available");
-  return response.json();
-}
-
-export async function updateTopic(
-  topicID: string,
-  body: Partial<Topic>
-): Promise<ApiResponse<Topic>> {
-  const response = await fetch(`${APP_URL}/api/topics/${topicID}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) throw new Error("API not available");
-  return response.json();
-}
-
-export async function deleteTopic(topicID: string): Promise<ApiResponse<string>> {
-  const response = await fetch(`${APP_URL}/api/topics/${topicID}`, {
-    method: "DELETE",
-  });
-  if (!response.ok) throw new Error("API not available");
-  return response.json();
 }
