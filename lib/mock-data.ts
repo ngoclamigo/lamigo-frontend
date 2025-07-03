@@ -15,7 +15,6 @@ export const mockLearningPaths: LearningPath[] = [
         description: "",
         type: "slide",
         config: {
-          title: "Getting Started with S&P Capital IQ Pro",
           content: `
           <section>
             <p class="text-base mb-6">
@@ -72,9 +71,6 @@ export const mockLearningPaths: LearningPath[] = [
         type: "embed",
         config: {
           url: "https://www.youtube.com/embed/eCjqEaWZvHg?si=oTZGa3ZuRsXu77M5",
-          title: "S&P Capital IQ Pro Platform Tutorial",
-          description:
-            "A comprehensive walkthrough of the Capital IQ Pro interface and key features",
           embed_type: "video",
         },
       },
@@ -88,22 +84,18 @@ export const mockLearningPaths: LearningPath[] = [
             {
               front: "What is EBITDA?",
               back: "EBITDA stands for Earnings Before Interest, Taxes, Depreciation, and Amortization. It's a measure of a company's overall financial performance and is used as an alternative to net income in some circumstances.",
-              tags: ["Financial Metrics", "Valuation", "Analysis"],
             },
             {
               front: "What is the EV/EBITDA multiple?",
               back: "Enterprise Value to EBITDA (EV/EBITDA) is a valuation ratio that compares a company's enterprise value to its earnings before interest, taxes, depreciation, and amortization.",
-              tags: ["Valuation Multiples", "Financial Analysis"],
             },
             {
               front: "What is a DCF model?",
               back: "Discounted Cash Flow (DCF) is a valuation method used to estimate the value of an investment based on its expected future cash flows.",
-              tags: ["Valuation", "Financial Modeling"],
             },
             {
               front: "What is a comp table?",
               back: "A comparable company analysis (comp table) is a valuation methodology that compares the current financial metrics of similar companies to determine the relative value of a target company.",
-              tags: ["Valuation", "Financial Analysis", "Comps"],
             },
           ],
         },
@@ -148,22 +140,18 @@ export const mockLearningPaths: LearningPath[] = [
             {
               position: 1,
               correct_answers: ["Tearsheet", "Tear Sheet"],
-              feedback: "A tearsheet provides a comprehensive one-page overview of a company.",
             },
             {
               position: 2,
               correct_answers: ["Screening", "Screen"],
-              feedback: "Screening allows you to filter companies by financial criteria.",
             },
             {
               position: 3,
               correct_answers: ["Market", "Trading"],
-              feedback: "Market data provides real-time pricing and trading information.",
             },
             {
               position: 4,
               correct_answers: ["Excel", "Office"],
-              feedback: "The Excel plugin integrates Capital IQ data with spreadsheets.",
             },
           ],
         },
@@ -175,9 +163,6 @@ export const mockLearningPaths: LearningPath[] = [
         type: "embed",
         config: {
           url: "https://www.spglobal.com/marketintelligence/en/solutions/sp-capital-iq-pro",
-          title: "S&P Capital IQ Pro Official Documentation",
-          description:
-            "This comprehensive guide provides an in-depth look at the features and functionalities of S&P Capital IQ Pro, designed to help users unlock the full potential of the platform. Whether you're conducting industry research, performing financial analysis, building models, screening for investment opportunities, or monitoring market trends, this document offers step-by-step instructions, best practices, and practical tips to streamline your workflow. Ideal for analysts, portfolio managers, and business professionals looking to make faster, smarter, and more data-driven decisions.",
           embed_type: "article" as const,
         },
       },
@@ -196,7 +181,6 @@ export const mockLearningPaths: LearningPath[] = [
         description: "",
         type: "slide",
         config: {
-          title: "Excel Integration with Capital IQ Pro",
           content: `
           <section>
             <p class="text-base mb-6">
@@ -245,9 +229,6 @@ export const mockLearningPaths: LearningPath[] = [
         type: "embed",
         config: {
           url: "https://www.youtube.com/embed/nyot7FkYoqM?si=_HoasUaIip3pstEF",
-          title: "Building a DCF Model with Capital IQ Data",
-          description:
-            "Step-by-step tutorial on creating a discounted cash flow model using Capital IQ data",
           embed_type: "video",
         },
       },

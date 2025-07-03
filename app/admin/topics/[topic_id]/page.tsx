@@ -3,6 +3,7 @@
 import { AlertCircle, ArrowLeft, Edit, Plus, Save } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { generateLearningPath } from "~/lib/api";
 import type { Topic, TopicSection } from "~/types/topic";
 
 type TopicWithSections = Topic & {
@@ -18,6 +19,8 @@ export default function TopicPage({ params }: { params: { topic_id: string } }) 
   const [error, setError] = useState<string | null>(null);
   const [importText, setImportText] = useState("");
   const [showImport, setShowImport] = useState(false);
+  const [isGeneratingPath, setIsGeneratingPath] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   const fetchTopic = useCallback(async () => {
     try {
@@ -89,6 +92,21 @@ export default function TopicPage({ params }: { params: { topic_id: string } }) 
     }
   };
 
+  const handleGenerateLearningPath = async () => {
+    if (!topic) return;
+
+    try {
+      setIsGeneratingPath(true);
+      setGenerationError(null);
+
+      const { data } = await generateLearningPath(params.topic_id);
+      window.location.href = `/admin/learning-paths/${data.id}`;
+    } catch (err) {
+      setGenerationError(err instanceof Error ? err.message : "Failed to generate learning path");
+      setIsGeneratingPath(false);
+    }
+  };
+
   if (isLoading) return <div className="p-4">Loading...</div>;
   if (error) return <div className="p-4 text-red-500">{error}</div>;
   if (!topic) return <div className="p-4">Topic not found</div>;
@@ -151,8 +169,28 @@ export default function TopicPage({ params }: { params: { topic_id: string } }) 
               <Plus className="mr-2 h-4 w-4" />
               Import Document
             </button>
+            <button
+              onClick={handleGenerateLearningPath}
+              disabled={isGeneratingPath || topic.topic_sections.length === 0}
+              className="flex items-center rounded bg-green-500 px-3 py-1 text-white hover:bg-green-600 disabled:bg-gray-400"
+            >
+              {isGeneratingPath ? (
+                <>
+                  <span className="mr-2">Generating...</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Generate Learning Path
+                </>
+              )}
+            </button>
           </div>
         </div>
+
+        {generationError && (
+          <div className="mt-2 rounded bg-red-100 p-2 text-red-700">{generationError}</div>
+        )}
 
         {showImport && (
           <div className="mt-4 rounded border p-4">
@@ -183,7 +221,7 @@ export default function TopicPage({ params }: { params: { topic_id: string } }) 
             {topic.topic_sections.map((section) => (
               <div key={section.id} className="rounded border p-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium">{section.metadata.title}</h3>
+                  <h3 className="text-lg font-medium">{section.metadata.title as string}</h3>
                   <Link
                     href={`/admin/topics/${params.topic_id}/sections/${section.id}`}
                     className="text-blue-500 hover:underline"

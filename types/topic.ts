@@ -4,6 +4,7 @@ type Topic = {
   description: string;
   created_at: string;
   updated_at: string;
+  topic_sections: TopicSection[];
 };
 
 type TopicSection = {
