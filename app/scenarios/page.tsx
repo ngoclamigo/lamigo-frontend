@@ -51,7 +51,7 @@ export default function ScenariosPage() {
         initial={{ y: -20 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-3xl font-bold mb-6"
+        className="text-2xl font-bold mb-6"
       >
         Available Scenarios
       </motion.h1>

@@ -2,8 +2,8 @@
 
 import { AlertCircle, ArrowLeft, Edit, Plus, Save } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-import { generateLearningPath } from "~/lib/api";
+import { useEffect, useState } from "react";
+import { generateLearningPath, getTopic, updateTopic } from "~/lib/api";
 import type { Topic, TopicSection } from "~/types/topic";
 
 type TopicWithSections = Topic & {
@@ -22,46 +22,33 @@ export default function TopicPage({ params }: { params: { topic_id: string } }) 
   const [isGeneratingPath, setIsGeneratingPath] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
 
-  const fetchTopic = useCallback(async () => {
+  const fetchTopic = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/topics/${params.topic_id}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch topic");
-      }
-      const data = await response.json();
+      const data = await getTopic(params.topic_id);
       setTopic(data.data);
       setTitle(data.data.title);
-      setDescription(data.description || "");
+      setDescription(data.data.description);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
-  }, [params.topic_id]);
+  };
 
   useEffect(() => {
     fetchTopic();
-  }, [fetchTopic]);
+  }, []);
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`/api/topics/${params.topic_id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          description,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update topic");
-      }
-
-      await fetchTopic();
+      if (!topic) return;
+      const updatedTopic = {
+        ...topic,
+        title: title.trim(),
+        description: description.trim(),
+      };
+      await updateTopic(params.topic_id, updatedTopic);
       setIsEditing(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -100,7 +87,7 @@ export default function TopicPage({ params }: { params: { topic_id: string } }) 
       setGenerationError(null);
 
       const { data } = await generateLearningPath(params.topic_id);
-      window.location.href = `/admin/learning-paths/${data.id}`;
+      window.location.href = `/learning-paths/${data.id}`;
     } catch (err) {
       setGenerationError(err instanceof Error ? err.message : "Failed to generate learning path");
       setIsGeneratingPath(false);
@@ -114,7 +101,7 @@ export default function TopicPage({ params }: { params: { topic_id: string } }) 
   return (
     <div className="container p-4">
       <div className="mb-6">
-        <Link href="/admin/topics" className="flex items-center text-blue-500 hover:underline">
+        <Link href="/topics" className="flex items-center text-blue-500 hover:underline">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Topics
         </Link>
@@ -223,7 +210,7 @@ export default function TopicPage({ params }: { params: { topic_id: string } }) 
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-medium">{section.metadata.title as string}</h3>
                   <Link
-                    href={`/admin/topics/${params.topic_id}/sections/${section.id}`}
+                    href={`/topics/${params.topic_id}/sections/${section.id}`}
                     className="text-blue-500 hover:underline"
                   >
                     Edit

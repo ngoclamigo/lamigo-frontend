@@ -37,10 +37,10 @@ export function AppLayout({ children }: AppLayoutProps) {
               Scenarios
             </Link>
             <Link
-              href="/admin"
+              href="/topics"
               className="text-gray-700 hover:text-brand-600 font-medium transition-colors"
             >
-              Admin
+              Topics
             </Link>
           </nav>
         </div>

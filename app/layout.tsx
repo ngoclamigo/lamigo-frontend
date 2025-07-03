@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en" className={`h-full ${fontSans.className}`}>
       <body className="h-full">
         {children}
-        <Toaster richColors />
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );
