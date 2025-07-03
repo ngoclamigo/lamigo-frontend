@@ -6,7 +6,7 @@ import { createClient } from "~/lib/supabase-server";
 export async function GET() {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase.from("document").select()
+    const { data, error } = await supabase.from("documents").select()
 
     if (error) {
       console.error("Error fetching documents:", error);
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     // Create a document entry in the database
     const { data: document, error: documentError } = await supabase
-      .from("document")
+      .from("documents")
       .insert({ path: file.name, type: "markdown", source: "upload" })
       .select()
       .single();
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         const heading = headingTitles[i];
         const slug = createSlugFromHeading(heading);
 
-        const { error } = await supabase.from("document_section").insert({
+        const { error } = await supabase.from("document_sections").insert({
           document_id: document.id,
           slug,
           heading,

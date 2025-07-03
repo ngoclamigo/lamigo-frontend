@@ -5,9 +5,10 @@ export async function GET(_: NextRequest, { params }: { params: { path_id: strin
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from("learning_path")
-      .select()
-      .eq("id", params.path_id);
+      .from("learning_paths")
+      .select("*, activities(*)")
+      .eq("id", params.path_id)
+      .single();
 
     if (error) {
       console.error("Error fetching learning path:", error);
@@ -25,7 +26,7 @@ export async function PUT(request: NextRequest, { params }: { params: { path_id:
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from("learning_path")
+      .from("learning_paths")
       .update(await request.json())
       .eq("id", params.path_id);
 
@@ -45,7 +46,7 @@ export async function DELETE(_: NextRequest, { params }: { params: { path_id: st
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from("learning_path")
+      .from("learning_paths")
       .delete()
       .eq("id", params.path_id);
 

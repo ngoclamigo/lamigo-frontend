@@ -182,14 +182,14 @@ function SlideActivity({
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             {config.media_type === "video" ? (
-              <video src={config.media_url} controls className="w-full rounded-lg" />
+              <video src={config.media_url} controls className="aspect-[21/9] w-full rounded-lg" />
             ) : (
               <Image
                 src={config.media_url}
                 alt={activity.title}
                 width={800}
                 height={400}
-                className="w-full rounded-lg"
+                className="aspect-[21/9] w-full rounded-lg"
               />
             )}
           </motion.div>

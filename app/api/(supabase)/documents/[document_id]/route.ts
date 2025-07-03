@@ -5,9 +5,10 @@ export async function GET(_: NextRequest, { params }: { params: { document_id: s
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from("document")
+      .from("documents")
       .select()
-      .eq("id", params.document_id);
+      .eq("id", params.document_id)
+      .single();
 
     if (error) {
       console.error("Error fetching document:", error);
@@ -25,7 +26,7 @@ export async function PUT(request: NextRequest, { params }: { params: { document
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from("document")
+      .from("documents")
       .update(await request.json())
       .eq("id", params.document_id);
 
@@ -45,7 +46,7 @@ export async function DELETE(_: NextRequest, { params }: { params: { document_id
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from("document")
+      .from("documents")
       .delete()
       .eq("id", params.document_id);
 
