@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateCompletion } from "~/lib/openai";
-import { TopicSectionSearchResult, searchTopicSections } from "~/lib/openai/embeddings";
-import { createClient } from "~/lib/supabase/server";
+import { TopicSectionSearchResult, searchTopicSections } from "~/lib/openai";
+import { createClient } from "~/lib/supabase-server";
 
 export const revalidate = 0;
 

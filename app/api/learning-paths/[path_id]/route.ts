@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "~/lib/supabase/server";
+import { createClient } from "~/lib/supabase-server";
 
 export const revalidate = 0;
 
@@ -35,10 +35,7 @@ export async function GET(_: NextRequest, { params }: { params: { path_id: strin
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { path_id: string } }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: { path_id: string } }) {
   try {
     const body = await request.json();
     const { title, description, duration_estimate_hours } = body;

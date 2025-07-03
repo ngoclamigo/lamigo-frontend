@@ -6,7 +6,7 @@ import {
   generateQuizActivities,
   generateSlideActivity,
 } from "~/lib/generator/activity";
-import { createClient } from "~/lib/supabase/server";
+import { createClient } from "~/lib/supabase-server";
 import { TopicSection } from "~/types/topic";
 
 export async function POST(request: Request, { params }: { params: { topic_id: string } }) {

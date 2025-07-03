@@ -172,7 +172,7 @@ function SlideActivity({
   return (
     <>
       <div className="flex-1 w-full p-6 overflow-y-auto custom-scrollbar">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">{config.title}</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
         {config.media_url && (
           <motion.div
@@ -186,7 +186,7 @@ function SlideActivity({
             ) : (
               <Image
                 src={config.media_url}
-                alt={config.title || activity.title}
+                alt={activity.title}
                 width={800}
                 height={400}
                 className="w-full rounded-lg"
@@ -612,14 +612,14 @@ function EmbedActivity({
       <div className="flex-1 w-full p-6 overflow-y-auto custom-scrollbar">
         <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
-        {config.description && config.embed_type === "video" && (
+        {config.embed_type === "video" && (
           <motion.p
             className="text-gray-600 mb-6 text-base"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.4 }}
           >
-            {config.description}
+            {activity.description}
           </motion.p>
         )}
 
@@ -662,19 +662,17 @@ function EmbedActivity({
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
               >
-                {config.title}
+                {activity.title}
               </motion.h3>
 
-              {config.description && (
-                <motion.p
-                  className="text-gray-600 mb-6"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3, duration: 0.4 }}
-                >
-                  {config.description}
-                </motion.p>
-              )}
+              <motion.p
+                className="text-gray-600 mb-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+              >
+                {activity.description}
+              </motion.p>
 
               <motion.a
                 href={config.url}

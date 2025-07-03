@@ -66,7 +66,7 @@ export async function fetchWithTimeout<T>(url: string, options: FetchOptions = {
       let errorData;
       try {
         errorData = await response.json();
-      } catch (e) {
+      } catch {
         // If JSON parsing fails, use text
         errorData = await response.text();
       }

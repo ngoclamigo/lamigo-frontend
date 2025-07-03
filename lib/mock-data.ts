@@ -253,9 +253,6 @@ export const mockLearningPaths: LearningPath[] = [
         type: "embed",
         config: {
           url: "https://valuingtools.com/en/valuation-simulator",
-          title: "Company Valuation Simulator",
-          description:
-            "An interactive learning tool that allows you to explore and practice real-world company valuation techniques. Adjust key assumptions—such as revenue growth, discount rates, and exit multiples—and instantly see how those changes impact the overall company valuation. Ideal for students, analysts, and finance professionals looking to strengthen their valuation skills, test scenarios, and gain a deeper understanding of the mechanics behind corporate valuation models.",
           embed_type: "article",
         },
       },
@@ -273,22 +270,18 @@ export const mockLearningPaths: LearningPath[] = [
             {
               position: 1,
               correct_answers: ["Market Cap", "Market Capitalization"],
-              feedback: "Market capitalization is the total value of a company's shares.",
             },
             {
               position: 2,
               correct_answers: ["Net Debt", "Debt"],
-              feedback: "Net debt is added to market cap to get enterprise value.",
             },
             {
               position: 3,
               correct_answers: ["P/E", "Price-to-Earnings"],
-              feedback: "P/E ratio compares stock price to earnings per share.",
             },
             {
               position: 4,
               correct_answers: ["Gross", "Profit"],
-              feedback: "Gross margin shows profit as a percentage of revenue.",
             },
           ],
         },
@@ -330,17 +323,14 @@ export const mockLearningPaths: LearningPath[] = [
             {
               front: "What is WACC?",
               back: "WACC (Weighted Average Cost of Capital) represents a company's average cost of financing its assets, weighted according to the proportion of debt and equity in its capital structure.",
-              tags: ["WACC", "Valuation", "DCF"],
             },
             {
               front: "What is a LBO model?",
               back: "A Leveraged Buyout (LBO) model is a financial model used to evaluate the acquisition of a company through significant use of debt financing.",
-              tags: ["LBO", "Financial Modeling", "Private Equity"],
             },
             {
               front: "What is a sensitivity analysis?",
               back: "Sensitivity analysis is a technique used in financial modeling to determine how different values of an independent variable affect a particular dependent variable under specific conditions.",
-              tags: ["Financial Modeling", "Valuation", "Analysis"],
             },
           ],
         },
@@ -360,7 +350,6 @@ export const mockLearningPaths: LearningPath[] = [
         description: "",
         type: "slide",
         config: {
-          title: "Industry Research with Capital IQ Pro",
           content: `
           <section>
             <p class="text-base mb-4">
@@ -416,9 +405,6 @@ export const mockLearningPaths: LearningPath[] = [
         type: "embed",
         config: {
           url: "https://valuingtools.com/en/valuation-simulator",
-          title: "Industry Analysis Simulation",
-          description:
-            "An immersive, interactive tool designed to help you explore and analyze a wide range of industries through real-world data and scenarios. Dive into key performance metrics, assess competitive dynamics, identify major players, and uncover growth trends across sectors. This simulation equips users—whether students, analysts, or business professionals—with the hands-on experience needed to build industry expertise, sharpen strategic thinking, and make informed market assessments.",
           embed_type: "article",
         },
       },
@@ -429,9 +415,6 @@ export const mockLearningPaths: LearningPath[] = [
         type: "embed",
         config: {
           url: "https://www.youtube.com/embed/CUa30M_FPhk?si=phtpHJ211FPsnpce",
-          title: "Interview with Senior Industry Analyst",
-          description:
-            "Learn how professional analysts use Capital IQ Pro for comprehensive market intelligence",
           embed_type: "video",
         },
       },

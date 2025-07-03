@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getEmbedding, splitTextIntoChunks } from "~/lib/openai";
-import { createClient } from "~/lib/supabase/server";
+import { createClient } from "~/lib/supabase-server";
 
 export async function POST(request: Request, { params }: { params: { topic_id: string } }) {
   try {

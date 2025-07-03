@@ -1,3 +1,5 @@
+import { generateCompletion } from "~/lib/openai";
+import { createClient } from "~/lib/supabase-server";
 import {
   ActivityConfig,
   ActivityType,
@@ -9,8 +11,6 @@ import {
   QuizConfig,
   SlideConfig,
 } from "~/types/learning-path";
-import { generateCompletion } from "~/lib/openai";
-import { createClient } from "~/lib/supabase/server";
 
 /**
  * Create an activity in the database
