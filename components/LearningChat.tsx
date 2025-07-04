@@ -40,25 +40,43 @@ export function LearningChatComponent({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [recognition, setRecognition] = useState<any>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Auto-play when latest message changes
+  // Create audio element once on component mount
   useEffect(() => {
-    if (!isLoading && latestMessage.sender === "assistant") {
-      // Cancel any existing speech
-      if (isPlaying) {
-        window.speechSynthesis.cancel();
+    audioRef.current = new Audio();
+
+    // Set up audio event listeners
+    const audio = audioRef.current;
+    audio.onended = () => {
+      setIsPlaying(false);
+      onPlayingStateChange?.(false);
+    };
+
+    audio.onerror = () => {
+      console.error("Audio playback error");
+      setIsPlaying(false);
+      onPlayingStateChange?.(false);
+    };
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
       }
+    };
+  }, [onPlayingStateChange]);
 
-      // Small delay to ensure UI updates first
-      const timer = setTimeout(() => {
-        playMessage();
-      }, 300);
+  // useEffect(() => {
+  //   if (!isLoading && latestMessage.sender === "assistant") {
+  //     const timer = setTimeout(() => {
+  //       playMessage();
+  //     }, 300);
 
-      return () => clearTimeout(timer);
-    }
-    // We only want to trigger this effect when the message ID changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [latestMessage.id]);
+  //     return () => clearTimeout(timer);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [latestMessage.id]);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -98,44 +116,55 @@ export function LearningChatComponent({
   };
 
   const playMessage = () => {
-    if ("speechSynthesis" in window) {
-      if (isPlaying) {
-        window.speechSynthesis.cancel();
-        setIsPlaying(false);
-        onPlayingStateChange?.(false);
-      } else {
-        const utterance = new SpeechSynthesisUtterance(latestMessage.content);
-        utterance.rate = 0.9;
-        utterance.pitch = 1;
-        utterance.volume = 1;
+    if (isPlaying && audioRef.current) {
+      // Stop playing if already playing
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+      onPlayingStateChange?.(false);
+      return;
+    }
 
-        // Set a female voice if available
-        const voices = window.speechSynthesis.getVoices();
-        const femaleVoice = voices.find(
-          (voice) =>
-            voice.name.toLowerCase().includes("female") ||
-            voice.name.toLowerCase().includes("sarah") ||
-            voice.name.toLowerCase().includes("samantha")
-        );
-        if (femaleVoice) {
-          utterance.voice = femaleVoice;
-        }
+    if (audioRef.current) {
+      // Start playing using OpenAI TTS API
+      setIsPlaying(true);
+      onPlayingStateChange?.(true);
 
-        utterance.onstart = () => {
-          setIsPlaying(true);
-          onPlayingStateChange?.(true);
-        };
-        utterance.onend = () => {
+      // Call our TTS API
+      fetch("/api/tts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: latestMessage.content,
+          voice: "ash", // You can customize: 'alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer', 'ash'
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("TTS API request failed");
+          }
+          return response.blob();
+        })
+        .then((audioBlob) => {
+          const audioUrl = URL.createObjectURL(audioBlob);
+
+          // Use the browser's native Audio API
+          if (audioRef.current) {
+            audioRef.current.src = audioUrl;
+            audioRef.current.play().catch((error) => {
+              console.error("Error playing audio:", error);
+              setIsPlaying(false);
+              onPlayingStateChange?.(false);
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching TTS:", error);
           setIsPlaying(false);
           onPlayingStateChange?.(false);
-        };
-        utterance.onerror = () => {
-          setIsPlaying(false);
-          onPlayingStateChange?.(false);
-        };
-
-        window.speechSynthesis.speak(utterance);
-      }
+        });
     }
   };
 
