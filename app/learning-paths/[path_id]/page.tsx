@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { ActivityRenderer } from "~/components/ActivityRenderer";
 import { LearningChatComponent } from "~/components/LearningChat";
 import { getLearningPath } from "~/lib/api";
-import type { LearningPath, SlideConfig } from "~/types/learning-path";
+import type { LearningPath } from "~/types/learning-path";
 
 export default function LearningPathPage() {
   const params = useParams();
@@ -512,11 +512,7 @@ export default function LearningPathPage() {
           <div className="h-full">
             <LearningChatComponent
               topic={learningPath.title}
-              narration={
-                currentActivity.type === "slide"
-                  ? (currentActivity.config as SlideConfig).narration
-                  : undefined
-              }
+              narration={currentActivity.config.narration}
               onPlayingStateChange={setIsAudioPlaying}
             />
           </div>

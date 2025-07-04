@@ -24,54 +24,51 @@ type Activity = {
   config: ActivityConfig;
 };
 
-export interface SlideConfig {
+export type SlideConfig = {
   content: string;
-  narration: string;
-  media_url?: string;
-  media_type?: "image" | "video";
-}
+  narration?: string;
+};
 
-export interface QuizConfig {
+export type QuizConfig = {
   question: string;
   options: string[];
   correct_answer: number;
   explanation?: string;
-}
+  narration?: string;
+};
 
-export interface FlashcardConfig {
-  cards: FlashcardData[];
-}
+export type FlashcardConfig = {
+  cards: {
+    front: string;
+    back: string;
+  }[];
+  narration?: string;
+};
 
-export interface FlashcardData {
-  front: string;
-  back: string;
-}
-
-export interface EmbedConfig {
+export type EmbedConfig = {
   url: string;
   embed_type: "video" | "article";
-}
+  narration?: string;
+};
 
-export interface FillBlanksConfig {
+export type FillBlanksConfig = {
   instruction: string;
   text_with_blanks: string;
-  blanks: FillBlank[];
-}
+  blanks: {
+    position: number;
+    correct_answers: string[];
+  }[];
+  narration?: string;
+};
 
-export interface FillBlank {
-  position: number;
-  correct_answers: string[];
-}
-
-export interface MatchingConfig {
+export type MatchingConfig = {
   instruction: string;
-  pairs: MatchingPair[];
-}
-
-export interface MatchingPair {
-  left: string;
-  right: string;
-}
+  pairs: {
+    left: string;
+    right: string;
+  }[];
+  narration?: string;
+};
 
 export interface LearningChat {
   message_id: string;

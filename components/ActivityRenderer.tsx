@@ -11,7 +11,6 @@ import {
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { ChevronRight, ExternalLink, GripVertical, RotateCcw } from "lucide-react";
 import { motion } from "motion/react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   Activity,
@@ -174,29 +173,8 @@ function SlideActivity({
       <div className="flex-1 w-full p-6 overflow-y-auto custom-scrollbar">
         <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
-        {config.media_url && (
-          <motion.div
-            className="mb-6 overflow-hidden rounded-xl shadow-md"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            {config.media_type === "video" ? (
-              <video src={config.media_url} controls className="aspect-[21/9] w-full rounded-lg" />
-            ) : (
-              <Image
-                src={config.media_url}
-                alt={activity.title}
-                width={800}
-                height={400}
-                className="aspect-[21/9] w-full rounded-lg"
-              />
-            )}
-          </motion.div>
-        )}
-
         <motion.div
-          className="prose prose-lg max-w-none text-gray-700"
+          className="prose prose-lg max-w-none text-gray-700 leading-loose"
           dangerouslySetInnerHTML={{ __html: config.content }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

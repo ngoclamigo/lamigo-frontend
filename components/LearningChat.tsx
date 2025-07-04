@@ -108,6 +108,17 @@ export function LearningChatComponent({
     }
   }, []);
 
+  useEffect(() => {
+    if (narration) {
+      setLatestMessage({
+        id: "1",
+        content: narration,
+        sender: "assistant",
+        timestamp: new Date(),
+      });
+    }
+  }, [narration]);
+
   const startListening = () => {
     if (recognition && !isListening) {
       setIsListening(true);
