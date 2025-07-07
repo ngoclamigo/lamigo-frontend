@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export async function getLearningPaths() {
   const response = await fetch("/api/learning-paths", {
     method: "GET",
@@ -12,7 +13,7 @@ export async function getLearningPaths() {
   return data.data || [];
 }
 
-export async function createLearningPath(learningPath: { name: string; description: string }) {
+export async function createLearningPath(learningPath: { title: string; description: string }) {
   const response = await fetch("/api/learning-paths", {
     method: "POST",
     headers: {
@@ -59,13 +60,13 @@ export async function updateLearningPath(
   return data.data;
 }
 
-export async function generateActivities(pathId: string, documentUrl: string) {
+export async function generateActivities(pathId: string, payload: any) {
   const response = await fetch(`/api/learning-paths/${pathId}/activities/generate`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ document_url: documentUrl }),
+    body: JSON.stringify(payload),
   });
   if (!response.ok) {
     throw new Error("Failed to generate activities");
@@ -76,8 +77,12 @@ export async function generateActivities(pathId: string, documentUrl: string) {
 
 export async function createActivities(
   pathId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  activities: Array<any>
+  activities: Array<{
+    title: string;
+    description: string;
+    type: string;
+    config: Record<string, any>;
+  }>
 ) {
   const response = await fetch(`/api/learning-paths/${pathId}/activities`, {
     method: "POST",

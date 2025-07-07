@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { AlertCircle, CheckCircle, FileText, Upload } from "lucide-react";
+import { AlertCircle, ArrowLeft, CheckCircle, FileText, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 const ALLOWED_FILE_TYPES = [
   "text/markdown",
@@ -73,7 +76,7 @@ export default function UploadPage() {
 
         // Redirect to documents page after a short delay
         setTimeout(() => {
-          router.push("/documents");
+          router.push("/admin/documents");
         }, 2000);
       } else {
         setError(result.error || "Failed to upload file");
@@ -94,9 +97,17 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Upload Document</h1>
+    <div className="space-y-8">
+      <div className="flex items-center space-x-4">
+        <Button variant="ghost" onClick={() => router.back()} className="pl-0">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Documents
+        </Button>
+      </div>
+
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Upload Document</h1>
+        <p className="text-muted-foreground">Add new documents to your library</p>
       </div>
 
       <div className="max-w-2xl">

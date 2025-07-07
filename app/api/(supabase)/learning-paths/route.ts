@@ -23,3 +23,39 @@ export async function GET() {
     );
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const supabase = await createClient();
+    const { title, description } = await request.json();
+
+    if (!title || !description) {
+      return NextResponse.json(
+        { status: "error", error: "Name and description are required" },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await supabase
+      .from("learning_paths")
+      .insert([{ title, description }])
+      .select("*")
+      .single();
+
+    if (error) {
+      console.error("Error creating learning path:", error);
+      return NextResponse.json(
+        { status: "error", error: "Failed to create learning path" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ status: "success", data });
+  } catch (error) {
+    console.error("Error creating learning path:", error);
+    return NextResponse.json(
+      { status: "error", error: "Failed to create learning path" },
+      { status: 500 }
+    );
+  }
+}
