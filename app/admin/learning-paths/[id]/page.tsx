@@ -34,6 +34,8 @@ import { systemPrompt as _systemPrompt, userPrompt as _userPrompt } from "~/util
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export default function LearningPathDetailPage() {
   const params = useParams();
   const router = useRouter();

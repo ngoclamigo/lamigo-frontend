@@ -47,7 +47,7 @@ export type FlashcardConfig = {
 
 export type EmbedConfig = {
   url: string;
-  embed_type: "video" | "article";
+  embed_type: "video" | "document";
   narration?: string;
 };
 

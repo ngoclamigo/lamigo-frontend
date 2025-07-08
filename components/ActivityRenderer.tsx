@@ -337,10 +337,7 @@ function FlashcardActivity({
                       flex items-center justify-center text-center`}
                     style={{ backfaceVisibility: "hidden" }}
                   >
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-2">Question</h3>
-                      <p className="text-base text-gray-700">{card.front}</p>
-                    </div>
+                    <p className="text-base font-semibold text-gray-700">{card.front}</p>
                   </motion.div>
 
                   <motion.div
@@ -352,10 +349,7 @@ function FlashcardActivity({
                       transform: "rotateY(180deg)",
                     }}
                   >
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-2">Answer</h3>
-                      <p className="text-base text-gray-700">{card.back}</p>
-                    </div>
+                    <p className="text-base text-gray-700">{card.back}</p>
                   </motion.div>
                 </motion.div>
 

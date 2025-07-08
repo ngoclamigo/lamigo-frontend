@@ -163,7 +163,7 @@ export const mockLearningPaths: LearningPath[] = [
         type: "embed",
         config: {
           url: "https://www.spglobal.com/marketintelligence/en/solutions/sp-capital-iq-pro",
-          embed_type: "article" as const,
+          embed_type: "document" as const,
         },
       },
     ],
@@ -253,7 +253,7 @@ export const mockLearningPaths: LearningPath[] = [
         type: "embed",
         config: {
           url: "https://valuingtools.com/en/valuation-simulator",
-          embed_type: "article",
+          embed_type: "document",
         },
       },
       {
@@ -405,7 +405,7 @@ export const mockLearningPaths: LearningPath[] = [
         type: "embed",
         config: {
           url: "https://valuingtools.com/en/valuation-simulator",
-          embed_type: "article",
+          embed_type: "document",
         },
       },
       {

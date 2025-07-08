@@ -11,6 +11,8 @@ import { Label } from "~/components/ui/label";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 const ALLOWED_FILE_TYPES = [
   "text/markdown",
   "text/plain",
