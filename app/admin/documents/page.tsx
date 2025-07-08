@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
 "use client";
 
 import { AlertCircle, Download, FileText, Trash2, Upload } from "lucide-react";
@@ -17,10 +18,6 @@ import {
 } from "~/components/ui/table";
 import { formatBytes, formatDate } from "~/lib/utils";
 import { Document } from "~/types/document";
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 

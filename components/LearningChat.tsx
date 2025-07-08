@@ -1,9 +1,13 @@
 "use client";
 
-import { Bot, MessageCircle, Mic, MicOff, Send, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { TextToSpeechRequest } from "@elevenlabs/elevenlabs-js/api";
+import { Bot, MessageCircle, Mic, MicOff, Send, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useSpeech } from "~/hooks/use-speech";
 import { sendMessage } from "~/lib/api";
+import { AudioPlayer } from "./AudioPlayer";
 
 interface Message {
   id: string;
@@ -14,170 +18,82 @@ interface Message {
 
 interface LearningChatProps {
   className?: string;
-  topic?: string; // Learning path name
   narration?: string; // Optional slide activity narration
-  onPlayingStateChange?: (isPlaying: boolean) => void; // Callback when playback state changes
+  audioBase64?: string; // Base64 audio for the initial narration
+  onGenerateStart: (text: string) => string;
+  onGenerateComplete: (id: string, text: string, audioUrl: string) => void;
 }
 
 export function LearningChatComponent({
   className = "",
-  topic,
   narration,
-  onPlayingStateChange,
+  audioBase64,
+  onGenerateStart,
+  onGenerateComplete,
 }: LearningChatProps) {
-  const [latestMessage, setLatestMessage] = useState<Message>({
-    id: "1",
-    content:
-      narration ||
-      "Hi! I'm David. I'm here to help you understand the concepts and answer any questions you might have about this learning path. How can I help you today?",
-    sender: "assistant",
-    timestamp: new Date(),
-  });
+  const [latestMessage, setLatestMessage] = useState<string>(
+    narration ||
+      "Hi! I'm David. I'm here to help you understand the concepts and answer any questions you might have about this learning path. How can I help you today?"
+  );
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [recognition, setRecognition] = useState<any>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isListening] = useState(false);
 
-  // Create audio element once on component mount
+  const {
+    speak,
+    isLoading: isSpeaking,
+    error,
+  } = useSpeech({
+    onError: (errorMessage) => toast.error(errorMessage),
+  });
+
   useEffect(() => {
-    audioRef.current = new Audio();
-
-    // Set up audio event listeners
-    const audio = audioRef.current;
-    audio.onended = () => {
-      setIsPlaying(false);
-      onPlayingStateChange?.(false);
-    };
-
-    audio.onerror = () => {
-      console.error("Audio playback error");
-      setIsPlaying(false);
-      onPlayingStateChange?.(false);
-    };
-
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = "";
-      }
-    };
-  }, [onPlayingStateChange]);
-
-  // useEffect(() => {
-  //   if (!isLoading && latestMessage.sender === "assistant") {
-  //     const timer = setTimeout(() => {
-  //       playMessage();
-  //     }, 300);
-
-  //     return () => clearTimeout(timer);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [latestMessage.id]);
-
-  // Initialize speech recognition
-  useEffect(() => {
-    if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const speechRecognition = new (window as any).webkitSpeechRecognition();
-      speechRecognition.continuous = false;
-      speechRecognition.interimResults = false;
-      speechRecognition.lang = "en-US";
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      speechRecognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setInputValue(transcript);
-        setIsListening(false);
-      };
-
-      speechRecognition.onend = () => {
-        setIsListening(false);
-      };
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      speechRecognition.onerror = (event: any) => {
-        console.error("Speech recognition error:", event.error);
-        setIsListening(false);
-      };
-
-      setRecognition(speechRecognition);
+    if (error) {
+      toast.error(error);
     }
-  }, []);
+  }, [error]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleSubmit = async (data: { text: string }) => {
+    try {
+      setIsGenerating(true);
+
+      const requestData: TextToSpeechRequest = {
+        text: data.text,
+        modelId: "eleven_flash_v2_5",
+        voiceSettings: {
+          stability: 0.5,
+          similarityBoost: 0.75,
+          style: 0,
+          speed: 1.0,
+          useSpeakerBoost: false,
+        },
+      };
+
+      const pendingId = onGenerateStart(data.text);
+
+      const audioUrl = await speak("ErXwobaYiN019PkySvjV", requestData);
+
+      if (audioUrl) {
+        // Pass the complete URL to the callback
+        onGenerateComplete(pendingId, data.text, audioUrl);
+        // toast.success("Generated speech");
+      }
+    } catch (err) {
+      console.log(`An unexpected error occurred: ${err}`);
+      toast.error(`An unexpected error occurred: ${err}`);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   useEffect(() => {
     if (narration) {
-      setLatestMessage({
-        id: "1",
-        content: narration,
-        sender: "assistant",
-        timestamp: new Date(),
-      });
+      handleSubmit({ text: narration });
+      setLatestMessage(narration);
     }
   }, [narration]);
-
-  const startListening = () => {
-    if (recognition && !isListening) {
-      setIsListening(true);
-      recognition.start();
-    }
-  };
-
-  const playMessage = () => {
-    if (isPlaying && audioRef.current) {
-      // Stop playing if already playing
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
-      onPlayingStateChange?.(false);
-      return;
-    }
-
-    if (audioRef.current) {
-      // Start playing using OpenAI TTS API
-      setIsPlaying(true);
-      onPlayingStateChange?.(true);
-
-      // Call our TTS API
-      fetch("/api/tts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: latestMessage.content,
-          voice: "ash", // You can customize: 'alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer', 'ash'
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("TTS API request failed");
-          }
-          return response.blob();
-        })
-        .then((audioBlob) => {
-          const audioUrl = URL.createObjectURL(audioBlob);
-
-          // Use the browser's native Audio API
-          if (audioRef.current) {
-            audioRef.current.src = audioUrl;
-            audioRef.current.play().catch((error) => {
-              console.error("Error playing audio:", error);
-              setIsPlaying(false);
-              onPlayingStateChange?.(false);
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching TTS:", error);
-          setIsPlaying(false);
-          onPlayingStateChange?.(false);
-        });
-    }
-  };
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -194,29 +110,18 @@ export function LearningChatComponent({
 
     try {
       // Call the API with the topic (learning path name)
-      const response = await sendMessage(userMessage.content, topic);
+      const response = await sendMessage(userMessage.content);
 
       if (response.status === "success") {
-        const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: response.data,
-          sender: "assistant",
-          timestamp: new Date(),
-        };
-        setLatestMessage(assistantMessage);
+        setLatestMessage(response.data);
       } else {
         throw new Error("Failed to get response from AI");
       }
     } catch (error) {
       console.error("Error getting AI response:", error);
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content:
-          "I'm sorry, I'm having trouble processing your request right now. Please try again later.",
-        sender: "assistant",
-        timestamp: new Date(),
-      };
-      setLatestMessage(assistantMessage);
+      setLatestMessage(
+        "I'm sorry, I'm having trouble processing your request right now. Please try again later."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -280,32 +185,38 @@ export function LearningChatComponent({
         </motion.div>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 p-4 overflow-y-auto">
-        {/* Display only the latest assistant message text */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          key={latestMessage.id}
-          className="flex items-start justify-between"
-        >
-          <div className="text-gray-800 flex-1">
-            <p className="text-base leading-relaxed">{latestMessage.content}</p>
+        {isGenerating ? (
+          <div className="mt-4">
+            <motion.div
+              className="flex gap-2"
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <div className="w-2 h-2 bg-brand-400 rounded-full"></div>
+              <motion.div
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
+                className="w-2 h-2 bg-brand-400 rounded-full"
+              ></motion.div>
+              <motion.div
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
+                className="w-2 h-2 bg-brand-400 rounded-full"
+              ></motion.div>
+            </motion.div>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={playMessage}
-            disabled={isLoading}
-            className={`ml-4 p-2 rounded-full ${
-              isPlaying ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            } disabled:opacity-50 disabled:cursor-not-allowed`}
-            title={isPlaying ? "Stop playing" : "Play message"}
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-start justify-between"
           >
-            {isPlaying ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-          </motion.button>
-        </motion.div>
-
+            <div className="text-gray-800 flex-1">
+              <p className="text-base leading-relaxed">{latestMessage}</p>
+            </div>
+          </motion.div>
+        )}
         {isLoading && (
           <div className="mt-4">
             <motion.div
@@ -337,11 +248,13 @@ export function LearningChatComponent({
         }}
       >
         <div className="space-y-2">
+          {audioBase64 && narration === latestMessage && (
+            <AudioPlayer audioBase64={audioBase64} autoplay />
+          )}
           {/* Text Input */}
           <div className="w-full relative">
             <div className="relative flex items-center w-full bg-white border rounded-lg focus-within:ring-2 focus-within:ring-brand-400">
               <textarea
-                ref={inputRef}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyPress}
@@ -369,7 +282,7 @@ export function LearningChatComponent({
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={startListening}
+              // onClick={startListening}
               disabled={isLoading}
               className={`px-4 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed ${
                 isListening ? "bg-red-500 text-white" : "bg-gray-500 text-white hover:bg-gray-600"

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { ArrowLeft, Edit2, FileText, Save, Trash2, Wand2, X } from "lucide-react";
@@ -31,8 +32,6 @@ import { createActivities, generateActivities, getLearningPaths } from "~/networ
 import { Document } from "~/types/document";
 import { Activity, LearningPath, QuizConfig, SlideConfig } from "~/types/learning-path";
 import { systemPrompt as _systemPrompt, userPrompt as _userPrompt } from "~/utils/prompt";
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

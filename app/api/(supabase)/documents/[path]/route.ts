@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "~/lib/supabase-server";
 import type { FileObject } from "~/types/document";
 
-export async function DELETE(request: NextRequest, { params }: { params: { path: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string }> }
+) {
   try {
-    const { path: bucketPath } = params;
+    const { path: bucketPath } = await params;
     const supabase = await createClient();
 
     // Delete file from storage
@@ -28,9 +31,9 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
   }
 }
 
-export async function GET(request: NextRequest, { params }: { params: { path: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string }> }) {
   try {
-    const { path: bucketPath } = params;
+    const { path: bucketPath } = await params;
     const supabase = await createClient();
 
     // Get file info

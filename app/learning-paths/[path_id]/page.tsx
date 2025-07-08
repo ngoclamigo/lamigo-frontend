@@ -2,9 +2,11 @@
 
 import { CheckCircle, ChevronLeft, ChevronRight, Circle, Home } from "lucide-react";
 import { motion } from "motion/react";
+import { nanoid } from "nanoid";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { ActivityRenderer } from "~/components/ActivityRenderer";
 import { LearningChatComponent } from "~/components/LearningChat";
 import { getLearningPath } from "~/lib/api";
@@ -21,7 +23,59 @@ export default function LearningPathPage() {
   const [error, setError] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
+  // Voice
+  const [, setSpeeches] = useState<GeneratedSpeech[]>([]);
+  const [selectedSpeech, setSelectedSpeech] = useState<GeneratedSpeech | null>(null);
+
+  const handleGenerateStart = useCallback((text: string) => {
+    const pendingSpeech: GeneratedSpeech = {
+      id: nanoid(),
+      text,
+      audioBase64: "",
+      createdAt: new Date(),
+      status: "loading",
+    };
+
+    setSpeeches((prev) => [pendingSpeech, ...prev]);
+    setSelectedSpeech(pendingSpeech);
+    return pendingSpeech.id;
+  }, []);
+
+  const handleGenerateComplete = useCallback((id: string, text: string, audioUrl: string) => {
+    // Make sure we have a valid URL
+    if (!audioUrl) {
+      toast.error("Failed to generate speech audio");
+      setSpeeches((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, status: "error" as const } : item))
+      );
+      return;
+    }
+
+    setSpeeches((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              text,
+              audioBase64: audioUrl,
+              status: "complete" as const,
+            }
+          : item
+      )
+    );
+
+    setSelectedSpeech((current) =>
+      current?.id === id
+        ? {
+            ...current,
+            text,
+            audioBase64: audioUrl,
+            status: "complete" as const,
+          }
+        : current
+    );
+  }, []);
 
   useEffect(() => {
     const fetchLearningPath = async () => {
@@ -502,7 +556,6 @@ export default function LearningPathPage() {
               onNext={() => handleNext(currentActivity.id)}
               isCompleted={completedActivities.has(currentActivity.id)}
               isLastActivity={currentActivityIndex === learningPath.activities.length - 1}
-              isAudioPlaying={isAudioPlaying}
             />
           </motion.div>
         </div>
@@ -511,13 +564,22 @@ export default function LearningPathPage() {
         <div className="w-96 bg-white/5 backdrop-blur-sm border-l border-white/10 rounded-tl-xl">
           <div className="h-full">
             <LearningChatComponent
-              topic={learningPath.title}
               narration={currentActivity.config.narration}
-              onPlayingStateChange={setIsAudioPlaying}
+              audioBase64={selectedSpeech?.audioBase64}
+              onGenerateStart={handleGenerateStart}
+              onGenerateComplete={handleGenerateComplete}
             />
           </div>
         </div>
       </div>
     </div>
   );
+}
+
+interface GeneratedSpeech {
+  id: string;
+  text: string;
+  audioBase64: string;
+  createdAt: Date;
+  status: "loading" | "complete" | "error";
 }

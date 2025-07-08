@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "~/lib/supabase-server";
 
-export async function GET(_: NextRequest, { params }: { params: { path_id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ path_id: string }> }) {
   try {
+    const { path_id } = await params;
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("learning_paths")
       .select("*, activities(*)")
-      .eq("id", params.path_id)
+      .eq("id", path_id)
       .single();
 
     if (error) {
@@ -28,13 +29,17 @@ export async function GET(_: NextRequest, { params }: { params: { path_id: strin
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { path_id: string } }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ path_id: string }> }
+) {
   try {
+    const { path_id } = await params;
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("learning_paths")
       .update(await request.json())
-      .eq("id", params.path_id);
+      .eq("id", path_id);
 
     if (error) {
       console.error("Error updating learning path:", error);
@@ -54,10 +59,11 @@ export async function PUT(request: NextRequest, { params }: { params: { path_id:
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { path_id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ path_id: string }> }) {
   try {
+    const { path_id } = await params;
     const supabase = await createClient();
-    const { data, error } = await supabase.from("learning_paths").delete().eq("id", params.path_id);
+    const { data, error } = await supabase.from("learning_paths").delete().eq("id", path_id);
 
     if (error) {
       console.error("Error deleting learning path:", error);

@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "~/lib/supabase-server";
 import type { FileObject } from "~/types/document";
 
-export async function GET(request: NextRequest, { params }: { params: { path: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string }> }) {
   try {
-    const { path: bucketPath } = params;
+    const { path: bucketPath } = await params;
     const supabase = await createClient();
 
     // Download file from storage

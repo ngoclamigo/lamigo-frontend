@@ -12,7 +12,7 @@ import {
 import { Room, RoomEvent } from "livekit-client";
 import { MessagesSquare, Phone } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import type { ConnectionDetails } from "~/app/api/connection-details/route";
 import { NoAgentNotification } from "~/components/NoAgentNotification";
@@ -22,7 +22,9 @@ import useCombinedTranscriptions from "~/hooks/useCombinedTranscriptions";
 import { getScenario } from "~/lib/api";
 import { Scenario } from "~/types/scenario";
 
-export default function ScenarioPracticePage({ params }: { params: { scenario_id: string } }) {
+export default function ScenarioPracticePage() {
+  const params = useParams();
+  const scenario_id = params.scenario_id as string;
   const [room] = useState(new Room());
   const router = useRouter();
   const [scenario, setScenario] = useState<Scenario | null>(null);
@@ -34,7 +36,7 @@ export default function ScenarioPracticePage({ params }: { params: { scenario_id
       setIsLoading(true);
       setIsError(false);
       try {
-        const data = await getScenario(params.scenario_id);
+        const data = await getScenario(scenario_id);
         setScenario(data.data);
       } catch (error) {
         console.error("Failed to fetch scenarios:", error);
@@ -45,7 +47,7 @@ export default function ScenarioPracticePage({ params }: { params: { scenario_id
     };
 
     fetchScenarios();
-  }, [params.scenario_id]);
+  }, [scenario_id]);
 
   const onConnectButtonClicked = useCallback(async () => {
     // Generate room connection details, including:
@@ -95,7 +97,7 @@ export default function ScenarioPracticePage({ params }: { params: { scenario_id
               We couldn&apos;t load the scenario details. Please try again later.
             </p>
             <button
-              onClick={() => router.push(`/scenarios/${encodeURIComponent(params.scenario_id)}`)}
+              onClick={() => router.push(`/scenarios/${encodeURIComponent(scenario_id)}`)}
               className="px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors"
             >
               Back to Scenarios
@@ -165,7 +167,7 @@ export default function ScenarioPracticePage({ params }: { params: { scenario_id
               <SimpleVoiceAssistant
                 onConnectButtonClicked={onConnectButtonClicked}
                 onDisconnectButtonClicked={() =>
-                  router.push(`/scenarios/${encodeURIComponent(params.scenario_id)}/summary`)
+                  router.push(`/scenarios/${encodeURIComponent(scenario_id)}/summary`)
                 }
               />
               <div className="absolute top-4 right-4">
@@ -188,7 +190,7 @@ export default function ScenarioPracticePage({ params }: { params: { scenario_id
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
           <p className="text-lg text-gray-600 dark:text-gray-400">No scenario found</p>
           <button
-            onClick={() => router.push(`/scenarios/${encodeURIComponent(params.scenario_id)}`)}
+            onClick={() => router.push(`/scenarios/${encodeURIComponent(scenario_id)}`)}
             className="mt-4 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors"
           >
             Back to Scenarios

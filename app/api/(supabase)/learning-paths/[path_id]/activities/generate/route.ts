@@ -8,7 +8,10 @@ const openai = new OpenAI({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function POST(request: NextRequest, { params }: { params: { path_id: string } }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ path_id: string }> }
+) {
   try {
     const { document_url, system_prompt, user_prompt } = await request.json();
 

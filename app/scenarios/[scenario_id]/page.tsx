@@ -12,13 +12,15 @@ import {
   TableProperties,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiChevronDown, FiChevronUp, FiMic, FiMicOff, FiPlay } from "react-icons/fi";
 import { getScenario } from "~/lib/api";
 import type { Scenario } from "~/types/scenario";
 
-export default function ScenarioPage({ params }: { params: { scenario_id: string } }) {
+export default function ScenarioPage() {
+  const params = useParams();
+  const scenario_id = params.scenario_id as string;
   const router = useRouter();
 
   const [collapsedSteps, setCollapsedSteps] = useState<Record<number, boolean>>({
@@ -43,7 +45,7 @@ export default function ScenarioPage({ params }: { params: { scenario_id: string
       setIsLoading(true);
       setIsError(false);
       try {
-        const data = await getScenario(params.scenario_id);
+        const data = await getScenario(scenario_id);
         setScenario(data.data);
       } catch (error) {
         console.error("Failed to fetch scenarios:", error);
@@ -54,7 +56,7 @@ export default function ScenarioPage({ params }: { params: { scenario_id: string
     };
 
     fetchScenarios();
-  }, [params.scenario_id]);
+  }, [scenario_id]);
 
   const toggleCollapse = (stepNumber: number) => {
     setCollapsedSteps((prev) => ({

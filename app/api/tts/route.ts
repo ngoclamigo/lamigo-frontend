@@ -1,40 +1,68 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
-
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, voice = "ash" } = await request.json();
+    const { text, voiceId = "pNInz6obpgDQGcFmaJgB" } = await request.json();
 
     if (!text) {
       return NextResponse.json({ error: "Text is required" }, { status: 400 });
     }
 
-    // Create audio using OpenAI's TTS API
-    const audioResponse = await openai.audio.speech.create({
-      model: "tts-1", // Using the fastest model
-      voice: voice,
-      input: text,
-      instructions: "Speak in a cheerful and positive tone.",
-      response_format: "wav", // Using WAV for better streaming with playAudio
+    const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+
+    if (!ELEVENLABS_API_KEY) {
+      return NextResponse.json({ error: "ElevenLabs API key not configured" }, { status: 500 });
+    }
+
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream`, {
+      method: "POST",
+      headers: {
+        Accept: "audio/mpeg",
+        "Content-Type": "application/json",
+        "xi-api-key": ELEVENLABS_API_KEY,
+      },
+      body: JSON.stringify({
+        text,
+        model_id: "eleven_multilingual_v2",
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.5,
+        },
+      }),
     });
 
-    // Get the array buffer from the response
-    const buffer = await audioResponse.arrayBuffer();
+    if (!response.ok) {
+      throw new Error(`ElevenLabs API error: ${response.status}`);
+    }
 
-    // Return the audio data with appropriate headers
-    return new NextResponse(buffer, {
+    // Create a ReadableStream to pipe the response
+    const stream = new ReadableStream({
+      start(controller) {
+        const reader = response.body?.getReader();
+
+        function pump(): Promise<void> {
+          return reader!.read().then(({ done, value }) => {
+            if (done) {
+              controller.close();
+              return;
+            }
+            controller.enqueue(value);
+            return pump();
+          });
+        }
+
+        return pump();
+      },
+    });
+
+    return new NextResponse(stream, {
       headers: {
-        "Content-Type": "audio/wav",
-        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Content-Type": "audio/mpeg",
+        "Cache-Control": "no-cache",
       },
     });
   } catch (error) {
-    console.error("TTS API error:", error);
-    return NextResponse.json({ error: "Failed to generate speech" }, { status: 500 });
+    console.error("Voice generation error:", error);
+    return NextResponse.json({ error: "Failed to generate voice" }, { status: 500 });
   }
 }

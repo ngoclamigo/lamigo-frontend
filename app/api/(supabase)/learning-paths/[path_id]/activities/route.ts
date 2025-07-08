@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "~/lib/supabase-server";
 
-export async function POST(request: NextRequest, { params }: { params: { path_id: string } }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ path_id: string }> }
+) {
   try {
+    const { path_id } = await params;
     const supabase = await createClient();
 
     const { activities } = await request.json();
@@ -13,7 +17,7 @@ export async function POST(request: NextRequest, { params }: { params: { path_id
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         activities.map((activity: any) => ({
           ...activity,
-          learning_path_id: params.path_id,
+          learning_path_id: path_id,
         }))
       )
       .select();

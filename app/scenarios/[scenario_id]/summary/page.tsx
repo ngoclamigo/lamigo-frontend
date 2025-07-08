@@ -1,12 +1,15 @@
 "use client";
 
 import { motion } from "motion/react";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getScenario } from "~/lib/api";
 import { generateEvaluation } from "~/lib/evaluation";
 import { EvaluationResult, Transcription } from "~/types/evaluation";
 
-export default function ScenarioSummaryPage({ params }: { params: { scenario_id: string } }) {
+export default function ScenarioSummaryPage() {
+  const params = useParams();
+  const scenario_id = params.scenario_id as string;
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [evaluationResult, setEvaluationResult] = useState<EvaluationResult | null>(null);
@@ -16,7 +19,7 @@ export default function ScenarioSummaryPage({ params }: { params: { scenario_id:
       setIsLoading(true);
       setIsError(false);
       try {
-        const data = await getScenario(params.scenario_id);
+        const data = await getScenario(scenario_id);
         // Generate evaluation using mock transcriptions for now
         // In a real app, you would fetch actual transcriptions from your API
         const mockTranscriptions: Transcription[] = [
