@@ -502,21 +502,19 @@ export const mockScenarios: Scenario[] = [
       industry: "Tech Startups",
       location: "New York, NY",
     },
-    scenarios: [
-      {
-        name: "Introductory Call with Tech Startup",
-        description: "Initial call to understand the startup's needs and pitch our solution",
-        type: "call_scenario",
-        category: "Sales Call",
-        call_type: "Introductory Call",
-        intent: "Understand business needs and pitch solution",
-        persona: ["Risk-Averse", "Committee Buyer"],
-        objections: ["Too expensive", "Not the right time"],
-        specialty: "Tech Startups",
-        time_limit: "30 minutes",
-        roleplay_tips: ["Be concise", "Focus on value proposition", "Listen actively"],
-      },
-    ],
+    scenarios: {
+      name: "Introductory Call with Tech Startup",
+      description: "Initial call to understand the startup's needs and pitch our solution",
+      type: "call_scenario",
+      category: "Sales Call",
+      call_type: "Introductory Call",
+      intent: "Understand business needs and pitch solution",
+      persona: ["Risk-Averse", "Committee Buyer"],
+      objections: ["Too expensive", "Not the right time"],
+      specialty: "Tech Startups",
+      time_limit: "30 minutes",
+      roleplay_tips: ["Be concise", "Focus on value proposition", "Listen actively"],
+    },
     agents: [
       {
         id: "b2e88484-1f49-45c9-a989-d4e46bf3415a",
@@ -535,25 +533,24 @@ export const mockScenarios: Scenario[] = [
       industry: "Manufacturing",
       location: "Chicago, IL",
     },
-    scenarios: [
-      {
-        name: "Operations Call for Supply Chain Issues",
-        description: "Discuss supply chain challenges and propose solutions",
-        type: "call_scenario",
-        category: "Operations Call",
-        call_type: "Problem Resolution Call",
-        intent: "Resolve supply chain issues and improve efficiency",
-        persona: ["Analytical", "Data-Driven"],
-        objections: ["Need more data", "Previous solutions failed"],
-        specialty: "Supply Chain Management",
-        time_limit: "45 minutes",
-        roleplay_tips: [
-          "Use data to support claims",
-          "Be prepared for technical questions",
-          "Offer multiple solutions",
-        ],
-      },
-    ],
+    scenarios: {
+      name: "Operations Call for Supply Chain Issues",
+      description: "Discuss supply chain challenges and propose solutions",
+      type: "call_scenario",
+      category: "Operations Call",
+      call_type: "Problem Resolution Call",
+      intent: "Resolve supply chain issues and improve efficiency",
+      persona: ["Analytical", "Data-Driven"],
+      objections: ["Need more data", "Previous solutions failed"],
+      specialty: "Supply Chain Management",
+      time_limit: "45 minutes",
+      roleplay_tips: [
+        "Use data to support claims",
+        "Be prepared for technical questions",
+        "Offer multiple solutions",
+      ],
+    },
+
     agents: [
       {
         id: "b2e88484-1f49-45c9-a989-d4e46bf3415a",
@@ -572,25 +569,24 @@ export const mockScenarios: Scenario[] = [
       industry: "Technology",
       location: "San Francisco, CA",
     },
-    scenarios: [
-      {
-        name: "Marketing Strategy Call",
-        description: "Discuss new marketing strategies and campaigns",
-        type: "call_scenario",
-        category: "Marketing Call",
-        call_type: "Strategy Discussion",
-        intent: "Discuss new marketing strategies and campaigns",
-        persona: ["Creative", "Visionary"],
-        objections: ["Budget constraints", "Need for quick results"],
-        specialty: "Digital Marketing",
-        time_limit: "60 minutes",
-        roleplay_tips: [
-          "Be innovative with ideas",
-          "Focus on ROI of marketing strategies",
-          "Prepare for budget discussions",
-        ],
-      },
-    ],
+    scenarios: {
+      name: "Marketing Strategy Call",
+      description: "Discuss new marketing strategies and campaigns",
+      type: "call_scenario",
+      category: "Marketing Call",
+      call_type: "Strategy Discussion",
+      intent: "Discuss new marketing strategies and campaigns",
+      persona: ["Creative", "Visionary"],
+      objections: ["Budget constraints", "Need for quick results"],
+      specialty: "Digital Marketing",
+      time_limit: "60 minutes",
+      roleplay_tips: [
+        "Be innovative with ideas",
+        "Focus on ROI of marketing strategies",
+        "Prepare for budget discussions",
+      ],
+    },
+
     agents: [
       {
         id: "b2e88484-1f49-45c9-a989-d4e46bf3415a",

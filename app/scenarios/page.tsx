@@ -93,10 +93,10 @@ export default function ScenariosPage() {
               <motion.div whileHover={{ rotate: 15 }}>
                 <BookOpen className="h-5 w-5 text-brand-500" />
               </motion.div>
-              <h2 className="text-xl font-semibold">{scenario.scenarios[0].name}</h2>
+              <h2 className="text-xl font-semibold">{scenario.scenarios.name}</h2>
             </div>
             <p className="text-gray-600 text-sm mb-3 line-clamp-3 leading-relaxed">
-              {scenario.scenarios[0].description || "No description available"}
+              {scenario.scenarios.description || "No description available"}
             </p>
             <Link
               href={`/scenarios/${scenario.id}`}

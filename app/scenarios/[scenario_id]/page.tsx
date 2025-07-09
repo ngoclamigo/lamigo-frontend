@@ -110,10 +110,10 @@ export default function ScenarioPage() {
               className="mb-8 text-center"
             >
               <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-brand-400 to-brand-600 bg-clip-text text-transparent">
-                {scenario.scenarios[0].name}
+                {scenario.scenarios.name}
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-lg">
-                {scenario.scenarios[0].description || "Get ready for your practice session"}
+                {scenario.scenarios.description || "Get ready for your practice session"}
               </p>
             </motion.div>
 
@@ -160,22 +160,22 @@ export default function ScenarioPage() {
                         {
                           icon: Headset,
                           name: "Call Type",
-                          topDesc: scenario.scenarios[0].call_type || "N/A",
+                          topDesc: scenario.scenarios.call_type || "N/A",
                         },
                         {
                           icon: FolderKanban,
                           name: "Intent",
-                          topDesc: scenario.scenarios[0].intent || "N/A",
+                          topDesc: scenario.scenarios.intent || "N/A",
                         },
                         {
                           icon: TableProperties,
                           name: "Objections",
-                          topDesc: scenario.scenarios[0].objections.join(", ") || "N/A",
+                          topDesc: scenario.scenarios.objections.join(", ") || "N/A",
                         },
                         {
                           icon: AlarmClock,
                           name: "Time Limit",
-                          topDesc: scenario.scenarios[0].time_limit || "N/A",
+                          topDesc: scenario.scenarios.time_limit || "N/A",
                         },
                       ].map((detail, index) => (
                         <motion.div

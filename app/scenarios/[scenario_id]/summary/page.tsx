@@ -34,10 +34,10 @@ export default function ScenarioSummaryPage() {
         ];
         const transcriptions = sessionStorage.getItem("transcriptions");
 
-        if (data.data.persona && data.data.scenarios[0]) {
+        if (data.data.persona && data.data.scenarios) {
           const evaluation = await generateEvaluation(
             data.data.persona,
-            data.data.scenarios[0],
+            data.data.scenarios,
             transcriptions ? JSON.parse(transcriptions) : mockTranscriptions
           );
           setEvaluationResult(evaluation);

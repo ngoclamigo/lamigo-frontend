@@ -29,7 +29,7 @@ export type ScenarioAgent = {
 export type Scenario = {
   id: string;
   persona: Persona;
-  scenarios: ScenarioDetail[];
+  scenarios: ScenarioDetail;
   agents: ScenarioAgent[];
   created_at: string;
 };
