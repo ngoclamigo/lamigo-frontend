@@ -24,29 +24,11 @@ export default function ScenarioSummaryPage() {
         // In a real app, you would fetch actual transcriptions from your API
         const mockTranscriptions: Transcription[] = [
           {
-            id: "1",
             text: "Hi, I'm calling about our software solution that could help with your current challenges.",
-            startTime: 0,
-            endTime: 5000,
-            final: true,
-            language: "en",
-            firstReceivedTime: Date.now(),
-            lastReceivedTime: Date.now(),
-            receivedAtMediaTimestamp: 0,
-            receivedAt: Date.now(),
             role: "user",
           },
           {
-            id: "2",
             text: "I'm not sure we have the budget for new software right now.",
-            startTime: 5000,
-            endTime: 8000,
-            final: true,
-            language: "en",
-            firstReceivedTime: Date.now(),
-            lastReceivedTime: Date.now(),
-            receivedAtMediaTimestamp: 5000,
-            receivedAt: Date.now(),
             role: "assistant",
           },
         ];

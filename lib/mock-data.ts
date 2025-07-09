@@ -517,6 +517,13 @@ export const mockScenarios: Scenario[] = [
         roleplay_tips: ["Be concise", "Focus on value proposition", "Listen actively"],
       },
     ],
+    agents: [
+      {
+        id: "b2e88484-1f49-45c9-a989-d4e46bf3415a",
+        platform: "vapi",
+        platform_agent_id: "3f76553f-1355-417c-8c3f-a81eac0603b4",
+      },
+    ],
     created_at: "2024-06-16T11:15:00Z",
   },
   {
@@ -547,6 +554,13 @@ export const mockScenarios: Scenario[] = [
         ],
       },
     ],
+    agents: [
+      {
+        id: "b2e88484-1f49-45c9-a989-d4e46bf3415a",
+        platform: "vapi",
+        platform_agent_id: "3f76553f-1355-417c-8c3f-a81eac0603b4",
+      },
+    ],
     created_at: "2024-06-06T10:45:00Z",
   },
   {
@@ -575,6 +589,13 @@ export const mockScenarios: Scenario[] = [
           "Focus on ROI of marketing strategies",
           "Prepare for budget discussions",
         ],
+      },
+    ],
+    agents: [
+      {
+        id: "b2e88484-1f49-45c9-a989-d4e46bf3415a",
+        platform: "vapi",
+        platform_agent_id: "3f76553f-1355-417c-8c3f-a81eac0603b4",
       },
     ],
     created_at: "2024-06-02T09:30:00Z",

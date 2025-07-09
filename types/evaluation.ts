@@ -1,14 +1,5 @@
 export type Transcription = {
-  id: string;
   text: string;
-  startTime: number;
-  endTime: number;
-  final: boolean;
-  language: string;
-  firstReceivedTime: number;
-  lastReceivedTime: number;
-  receivedAtMediaTimestamp: number;
-  receivedAt: number;
   role: "assistant" | "user";
 };
 

@@ -20,9 +20,16 @@ export type ScenarioDetail = {
   roleplay_tips: string[];
 };
 
+export type ScenarioAgent = {
+  id: string;
+  platform: string;
+  platform_agent_id: string;
+};
+
 export type Scenario = {
   id: string;
   persona: Persona;
   scenarios: ScenarioDetail[];
+  agents: ScenarioAgent[];
   created_at: string;
 };

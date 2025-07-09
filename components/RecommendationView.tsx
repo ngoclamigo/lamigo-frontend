@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
-import useCombinedTranscriptions from "~/hooks/useCombinedTranscriptions";
 
 interface MessageEvaluation {
   type: "suggestion" | "improvement" | "warning" | "positive";
@@ -175,9 +174,7 @@ function generateUserEvaluation(content: string): MessageEvaluation | null {
   return null;
 }
 
-export function RecommendationView() {
-  const messages = useCombinedTranscriptions();
-
+export function RecommendationView({ messages }: { messages: any[] }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const getEvaluationStyle = (type: string) => {

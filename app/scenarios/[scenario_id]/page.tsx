@@ -1,6 +1,5 @@
 "use client";
 
-import { useMediaDeviceSelect } from "@livekit/components-react";
 import {
   AlarmClock,
   BriefcaseBusiness,
@@ -15,6 +14,7 @@ import { motion } from "motion/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiChevronDown, FiChevronUp, FiMic, FiMicOff, FiPlay } from "react-icons/fi";
+import { useMediaDevices } from "~/hooks/use-media-devices";
 import { getScenario } from "~/lib/api";
 import type { Scenario } from "~/types/scenario";
 
@@ -29,7 +29,7 @@ export default function ScenarioPage() {
     3: false,
   });
 
-  const { devices, activeDeviceId, setActiveMediaDevice } = useMediaDeviceSelect({
+  const { devices, activeDeviceId, setActiveDeviceId } = useMediaDevices({
     kind: "audioinput",
   });
 
@@ -263,7 +263,7 @@ export default function ScenarioPage() {
                           className="w-full p-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
                           disabled={devices.length === 0}
                           value={activeDeviceId}
-                          onChange={(e) => setActiveMediaDevice(e.target.value)}
+                          onChange={(e) => setActiveDeviceId(e.target.value)}
                         >
                           {devices.map((device) => (
                             <option key={device.deviceId} value={device.deviceId}>

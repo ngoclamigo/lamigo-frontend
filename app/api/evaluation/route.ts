@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
   try {
     // Format transcriptions for analysis
     const conversationHistory = transcriptions
-      .sort((a, b) => a.startTime - b.startTime)
       .map((t) => `${t.role === "assistant" ? "PERSONA" : "SALES_REP"}: ${t.text}`)
       .join("\n");
 

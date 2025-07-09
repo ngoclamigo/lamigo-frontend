@@ -1,4 +1,3 @@
-import "@livekit/components-styles";
 import { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import { Toaster } from "sonner";
