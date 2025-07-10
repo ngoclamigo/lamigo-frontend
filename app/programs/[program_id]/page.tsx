@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ActivityRenderer } from "~/components/ActivityRenderer";
 import { ProgramChat } from "~/components/ProgramChat";
-import { getProgram } from "~/network/programs";
+import { getProgram, updateUserActivityProgress } from "~/network/programs";
 import type { Activity, Program } from "~/types/program";
 
 export default function ProgramPage() {
@@ -23,15 +23,11 @@ export default function ProgramPage() {
   const pathname = usePathname();
 
   const [program, setProgram] = useState<Program | null>(null);
-  const [completedActivities, setCompletedActivities] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
-
-  // Voice
   const [speeches, setSpeeches] = useState<GeneratedSpeech[]>([]);
-  const [selectedSpeech, setSelectedSpeech] = useState<GeneratedSpeech | null>(null);
 
   const handleGenerateStart = useCallback(
     (text: string) => {
@@ -44,7 +40,6 @@ export default function ProgramPage() {
       };
 
       setSpeeches((prev) => [pendingSpeech, ...prev]);
-      setSelectedSpeech(pendingSpeech);
       return pendingSpeech.id;
     },
     [activityID, program?.activities]
@@ -71,17 +66,6 @@ export default function ProgramPage() {
             }
           : item
       )
-    );
-
-    setSelectedSpeech((current) =>
-      current?.id === id
-        ? {
-            ...current,
-            text,
-            audioBase64: audioUrl,
-            status: "complete" as const,
-          }
-        : current
     );
   }, []);
 
@@ -157,10 +141,22 @@ export default function ProgramPage() {
   const currentActivityIndex = program.activities.findIndex(
     (activity) => activity.id === currentActivity.id
   );
+  const completedActivityIDs = program.activities
+    .filter((activity) => Object.keys(activity.user_action || {}).length > 0)
+    .map((activity) => activity.id);
 
   const handleNext = (activityID: string) => {
-    if (!completedActivities.has(activityID)) {
-      setCompletedActivities((prev) => new Set(prev).add(activityID));
+    if (!completedActivityIDs.includes(activityID)) {
+      updateUserActivityProgress(activityID, { status: "completed" });
+      setProgram((prev) => {
+        if (!prev) return null;
+        const updatedActivities = prev.activities.map((activity) =>
+          activity.id === activityID
+            ? { ...activity, user_action: { status: "completed" } }
+            : activity
+        );
+        return { ...prev, activities: updatedActivities };
+      });
     }
 
     if (currentActivityIndex < program.activities.length - 1) {
@@ -178,12 +174,12 @@ export default function ProgramPage() {
     const index = program.activities.findIndex((activity) => activity.id === activityID);
     if (index < 0) return;
     if (index !== currentActivityIndex && program) {
-      if (index <= currentActivityIndex || completedActivities.has(activityID)) {
+      if (index <= currentActivityIndex || completedActivityIDs.includes(activityID)) {
         router.push(`${pathname}?${createQueryString("activity_id", activityID)}`);
       } else {
         const allPreviousCompleted = program.activities
           .slice(0, index)
-          .every((activity) => completedActivities.has(activity.id));
+          .every((activity) => completedActivityIDs.includes(activity.id));
 
         if (allPreviousCompleted) {
           router.push(`${pathname}?${createQueryString("activity_id", activityID)}`);
@@ -261,11 +257,11 @@ export default function ProgramPage() {
                 <h3 className="text-white font-bold text-lg mb-4">Activities</h3>
                 <div className="space-y-2">
                   {program.activities.map((activity, index) => {
-                    const isCompleted = completedActivities.has(activity.id);
+                    const isCompleted = completedActivityIDs.includes(activity.id);
                     const isCurrentActivity = index === currentActivityIndex;
                     const allPreviousCompleted = program.activities
                       .slice(0, index)
-                      .every((act) => completedActivities.has(act.id));
+                      .every((act) => completedActivityIDs.includes(act.id));
                     const isUnlocked = index === 0 || allPreviousCompleted || isCompleted;
 
                     return (
@@ -323,11 +319,11 @@ export default function ProgramPage() {
               <div className="p-2 flex-1">
                 <div className="space-y-2">
                   {program.activities.map((activity, index) => {
-                    const isCompleted = completedActivities.has(activity.id);
+                    const isCompleted = completedActivityIDs.includes(activity.id);
                     const isCurrentActivity = index === currentActivityIndex;
                     const allPreviousCompleted = program.activities
                       .slice(0, index)
-                      .every((act) => completedActivities.has(act.id));
+                      .every((act) => completedActivityIDs.includes(act.id));
                     const isUnlocked = index === 0 || allPreviousCompleted || isCompleted;
 
                     return (
@@ -585,7 +581,7 @@ export default function ProgramPage() {
               <ActivityRenderer
                 activity={currentActivity}
                 onNext={() => handleNext(currentActivity.id)}
-                isCompleted={completedActivities.has(currentActivity.id)}
+                isCompleted={completedActivityIDs.includes(currentActivity.id)}
                 isLastActivity={currentActivityIndex === program.activities.length - 1}
               />
             )}

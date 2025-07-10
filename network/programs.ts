@@ -1,5 +1,5 @@
-import { ApiResponse, ListResponse } from "~/types/api";
-import { Program } from "~/types/program";
+import type { ApiResponse, ListResponse } from "~/types/api";
+import type { Activity, Program } from "~/types/program";
 
 const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "https://lamigo-api.rockship.co/api";
 
@@ -32,5 +32,25 @@ export async function getProgram(program_id: string): Promise<ApiResponse<Progra
   }
 
   const data: ApiResponse<Program> = await response.json();
+  return data;
+}
+
+export async function updateUserActivityProgress(
+  activity_id: string,
+  body: any
+): Promise<ApiResponse<Activity>> {
+  const response = await fetch(`${serverUrl}/v1/learning-activities/${activity_id}/user-action`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ user_action: body }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update user progress for activity ${activity_id}`);
+  }
+
+  const data: ApiResponse<Activity> = await response.json();
   return data;
 }
