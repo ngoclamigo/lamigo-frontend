@@ -4,20 +4,25 @@ import { CheckCircle, ChevronLeft, ChevronRight, Circle, Home } from "lucide-rea
 import { motion } from "motion/react";
 import { nanoid } from "nanoid";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ActivityRenderer } from "~/components/ActivityRenderer";
-import { LearningChatComponent } from "~/components/LearningChat";
-import { getLearningPath } from "~/lib/api";
-import type { LearningPath } from "~/types/learning-path";
+import { ProgramChat } from "~/components/ProgramChat";
+import { getProgram } from "~/network/programs";
+import type { Activity, Program } from "~/types/program";
 
-export default function LearningPathPage() {
+export default function ProgramPage() {
   const params = useParams();
-  const pathId = params.path_id as string;
+  const programID = params.program_id as Program["id"];
 
-  const [learningPath, setLearningPath] = useState<LearningPath | null>(null);
-  const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
+  const searchParams = useSearchParams();
+  const activityID = searchParams.get("activity_id");
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const [program, setProgram] = useState<Program | null>(null);
   const [completedActivities, setCompletedActivities] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,22 +30,25 @@ export default function LearningPathPage() {
   const [showCelebration, setShowCelebration] = useState(false);
 
   // Voice
-  const [, setSpeeches] = useState<GeneratedSpeech[]>([]);
+  const [speeches, setSpeeches] = useState<GeneratedSpeech[]>([]);
   const [selectedSpeech, setSelectedSpeech] = useState<GeneratedSpeech | null>(null);
 
-  const handleGenerateStart = useCallback((text: string) => {
-    const pendingSpeech: GeneratedSpeech = {
-      id: nanoid(),
-      text,
-      audioBase64: "",
-      createdAt: new Date(),
-      status: "loading",
-    };
+  const handleGenerateStart = useCallback(
+    (text: string) => {
+      const pendingSpeech: GeneratedSpeech = {
+        id: activityID || program?.activities[0].id || nanoid(),
+        text,
+        audioBase64: "",
+        createdAt: new Date(),
+        status: "loading",
+      };
 
-    setSpeeches((prev) => [pendingSpeech, ...prev]);
-    setSelectedSpeech(pendingSpeech);
-    return pendingSpeech.id;
-  }, []);
+      setSpeeches((prev) => [pendingSpeech, ...prev]);
+      setSelectedSpeech(pendingSpeech);
+      return pendingSpeech.id;
+    },
+    [activityID, program?.activities]
+  );
 
   const handleGenerateComplete = useCallback((id: string, text: string, audioUrl: string) => {
     // Make sure we have a valid URL
@@ -77,25 +85,38 @@ export default function LearningPathPage() {
     );
   }, []);
 
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams]
+  );
+
   useEffect(() => {
-    const fetchLearningPath = async () => {
+    const fetchProgram = async () => {
       try {
-        const response = await getLearningPath(pathId);
+        const response = await getProgram(programID);
         if (response.status === "success") {
-          setLearningPath(response.data);
+          setProgram(response.data);
+          router.push(
+            `${pathname}?${createQueryString("activity_id", response.data.activities[0].id)}`
+          );
         } else {
-          setError("Failed to load learning path");
+          setError(`Failed to fetch program with id ${programID}`);
         }
       } catch (err) {
-        setError("Failed to load learning path");
+        setError(`Failed to fetch program with id ${programID}`);
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchLearningPath();
-  }, [pathId]);
+    fetchProgram();
+  }, [programID]);
 
   if (loading) {
     return (
@@ -109,7 +130,7 @@ export default function LearningPathPage() {
     );
   }
 
-  if (error || !learningPath) {
+  if (error || !program) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-brand-50 to-indigo-100 flex items-center justify-center">
         <motion.div
@@ -118,50 +139,54 @@ export default function LearningPathPage() {
           className="text-center bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg"
         >
           <div className="text-red-600 text-xl mb-2">⚠️ Error</div>
-          <p className="text-gray-700">{error || "Learning path not found"}</p>
+          <p className="text-gray-700">{error || "Program not found"}</p>
           <Link
-            href="/learning-paths"
+            href="/programs"
             className="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors shadow-md"
           >
             <Home className="w-4 h-4 mr-2" />
-            Back to Learning Paths
+            Back to Programs
           </Link>
         </motion.div>
       </div>
     );
   }
 
-  const currentActivity = learningPath.activities[currentActivityIndex];
+  const currentActivity =
+    program.activities.find((activity) => activity.id === activityID) || program.activities[0];
+  const currentActivityIndex = program.activities.findIndex(
+    (activity) => activity.id === currentActivity.id
+  );
 
   const handleNext = (activityID: string) => {
     if (!completedActivities.has(activityID)) {
       setCompletedActivities((prev) => new Set(prev).add(activityID));
     }
 
-    if (currentActivityIndex < learningPath.activities.length - 1) {
-      setCurrentActivityIndex((prev) => prev + 1);
+    if (currentActivityIndex < program.activities.length - 1) {
+      const nextActivity = program.activities[currentActivityIndex + 1];
+      if (nextActivity) {
+        router.push(`${pathname}?${createQueryString("activity_id", nextActivity.id)}`);
+      }
     } else {
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 6000); // 6 seconds for fireworks display
     }
   };
 
-  const handleActivitySelect = (index: number) => {
-    if (index !== currentActivityIndex && learningPath) {
-      // Only allow navigation to activities that are unlocked
-      const activityId = learningPath.activities[index].id;
-
-      // Allow going back to any previous activity or completed activities
-      if (index <= currentActivityIndex || completedActivities.has(activityId)) {
-        setCurrentActivityIndex(index);
+  const handleActivitySelect = (activityID: Activity["id"]) => {
+    const index = program.activities.findIndex((activity) => activity.id === activityID);
+    if (index < 0) return;
+    if (index !== currentActivityIndex && program) {
+      if (index <= currentActivityIndex || completedActivities.has(activityID)) {
+        router.push(`${pathname}?${createQueryString("activity_id", activityID)}`);
       } else {
-        // Check if previous activities are completed to unlock this one
-        const allPreviousCompleted = learningPath.activities
+        const allPreviousCompleted = program.activities
           .slice(0, index)
           .every((activity) => completedActivities.has(activity.id));
 
         if (allPreviousCompleted) {
-          setCurrentActivityIndex(index);
+          router.push(`${pathname}?${createQueryString("activity_id", activityID)}`);
         }
       }
     }
@@ -174,21 +199,21 @@ export default function LearningPathPage() {
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center space-x-4">
             <Link
-              href="/learning-paths"
+              href="/programs"
               className="flex items-center text-white/80 hover:text-white transition-all duration-300 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-md"
             >
               <ChevronLeft className="w-4 h-4 mr-2" />
               <span className="text-sm font-medium">Back</span>
             </Link>
             <div className="text-white">
-              <h1 className="text-lg font-bold">{learningPath.title}</h1>
+              <h1 className="text-lg font-bold">{program.title}</h1>
             </div>
           </div>
 
           <div className="flex items-center space-x-4">
             {/* Progress indicator */}
             <div className="text-white/80 text-sm font-medium">
-              {currentActivityIndex + 1} / {learningPath.activities.length}
+              {currentActivityIndex + 1} / {program.activities.length}
             </div>
 
             {/* Sidebar toggle */}
@@ -213,7 +238,7 @@ export default function LearningPathPage() {
             <motion.div
               initial={{ width: 0 }}
               animate={{
-                width: `${((currentActivityIndex + 1) / learningPath.activities.length) * 100}%`,
+                width: `${((currentActivityIndex + 1) / program.activities.length) * 100}%`,
               }}
               className="bg-gradient-to-r from-brand-400 to-brand-600 h-1 rounded-full"
               transition={{ duration: 0.3 }}
@@ -235,10 +260,10 @@ export default function LearningPathPage() {
               <div className="p-4 flex-1">
                 <h3 className="text-white font-bold text-lg mb-4">Activities</h3>
                 <div className="space-y-2">
-                  {learningPath.activities.map((activity, index) => {
+                  {program.activities.map((activity, index) => {
                     const isCompleted = completedActivities.has(activity.id);
                     const isCurrentActivity = index === currentActivityIndex;
-                    const allPreviousCompleted = learningPath.activities
+                    const allPreviousCompleted = program.activities
                       .slice(0, index)
                       .every((act) => completedActivities.has(act.id));
                     const isUnlocked = index === 0 || allPreviousCompleted || isCompleted;
@@ -248,7 +273,7 @@ export default function LearningPathPage() {
                         key={activity.id}
                         whileHover={{ scale: isUnlocked ? 1.02 : 1 }}
                         whileTap={{ scale: isUnlocked ? 0.98 : 1 }}
-                        onClick={() => handleActivitySelect(index)}
+                        onClick={() => handleActivitySelect(activity.id)}
                         disabled={!isUnlocked}
                         className={`w-full text-left p-3 transition-all duration-300 rounded-lg ${
                           isCurrentActivity
@@ -297,10 +322,10 @@ export default function LearningPathPage() {
             <>
               <div className="p-2 flex-1">
                 <div className="space-y-2">
-                  {learningPath.activities.map((activity, index) => {
+                  {program.activities.map((activity, index) => {
                     const isCompleted = completedActivities.has(activity.id);
                     const isCurrentActivity = index === currentActivityIndex;
-                    const allPreviousCompleted = learningPath.activities
+                    const allPreviousCompleted = program.activities
                       .slice(0, index)
                       .every((act) => completedActivities.has(act.id));
                     const isUnlocked = index === 0 || allPreviousCompleted || isCompleted;
@@ -310,7 +335,7 @@ export default function LearningPathPage() {
                         key={activity.id}
                         whileHover={{ scale: isUnlocked ? 1.1 : 1 }}
                         whileTap={{ scale: isUnlocked ? 0.9 : 1 }}
-                        onClick={() => handleActivitySelect(index)}
+                        onClick={() => handleActivitySelect(activity.id)}
                         disabled={!isUnlocked}
                         className={`w-8 h-8 flex items-center justify-center transition-all duration-300 rounded-full ${
                           isCurrentActivity
@@ -417,7 +442,7 @@ export default function LearningPathPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.5, duration: 0.6 }}
                     >
-                      You&apos;ve completed the learning path!
+                      You&apos;ve completed the program!
                     </motion.p>
                   </div>
                 </motion.div>
@@ -551,26 +576,35 @@ export default function LearningPathPage() {
               </motion.div>
             )}
 
-            <ActivityRenderer
-              activity={currentActivity as any}
-              onNext={() => handleNext(currentActivity.id)}
-              isCompleted={completedActivities.has(currentActivity.id)}
-              isLastActivity={currentActivityIndex === learningPath.activities.length - 1}
-            />
+            {program.activities.length === 0 ? (
+              <div className="text-center">
+                <p className="text-lg">No activities available in this program</p>
+                <p className="text-sm">Please check back later or contact support</p>
+              </div>
+            ) : (
+              <ActivityRenderer
+                activity={currentActivity}
+                onNext={() => handleNext(currentActivity.id)}
+                isCompleted={completedActivities.has(currentActivity.id)}
+                isLastActivity={currentActivityIndex === program.activities.length - 1}
+              />
+            )}
           </motion.div>
         </div>
 
         {/* Chat Sidebar - Fixed Right */}
-        <div className="w-96 bg-white/5 backdrop-blur-sm border-l border-white/10 rounded-tl-xl">
-          <div className="h-full">
-            <LearningChatComponent
-              narration={currentActivity.config.narration}
-              audioBase64={selectedSpeech?.audioBase64}
-              onGenerateStart={handleGenerateStart}
-              onGenerateComplete={handleGenerateComplete}
-            />
+        {program.activities.length > 0 && (
+          <div className="w-96 bg-white/5 backdrop-blur-sm border-l border-white/10 rounded-tl-xl">
+            <div className="h-full">
+              <ProgramChat
+                narration={currentActivity.config.narration}
+                audioBase64={speeches.find((s) => s.id === activityID)?.audioBase64}
+                onGenerateStart={handleGenerateStart}
+                onGenerateComplete={handleGenerateComplete}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

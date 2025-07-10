@@ -25,10 +25,10 @@ export function AppLayout({ children }: AppLayoutProps) {
 
           <nav className="flex items-center space-x-8">
             <Link
-              href="/learning-paths"
+              href="/programs"
               className="text-gray-700 hover:text-brand-600 font-medium transition-colors"
             >
-              Learning
+              Programs
             </Link>
             <Link
               href="/scenarios"
@@ -36,12 +36,12 @@ export function AppLayout({ children }: AppLayoutProps) {
             >
               Scenarios
             </Link>
-            <Link
+            {/* <Link
               href="/admin"
               className="text-gray-700 hover:text-brand-600 font-medium transition-colors"
             >
               Admin
-            </Link>
+            </Link> */}
           </nav>
         </div>
       </header>

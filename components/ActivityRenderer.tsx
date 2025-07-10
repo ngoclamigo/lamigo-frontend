@@ -20,7 +20,7 @@ import {
   MatchingConfig,
   QuizConfig,
   SlideConfig,
-} from "~/types/learning-path";
+} from "~/types/program";
 
 interface ActivityRendererProps {
   activity: Activity;
@@ -162,7 +162,7 @@ function SlideActivity({
     if (!isCompleted && !hasInteracted) {
       const timer = setTimeout(() => {
         setHasInteracted(true);
-      }, 10000);
+      }, 5000);
 
       return () => clearTimeout(timer);
     }
@@ -191,7 +191,7 @@ function SlideActivity({
               </div>
             ) : (
               <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                👁️‍🗨️ Read slide for 10 seconds to continue
+                👁️‍🗨️ Read slide for 5 seconds to continue
               </div>
             )}
           </div>
@@ -569,7 +569,7 @@ function EmbedActivity({
     if (config.embed_type === "video" && !isCompleted) {
       const timer = setTimeout(() => {
         setHasInteracted(true);
-      }, 10000);
+      }, 5000);
 
       return () => clearTimeout(timer);
     }
@@ -584,7 +584,7 @@ function EmbedActivity({
       <div className="flex-1 w-full p-6 overflow-y-auto custom-scrollbar">
         <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
-        {config.embed_type === "video" && (
+        {/* {config.embed_type === "video" && (
           <motion.p
             className="text-gray-600 mb-6 text-base"
             initial={{ opacity: 0 }}
@@ -593,7 +593,7 @@ function EmbedActivity({
           >
             {activity.description}
           </motion.p>
-        )}
+        )} */}
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -637,14 +637,14 @@ function EmbedActivity({
                 {activity.title}
               </motion.h3>
 
-              <motion.p
+              {/* <motion.p
                 className="text-gray-600 mb-6"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.4 }}
               >
                 {activity.description}
-              </motion.p>
+              </motion.p> */}
 
               <motion.a
                 href={config.url}
@@ -676,7 +676,7 @@ function EmbedActivity({
             ) : (
               <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
                 {config.embed_type === "video"
-                  ? "🎥 Watch video for 10 seconds to continue"
+                  ? "🎥 Watch video for 5 seconds to continue"
                   : "🔗 Click the link to continue"}
               </div>
             )}
