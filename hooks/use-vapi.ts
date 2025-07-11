@@ -8,7 +8,7 @@ import {
   Message,
   MessageTypeEnum,
   TranscriptMessage,
-  TranscriptMessageTypeEnum,
+  // TranscriptMessageTypeEnum,
 } from "~/types/conversation.type";
 
 export enum CALL_STATUS {
@@ -65,8 +65,9 @@ export function useVapi() {
 
     const onError = (e: any) => {
       setCallStatus(CALL_STATUS.INACTIVE);
-      toast.error(e.error?.type || "Error", {
-        description: e.error?.message || "An error occurred",
+      toast.error(e.error?.error?.error || e.error?.type || "Error", {
+        description:
+          e.error?.error?.message || e.errorMsg || e.error?.message || "An error occurred",
       });
       console.error(e);
     };
