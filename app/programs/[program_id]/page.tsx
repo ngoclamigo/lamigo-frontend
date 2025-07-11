@@ -85,9 +85,11 @@ export default function ProgramPage() {
         const response = await getProgram(programID);
         if (response.status === "success") {
           setProgram(response.data);
-          router.push(
-            `${pathname}?${createQueryString("activity_id", response.data.activities[0].id)}`
-          );
+          if (response.data.activities.length > 0) {
+            router.push(
+              `${pathname}?${createQueryString("activity_id", response.data.activities[0].id)}`
+            );
+          }
         } else {
           setError(`Failed to fetch program with id ${programID}`);
         }
@@ -573,9 +575,9 @@ export default function ProgramPage() {
             )}
 
             {program.activities.length === 0 ? (
-              <div className="text-center">
+              <div className="flex flex-col items-center justify-center gap-2 h-full">
                 <p className="text-lg">No activities available in this program</p>
-                <p className="text-sm">Please check back later or contact support</p>
+                <p>Please check back later or contact support</p>
               </div>
             ) : (
               <ActivityRenderer

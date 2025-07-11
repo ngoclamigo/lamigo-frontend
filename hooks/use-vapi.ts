@@ -65,8 +65,8 @@ export function useVapi() {
 
     const onError = (e: any) => {
       setCallStatus(CALL_STATUS.INACTIVE);
-      toast.error(e.error.type, {
-        description: e.error.message,
+      toast.error(e.error?.type || "Error", {
+        description: e.error?.message || "An error occurred",
       });
       console.error(e);
     };

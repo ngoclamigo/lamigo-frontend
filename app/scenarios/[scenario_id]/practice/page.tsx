@@ -10,6 +10,13 @@ import { getScenario } from "~/lib/api";
 import { cn } from "~/lib/utils";
 import { MessageTypeEnum, TranscriptMessageTypeEnum } from "~/types/conversation.type";
 import { Scenario } from "~/types/scenario";
+import {
+  getCallTypeLabel,
+  getIntentTypeLabel,
+  getObjectionTypeLabel,
+  getPersonaArchetypeLabel,
+  getSpecialtyTypeLabel,
+} from "~/utils/label";
 
 export default function ScenarioPracticePage() {
   const params = useParams();
@@ -82,16 +89,40 @@ export default function ScenarioPracticePage() {
             </div>
 
             <div className="flex-1 flex flex-col gap-3 p-4 bg-white overflow-auto">
-              <div className="text-sm text-gray-700 leading-relaxed">
-                {scenario.scenarios.call_type || "N/A"}
-              </div>
+              {scenario.scenarios.persona.length > 0 && (
+                <div className="mt-1">
+                  <p className="text-gray-600 font-medium text-xs uppercase tracking-wide mb-2">
+                    Persona Archetypes
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {scenario.scenarios.persona.map((persona, index) => (
+                      <span
+                        key={index}
+                        className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${
+                          index % 3 === 0
+                            ? "bg-blue-50 text-blue-700"
+                            : index % 3 === 1
+                              ? "bg-emerald-50 text-emerald-700"
+                              : "bg-purple-50 text-purple-700"
+                        }`}
+                      >
+                        {getPersonaArchetypeLabel(persona)}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              <div className="flex items-center gap-2 text-yellow-600">
-                <span className="flex-shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full bg-yellow-100">
-                  <span className="text-xs">😐</span>
-                </span>
-                <span className="text-sm font-medium">{scenario.scenarios.intent || "N/A"}</span>
-              </div>
+              {scenario.scenarios.specialty && (
+                <div className="mt-1">
+                  <p className="text-gray-600 font-medium text-xs uppercase tracking-wide mb-2">
+                    Specialty
+                  </p>
+                  <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">
+                    {getSpecialtyTypeLabel(scenario.scenarios.specialty)}
+                  </span>
+                </div>
+              )}
 
               {scenario.scenarios.objections.length > 0 && (
                 <div className="mt-1">
@@ -110,7 +141,7 @@ export default function ScenarioPracticePage() {
                               : "bg-purple-50 text-purple-700"
                         }`}
                       >
-                        {objection}
+                        {getObjectionTypeLabel(objection)}
                       </span>
                     ))}
                   </div>
@@ -126,7 +157,7 @@ export default function ScenarioPracticePage() {
             }}
           >
             <SimpleVoiceAssistant
-              assistantId={scenario.agents[0].platform_agent_id}
+              assistantId={scenario.agents[0]?.platform_agent_id || ""}
               onDisconnectButtonClicked={() =>
                 router.push(`/scenarios/${encodeURIComponent(scenario_id)}/summary`)
               }
@@ -192,7 +223,19 @@ function SimpleVoiceAssistant(props: {
   return (
     <>
       <AnimatePresence mode="wait">
-        {callStatus === CALL_STATUS.INACTIVE ? (
+        {!props.assistantId ? (
+          <motion.div
+            key="no-assistant"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: [0.09, 1.04, 0.245, 1.055] }}
+            className="flex flex-col items-center justify-center gap-2 h-full"
+          >
+            <p className="text-lg">No agent available in this scenario</p>
+            <p>Please check back later or contact support</p>
+          </motion.div>
+        ) : callStatus === CALL_STATUS.INACTIVE ? (
           <motion.div
             key="disconnected"
             initial={{ opacity: 0, scale: 0.95 }}

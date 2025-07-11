@@ -17,6 +17,7 @@ import { FiChevronDown, FiChevronUp, FiMic, FiMicOff, FiPlay } from "react-icons
 import { useMediaDevices } from "~/hooks/use-media-devices";
 import { getScenario } from "~/lib/api";
 import type { Scenario } from "~/types/scenario";
+import { getCallTypeLabel, getIntentTypeLabel, getObjectionTypeLabel } from "~/utils/label";
 
 export default function ScenarioPage() {
   const params = useParams();
@@ -110,10 +111,10 @@ export default function ScenarioPage() {
               className="mb-8 text-center"
             >
               <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-brand-400 to-brand-600 bg-clip-text text-transparent">
-                {scenario.scenarios.name}
+                Practice Scenario
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-lg">
-                {scenario.scenarios.description || "Get ready for your practice session"}
+                Get ready to practice your sales skills with a real-world scenario!
               </p>
             </motion.div>
 
@@ -160,22 +161,25 @@ export default function ScenarioPage() {
                         {
                           icon: Headset,
                           name: "Call Type",
-                          topDesc: scenario.scenarios.call_type || "N/A",
+                          topDesc: getCallTypeLabel(scenario.scenarios.call_type) || "N/A",
                         },
                         {
                           icon: FolderKanban,
                           name: "Intent",
-                          topDesc: scenario.scenarios.intent || "N/A",
+                          topDesc: getIntentTypeLabel(scenario.scenarios.intent) || "N/A",
                         },
                         {
                           icon: TableProperties,
                           name: "Objections",
-                          topDesc: scenario.scenarios.objections.join(", ") || "N/A",
+                          topDesc:
+                            scenario.scenarios.objections
+                              .map((o) => getObjectionTypeLabel(o))
+                              .join(", ") || "N/A",
                         },
                         {
                           icon: AlarmClock,
                           name: "Time Limit",
-                          topDesc: scenario.scenarios.time_limit || "N/A",
+                          topDesc: `${Number(scenario.scenarios.time_limit) / 60} minutes` || "N/A",
                         },
                       ].map((detail, index) => (
                         <motion.div

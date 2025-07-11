@@ -1,5 +1,6 @@
 import { EvaluationResult, Transcription } from "~/types/evaluation";
 import { Persona, ScenarioDetail } from "~/types/scenario";
+import { getIntentTypeLabel } from "~/utils/label";
 
 export async function generateEvaluation(
   persona: Persona,
@@ -66,7 +67,7 @@ export async function generateEvaluation(
       sessionData: {
         duration: "15 minutes",
         practicePartner: persona.name,
-        scenario: scenarioDetail.name,
+        scenario: getIntentTypeLabel(scenarioDetail.intent),
         keyInsight: "Practice sessions help build confidence and improve sales techniques",
         callStatus: "Good progress! Keep practicing to improve your skills.",
       },

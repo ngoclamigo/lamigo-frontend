@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getScenarios } from "~/lib/api";
 import { Scenario } from "~/types/scenario";
+import { getCallTypeLabel, getIntentTypeLabel, getLeadStageCategoryLabel } from "~/utils/label";
 
 export default function ScenariosPage() {
   const [scenarioId, setScenarioId] = useState("");
@@ -85,25 +86,48 @@ export default function ScenariosPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
-            className="border rounded-xl p-4 cursor-pointer hover:shadow-md transition bg-gradient-to-br from-white to-brand-50"
+            className="border rounded-xl p-5 bg-white hover:shadow-lg transition-all"
             whileHover={{ scale: 1.02 }}
-            onClick={() => router.push(`/scenarios/${scenario.id}`)}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <motion.div whileHover={{ rotate: 15 }}>
-                <BookOpen className="h-5 w-5 text-brand-500" />
-              </motion.div>
-              <h2 className="text-xl font-semibold">{scenario.scenarios.name}</h2>
+            <div className="space-y-4">
+              {/* Header with icon */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="h-4 w-4 text-brand-500" />
+                  <h2 className="font-semibold text-gray-900">{scenario.persona.name}</h2>
+                </div>
+                <div className="text-sm text-gray-600">
+                  <p>{scenario.persona.job_title}</p>
+                  <p>{scenario.persona.company}</p>
+                </div>
+              </div>
+
+              {/* Tags section */}
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-md">
+                  {getLeadStageCategoryLabel(scenario.scenarios.category)}
+                </span>
+                <span className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded-md">
+                  {getCallTypeLabel(scenario.scenarios.call_type)}
+                </span>
+                <span className="px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded-md">
+                  {getIntentTypeLabel(scenario.scenarios.intent)}
+                </span>
+              </div>
+
+              {/* Time info */}
+              <div className="text-sm text-gray-600">
+                Duration: {Number(scenario.scenarios.time_limit) / 60} minutes
+              </div>
+
+              {/* Action button */}
+              <Link
+                href={`/scenarios/${scenario.id}`}
+                className="block w-full text-center py-2 mt-2 bg-brand-50 text-brand-600 rounded-lg hover:bg-brand-100 transition-colors"
+              >
+                Start Practice →
+              </Link>
             </div>
-            <p className="text-gray-600 text-sm mb-3 line-clamp-3 leading-relaxed">
-              {scenario.scenarios.description || "No description available"}
-            </p>
-            <Link
-              href={`/scenarios/${scenario.id}`}
-              className="text-sm text-brand-500 hover:text-brand-700 font-medium"
-            >
-              View details →
-            </Link>
           </motion.div>
         ))}
       </div>

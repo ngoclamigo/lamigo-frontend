@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { EvaluationResult, Transcription } from "~/types/evaluation";
 import { Persona, ScenarioDetail } from "~/types/scenario";
+import { getIntentTypeLabel } from "~/utils/label";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -36,8 +37,6 @@ PERSONA DETAILS:
 - Location: ${persona.location}
 
 SCENARIO:
-- Name: ${scenarioDetail.name}
-- Description: ${scenarioDetail.description}
 - Type: ${scenarioDetail.type}
 - Category: ${scenarioDetail.category}
 - Call Type: ${scenarioDetail.call_type}
@@ -77,7 +76,7 @@ Please provide a detailed evaluation in the following JSON format:
   "sessionData": {
     "duration": "Estimated duration",
     "practicePartner": "${persona.name}",
-    "scenario": "${scenarioDetail.name}",
+    "scenario": "${getIntentTypeLabel(scenarioDetail.intent)}",
     "keyInsight": "Most important learning from this session",
     "callStatus": "Assessment of readiness for real call"
   }
@@ -171,7 +170,7 @@ Provide scores out of 100 and specific, actionable feedback. Be encouraging but 
       sessionData: {
         duration: "15 minutes",
         practicePartner: persona.name,
-        scenario: scenarioDetail.name,
+        scenario: getIntentTypeLabel(scenarioDetail.intent),
         keyInsight: "Practice sessions help build confidence and improve sales techniques",
         callStatus: "Good progress! Keep practicing to improve your skills.",
       },
