@@ -19,26 +19,26 @@ export function AppLayout({ children }: AppLayoutProps) {
                 height={40}
                 className="h-10 w-auto"
               />
-              <span className="ml-2 font-bold text-xl text-brand-600">Lamigo</span>
+              <span className="ml-2 font-bold text-xl text-primary">Lamigo</span>
             </Link>
           </div>
 
           <nav className="flex items-center space-x-8">
             <Link
               href="/programs"
-              className="text-gray-700 hover:text-brand-600 font-medium transition-colors"
+              className="text-gray-700 hover:text-primary font-medium transition-colors"
             >
               Programs
             </Link>
             <Link
               href="/scenarios"
-              className="text-gray-700 hover:text-brand-600 font-medium transition-colors"
+              className="text-gray-700 hover:text-primary font-medium transition-colors"
             >
               Scenarios
             </Link>
             {/* <Link
               href="/admin"
-              className="text-gray-700 hover:text-brand-600 font-medium transition-colors"
+              className="text-gray-700 hover:text-primary font-medium transition-colors"
             >
               Admin
             </Link> */}

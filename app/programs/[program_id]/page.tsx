@@ -108,7 +108,7 @@ export default function ProgramPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <motion.div
-          className="rounded-full h-16 w-16 border-4 border-indigo-200 border-b-brand-500"
+          className="rounded-full h-16 w-16 border-4 border-accent border-b-primary"
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         />
@@ -118,7 +118,7 @@ export default function ProgramPage() {
 
   if (error || !program) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-brand-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-muted to-accent flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -128,7 +128,7 @@ export default function ProgramPage() {
           <p className="text-gray-700">{error || "Program not found"}</p>
           <Link
             href="/programs"
-            className="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors shadow-md"
+            className="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-ring to-primary text-white rounded-lg transition-colors shadow-md"
           >
             <Home className="w-4 h-4 mr-2" />
             Back to Programs
@@ -238,7 +238,7 @@ export default function ProgramPage() {
               animate={{
                 width: `${((currentActivityIndex + 1) / program.activities.length) * 100}%`,
               }}
-              className="bg-gradient-to-r from-brand-400 to-brand-600 h-1 rounded-full"
+              className="bg-gradient-to-r from-ring to-primary h-1 rounded-full"
               transition={{ duration: 0.3 }}
             />
           </div>
@@ -275,7 +275,7 @@ export default function ProgramPage() {
                         disabled={!isUnlocked}
                         className={`w-full text-left p-3 transition-all duration-300 rounded-lg ${
                           isCurrentActivity
-                            ? "bg-gradient-to-r from-brand-500/20 to-brand-600/20 border border-brand-400/30 text-white"
+                            ? "bg-gradient-to-r from-ring/20 to-primary/20 border border-ring/30 text-white"
                             : isUnlocked
                               ? "bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10"
                               : "bg-white/5 text-white/30 border border-white/5 cursor-not-allowed opacity-50"
@@ -337,7 +337,7 @@ export default function ProgramPage() {
                         disabled={!isUnlocked}
                         className={`w-8 h-8 flex items-center justify-center transition-all duration-300 rounded-full ${
                           isCurrentActivity
-                            ? "bg-gradient-to-r from-brand-500/30 to-brand-600/30 border border-brand-400/50 text-white"
+                            ? "bg-gradient-to-r from-ring/30 to-primary/30 border border-ring/50 text-white"
                             : isUnlocked
                               ? "bg-white/10 hover:bg-white/20 text-white/70 hover:text-white border border-white/20"
                               : "bg-white/5 text-white/20 border border-white/10 cursor-not-allowed opacity-50"

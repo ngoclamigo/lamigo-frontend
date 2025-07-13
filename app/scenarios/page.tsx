@@ -93,7 +93,7 @@ export default function ScenariosPage() {
               {/* Header with icon */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4 text-brand-500" />
+                  <BookOpen className="h-4 w-4 text-primary" />
                   <h2 className="font-semibold text-gray-900">{scenario.persona.name}</h2>
                 </div>
                 <div className="text-sm text-gray-600">
@@ -123,7 +123,7 @@ export default function ScenariosPage() {
               {/* Action button */}
               <Link
                 href={`/scenarios/${scenario.id}`}
-                className="block w-full text-center py-2 mt-2 bg-brand-50 text-brand-600 rounded-lg hover:bg-brand-100 transition-colors"
+                className="block w-full text-center py-2 mt-2 bg-muted text-primary rounded-lg hover:bg-accent transition-colors"
               >
                 Start Practice →
               </Link>
@@ -136,7 +136,7 @@ export default function ScenariosPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="mt-8 p-5 border rounded-xl bg-gradient-to-r from-white via-brand-50 to-white shadow-sm"
+        className="mt-8 p-5 border rounded-xl bg-gradient-to-r from-white via-muted to-white shadow-sm"
       >
         <h2 className="text-xl font-semibold mb-4">Access by ID</h2>
         <div className="flex gap-2">
@@ -145,14 +145,14 @@ export default function ScenariosPage() {
             value={scenarioId}
             onChange={(e) => setScenarioId(e.target.value)}
             placeholder="Enter scenario ID"
-            className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-300 focus:border-brand-500 outline-none"
+            className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-ring focus:border-primary outline-none"
           />
           <motion.button
             onClick={handleRedirect}
             disabled={!scenarioId.trim()}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 bg-brand-500 text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-primary text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             Go
           </motion.button>

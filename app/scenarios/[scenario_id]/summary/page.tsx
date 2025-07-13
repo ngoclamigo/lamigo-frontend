@@ -143,8 +143,8 @@ export default function ScenarioSummaryPage() {
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-brand-50 to-brand-100 border-b border-gray-200 p-8 rounded-lg my-4 mx-4">
-        <h2 className="text-xl font-bold text-brand-900 text-center mb-4">
+      <div className="bg-gradient-to-r from-muted to-accent border-b border-gray-200 p-8 rounded-lg my-4 mx-4">
+        <h2 className="text-xl font-bold text-primary text-center mb-4">
           💪 Your Winning Talking Points
         </h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -226,7 +226,7 @@ export default function ScenarioSummaryPage() {
         <div className="flex flex-wrap justify-center gap-4">
           <motion.a
             href="#"
-            className="px-6 py-4 font-semibold text-white bg-gradient-to-r from-brand-500 to-brand-600 cursor-pointer rounded-lg shadow-sm"
+            className="px-6 py-4 font-semibold text-white bg-gradient-to-r from-ring to-primary cursor-pointer rounded-lg shadow-sm"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
           >

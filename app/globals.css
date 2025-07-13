@@ -3,18 +3,6 @@
 @tailwind utilities;
 
 :root {
-  --brand-50: #f0f4ff;
-  --brand-100: #dbe4ff;
-  --brand-200: #b6caff;
-  --brand-300: #8eaaff;
-  --brand-400: #6a90ff;
-  --brand-500: #4a74f1;
-  --brand-600: #3a5dd1;
-  --brand-700: #304db1;
-  --brand-800: #283e91;
-  --brand-900: #212f71;
-  --brand-950: #1a2255;
-
   color-scheme: light;
 }
 
@@ -29,12 +17,12 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(45deg, var(--brand-400), var(--brand-300));
+  background: linear-gradient(45deg, hsl(var(--ring)), hsl(var(--accent)));
   border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(45deg, var(--brand-500), var(--brand-400));
+  background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--ring)));
 }
 
 /* Enhanced scroll behavior */

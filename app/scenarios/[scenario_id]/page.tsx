@@ -75,7 +75,7 @@ export default function ScenarioPage() {
       <div className="container mx-auto py-8">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <div className="w-16 h-16 border-4 border-gray-300 border-t-brand-500 rounded-full animate-spin mb-4"></div>
+            <div className="w-16 h-16 border-4 border-gray-300 border-t-primary rounded-full animate-spin mb-4"></div>
             <p className="text-lg text-gray-600 dark:text-gray-400">Loading scenario details...</p>
           </div>
         ) : isError ? (
@@ -95,7 +95,7 @@ export default function ScenarioPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/scenarios")}
-                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:shadow-lg transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-ring to-primary text-white rounded-lg hover:shadow-lg transition-all"
               >
                 Back to Scenarios
               </motion.button>
@@ -110,7 +110,7 @@ export default function ScenarioPage() {
               transition={{ duration: 0.5 }}
               className="mb-8 text-center"
             >
-              <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-brand-400 to-brand-600 bg-clip-text text-transparent">
+              <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-ring to-primary bg-clip-text text-transparent">
                 Practice Scenario
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-lg">
@@ -128,10 +128,10 @@ export default function ScenarioPage() {
               >
                 <div className="flex items-center justify-between p-4">
                   <div className="flex items-center space-x-4">
-                    <div className="bg-gradient-to-br from-brand-400 to-brand-600 rounded-lg w-12 h-12 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                    <div className="bg-gradient-to-br from-ring to-primary rounded-lg w-12 h-12 flex items-center justify-center text-white font-bold text-lg shadow-md">
                       1
                     </div>
-                    <h2 className="text-xl font-bold text-brand-500">Context Verification</h2>
+                    <h2 className="text-xl font-bold text-primary">Context Verification</h2>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -189,7 +189,7 @@ export default function ScenarioPage() {
                           transition={{ delay: 0.1 * index }}
                         >
                           <div className="flex items-center p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                            <div className="flex items-center justify-center bg-gradient-to-br from-brand-400 to-brand-600 rounded-lg w-10 h-10 text-white">
+                            <div className="flex items-center justify-center bg-gradient-to-br from-ring to-primary rounded-lg w-10 h-10 text-white">
                               <detail.icon className="w-5 h-5" />
                             </div>
                             <div className="ml-3">
@@ -204,11 +204,11 @@ export default function ScenarioPage() {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-brand-50 to-brand-100 border border-brand-200 rounded-lg p-4 shadow-sm">
+                  <div className="bg-gradient-to-r from-muted to-accent border border-accent rounded-lg p-4 shadow-sm">
                     <div className="flex">
                       <div className="ml-3">
-                        <h3 className="text-brand-700 font-semibold">Ready to proceed!</h3>
-                        <p className="text-brand-600">
+                        <h3 className="text-primary font-semibold">Ready to proceed!</h3>
+                        <p className="text-primary">
                           Everything looks accurate. Let&apos;s set up your practice environment.
                         </p>
                       </div>
@@ -226,10 +226,10 @@ export default function ScenarioPage() {
               >
                 <div className="flex items-center justify-between p-4">
                   <div className="flex items-center space-x-4">
-                    <div className="bg-gradient-to-br from-brand-400 to-brand-600 rounded-lg w-12 h-12 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                    <div className="bg-gradient-to-br from-ring to-primary rounded-lg w-12 h-12 flex items-center justify-center text-white font-bold text-lg shadow-md">
                       2
                     </div>
-                    <h2 className="text-xl font-bold text-brand-500">Voice Setup & Testing</h2>
+                    <h2 className="text-xl font-bold text-primary">Voice Setup & Testing</h2>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -264,7 +264,7 @@ export default function ScenarioPage() {
                         </p>
 
                         <select
-                          className="w-full p-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
+                          className="w-full p-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                           disabled={devices.length === 0}
                           value={activeDeviceId}
                           onChange={(e) => setActiveDeviceId(e.target.value)}
@@ -283,7 +283,7 @@ export default function ScenarioPage() {
                         <motion.button
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          className="w-full py-2 px-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white font-medium rounded-lg hover:shadow-lg flex items-center justify-center gap-2 text-base transition-all"
+                          className="w-full py-2 px-3 bg-gradient-to-r from-ring to-primary text-white font-medium rounded-lg hover:shadow-lg flex items-center justify-center gap-2 text-base transition-all"
                         >
                           {isTestingMic ? "Stop Testing" : "Test Microphone"}
                           {isTestingMic ? (
@@ -322,10 +322,10 @@ export default function ScenarioPage() {
               >
                 <div className="flex items-center justify-between p-4">
                   <div className="flex items-center space-x-4">
-                    <div className="bg-gradient-to-br from-brand-400 to-brand-600 rounded-lg w-12 h-12 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                    <div className="bg-gradient-to-br from-ring to-primary rounded-lg w-12 h-12 flex items-center justify-center text-white font-bold text-lg shadow-md">
                       3
                     </div>
-                    <h2 className="text-xl font-bold text-brand-500">Meet Your Practice Partner</h2>
+                    <h2 className="text-xl font-bold text-primary">Meet Your Practice Partner</h2>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -351,7 +351,7 @@ export default function ScenarioPage() {
                   <div className="bg-gray-50 dark:bg-gray-700 p-5 rounded-lg mb-4">
                     <div>
                       <div className="flex items-center mb-4">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white text-base font-bold shadow-sm">
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-ring to-primary flex items-center justify-center text-white text-base font-bold shadow-sm">
                           {scenario.persona.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="ml-4">
@@ -392,7 +392,7 @@ export default function ScenarioPage() {
                           transition={{ delay: 0.1 * index }}
                         >
                           <div className="flex items-center p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow gap-3">
-                            <div className="flex items-center justify-center bg-gradient-to-br from-brand-400 to-brand-600 rounded-lg w-8 h-8 text-white">
+                            <div className="flex items-center justify-center bg-gradient-to-br from-ring to-primary rounded-lg w-8 h-8 text-white">
                               <item.icon className="w-4 h-4" />
                             </div>
                             <div>
@@ -427,7 +427,7 @@ export default function ScenarioPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => router.push("/scenarios")}
-              className="mt-4 px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:shadow-lg transition-all"
+              className="mt-4 px-4 py-2 bg-gradient-to-r from-ring to-primary text-white rounded-lg hover:shadow-lg transition-all"
             >
               Back to Scenarios
             </motion.button>
@@ -448,7 +448,7 @@ export default function ScenarioPage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="py-3 px-6 bg-gradient-to-r from-brand-500 to-brand-600 text-white font-medium rounded-lg shadow-md hover:shadow-xl flex items-center justify-center mx-auto"
+                className="py-3 px-6 bg-gradient-to-r from-ring to-primary text-white font-medium rounded-lg shadow-md hover:shadow-xl flex items-center justify-center mx-auto"
                 onClick={handleStartSimulation}
               >
                 Start Voice Practice

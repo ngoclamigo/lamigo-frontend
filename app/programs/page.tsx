@@ -38,7 +38,7 @@ export default function ProgramsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <motion.div
-          className="rounded-full h-16 w-16 border-4 border-indigo-200 border-b-brand-500"
+          className="rounded-full h-16 w-16 border-4 border-accent border-b-primary"
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         />
@@ -86,7 +86,7 @@ export default function ProgramsPage() {
                   <div className="flex items-start justify-between mb-4">
                     <motion.div
                       whileHover={{ scale: 1.05 }}
-                      className="bg-gradient-to-br from-brand-400 to-brand-600 p-3 rounded-lg shadow-md"
+                      className="bg-gradient-to-br from-ring to-primary p-3 rounded-lg shadow-md"
                     >
                       <BookOpen className="h-6 w-6 text-white" />
                     </motion.div>
@@ -112,13 +112,13 @@ export default function ProgramsPage() {
 
                   <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                     <div className="flex items-center bg-gray-100 px-3 py-2 rounded-lg">
-                      <Clock className="h-4 w-4 mr-2 text-brand-600" />
+                      <Clock className="h-4 w-4 mr-2 text-primary" />
                       <span className="font-semibold text-gray-700">
                         {program.duration_estimate_hours}h
                       </span>
                     </div>
                     <div className="flex items-center bg-gray-100 px-3 py-2 rounded-lg">
-                      <BookOpen className="h-4 w-4 mr-2 text-brand-600" />
+                      <BookOpen className="h-4 w-4 mr-2 text-primary" />
                       <span className="font-semibold text-gray-700">
                         {program.activities.length} activities
                       </span>
@@ -129,7 +129,7 @@ export default function ProgramsPage() {
                 <div className="px-6 pb-6 relative">
                   <div className="relative w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                     <motion.div
-                      className="bg-gradient-to-r from-brand-400 to-brand-600 h-3 rounded-full"
+                      className="bg-gradient-to-r from-ring to-primary h-3 rounded-full"
                       initial={{ width: 0 }}
                       whileInView={{ width: "0%" }}
                       transition={{ duration: 0.8, delay: 0.2 }}

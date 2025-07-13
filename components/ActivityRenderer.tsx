@@ -125,7 +125,7 @@ function NextButton({
       className={`flex items-center px-4 py-2 rounded-lg shadow-sm transition-colors text-sm font-medium ${
         isLastActivity
           ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-          : "bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700"
+          : "bg-gradient-to-r from-ring to-primary"
       } text-white disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed`}
     >
       {isLastActivity ? (isCompleted ? "Completed" : "Mark Complete") : "Continue"}
@@ -277,8 +277,8 @@ function FlashcardActivity({
               onClick={handleFlipAll}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-4 py-1.5 bg-gradient-to-r from-brand-100 to-brand-200 text-brand-700
-                rounded-lg border border-brand-300 shadow-sm text-sm font-medium flex items-center"
+              className="px-4 py-1.5 bg-gradient-to-r from-muted to-accent text-primary
+                rounded-lg border border-ring shadow-sm text-sm font-medium flex items-center"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -333,7 +333,7 @@ function FlashcardActivity({
                 >
                   <motion.div
                     className={`absolute w-full h-full backface-hidden p-5 rounded-xl
-                      bg-gradient-to-br from-brand-50 to-brand-100 border border-brand-200
+                      bg-gradient-to-br from-muted to-accent border border-accent
                       flex items-center justify-center text-center`}
                     style={{ backfaceVisibility: "hidden" }}
                   >
@@ -342,7 +342,7 @@ function FlashcardActivity({
 
                   <motion.div
                     className={`absolute w-full h-full backface-hidden p-5 rounded-xl
-                      bg-gradient-to-br from-brand-100 to-brand-200 border border-brand-300
+                      bg-gradient-to-br from-muted to-accent border border-ring
                       flex items-center justify-center text-center`}
                     style={{
                       backfaceVisibility: "hidden",
@@ -424,7 +424,7 @@ function QuizActivity({
         <h2 className="text-xl font-bold text-gray-800 mb-6">{activity.title}</h2>
 
         <motion.div
-          className="mb-8 p-6 rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 border border-brand-200/50"
+          className="mb-8 p-6 rounded-xl bg-gradient-to-br from-muted to-accent border border-accent/50"
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -446,10 +446,10 @@ function QuizActivity({
                       ? index === config.correct_answer
                         ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
                         : "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
-                      : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
+                      : "border-primary bg-gradient-to-r from-muted to-accent"
                     : showResult && index === config.correct_answer
                       ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
-                      : "border-gray-200 hover:border-brand-300 bg-gradient-to-r from-white to-gray-50"
+                      : "border-gray-200 hover:border-ring bg-gradient-to-r from-white to-gray-50"
                 }`}
               >
                 <input
@@ -459,7 +459,7 @@ function QuizActivity({
                   checked={userAnswer === index}
                   onChange={() => !answered && setUserAnswer(index)}
                   disabled={answered}
-                  className="w-4 h-4 text-brand-600 mr-3"
+                  className="w-4 h-4 text-primary mr-3"
                 />
                 <span className="text-base font-medium text-gray-800">{option}</span>
                 {showResult && index === config.correct_answer && (
@@ -513,7 +513,7 @@ function QuizActivity({
                 disabled={userAnswer === null}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-gradient-to-r from-ring to-primary text-white rounded-lg shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm font-medium"
               >
                 Check Answer
               </motion.button>
@@ -616,7 +616,7 @@ function EmbedActivity({
             </motion.div>
           ) : (
             <motion.div
-              className="border border-brand-200 p-8 text-center rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 shadow-sm"
+              className="border border-accent p-8 text-center rounded-xl bg-gradient-to-br from-muted to-accent shadow-sm"
               whileHover={{ boxShadow: "0 8px 30px rgba(0,0,0,0.08)" }}
               transition={{ duration: 0.3 }}
             >
@@ -625,7 +625,7 @@ function EmbedActivity({
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <ExternalLink className="w-12 h-12 text-brand-400 mx-auto mb-4" />
+                <ExternalLink className="w-12 h-12 text-ring mx-auto mb-4" />
               </motion.div>
 
               <motion.h3
@@ -651,7 +651,7 @@ function EmbedActivity({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={handleExternalLinkClick}
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white font-medium rounded-lg shadow-md"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-ring to-primary text-white font-medium rounded-lg shadow-md"
                 whileHover={{ scale: 1.05, boxShadow: "0 5px 15px rgba(0,0,0,0.1)" }}
                 whileTap={{ scale: 0.98 }}
                 initial={{ opacity: 0, y: 5 }}
@@ -717,7 +717,7 @@ function DraggableWord({ id, word, isUsed }: { id: string; word: string; isUsed:
       className={`px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 select-none ${
         isUsed
           ? "cursor-not-allowed opacity-60 bg-gray-100"
-          : "cursor-move bg-gradient-to-r from-brand-50 to-brand-100 border border-brand-200 text-brand-800"
+          : "cursor-move bg-gradient-to-r from-muted to-accent border border-accent text-primary"
       }`}
       whileHover={!isUsed ? { scale: 1.03 } : {}}
       whileTap={!isUsed ? { scale: 0.98 } : {}}
@@ -766,10 +766,10 @@ function DroppableBlank({
               ? isCorrect
                 ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100 text-green-800"
                 : "border-red-500 bg-gradient-to-r from-red-50 to-red-100 text-red-800"
-              : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100 text-brand-800"
+              : "border-primary bg-gradient-to-r from-muted to-accent text-primary"
             : isOver
-              ? "border-brand-400 bg-gradient-to-r from-brand-50 to-brand-100"
-              : "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 hover:border-brand-400"
+              ? "border-ring bg-gradient-to-r from-muted to-accent"
+              : "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 hover:border-ring"
         }`}
         whileHover={{ scale: 1.02, boxShadow: "0 2px 4px rgba(0,0,0,0.05)" }}
         whileTap={{ scale: 0.98 }}
@@ -949,7 +949,7 @@ function FillBlanksActivity({
 
           {/* Text with blanks */}
           <motion.div
-            className="bg-gradient-to-br from-white to-brand-50/50 p-6 border border-brand-200/50 shadow-sm mb-6 rounded-xl"
+            className="bg-gradient-to-br from-white to-muted/50 p-6 border border-accent/50 shadow-sm mb-6 rounded-xl"
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
@@ -997,7 +997,7 @@ function FillBlanksActivity({
           >
             <h3 className="text-lg font-semibold text-gray-700 mb-4">Available Words:</h3>
             <motion.div
-              className="flex flex-wrap gap-3 p-4 bg-gradient-to-br from-brand-50 to-brand-100 rounded-xl border border-brand-200/50"
+              className="flex flex-wrap gap-3 p-4 bg-gradient-to-br from-muted to-accent rounded-xl border border-accent/50"
               initial={{ scale: 0.98 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.5, duration: 0.4 }}
@@ -1028,7 +1028,7 @@ function FillBlanksActivity({
                 disabled={Object.keys(userAnswer).length !== config.blanks.length}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-gradient-to-r from-ring to-primary text-white rounded-lg shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm font-medium"
               >
                 Check Answers
               </motion.button>
@@ -1069,7 +1069,7 @@ function FillBlanksActivity({
         {activeId && activeId.startsWith("word-") && activeWord ? (
           <motion.div
             initial={{ scale: 1.05 }}
-            className="px-4 py-2 bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border border-brand-300 shadow-lg rounded-lg pointer-events-none"
+            className="px-4 py-2 bg-gradient-to-r from-muted to-accent text-primary border border-ring shadow-lg rounded-lg pointer-events-none"
           >
             <div className="flex items-center">
               <GripVertical className="w-4 h-4 mr-2 opacity-60" />
@@ -1318,13 +1318,13 @@ function MatchingActivity({
 
           {/* Selection instructions */}
           <motion.div
-            className="mb-6 p-4 bg-gradient-to-r from-brand-50 to-brand-100/50 border border-brand-200 rounded-xl shadow-sm"
+            className="mb-6 p-4 bg-gradient-to-r from-muted to-accent/50 border border-accent rounded-xl shadow-sm"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
             whileHover={{ boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
           >
-            <p className="text-sm text-brand-800 font-medium flex items-center">
+            <p className="text-sm text-primary font-medium flex items-center">
               <motion.span
                 animate={{ rotate: [0, 10, 0] }}
                 transition={{ repeat: Infinity, duration: 2 }}
@@ -1368,16 +1368,16 @@ function MatchingActivity({
                       onClick={() => handleLeftClick(item.id)}
                       className={`p-3 border-2 cursor-pointer rounded-xl shadow-sm ${
                         isSelected
-                          ? "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
+                          ? "border-primary bg-gradient-to-r from-muted to-accent"
                           : isMatched
                             ? answered
                               ? isCorrect
                                 ? "border-green-500 bg-gradient-to-r from-green-50 to-green-100"
                                 : isIncorrect
                                   ? "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
-                                  : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
-                              : "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
-                            : "border-gray-200 bg-gradient-to-r from-white to-gray-50 hover:border-brand-300"
+                                  : "border-primary bg-gradient-to-r from-muted to-accent"
+                              : "border-primary bg-gradient-to-r from-muted to-accent"
+                            : "border-gray-200 bg-gradient-to-r from-white to-gray-50 hover:border-ring"
                       }`}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -1392,7 +1392,7 @@ function MatchingActivity({
                             <motion.span
                               animate={{ x: [0, 5, 0] }}
                               transition={{ repeat: Infinity, duration: 1 }}
-                              className="ml-2 text-brand-600 font-semibold"
+                              className="ml-2 text-primary font-semibold"
                             >
                               →
                             </motion.span>
@@ -1444,7 +1444,7 @@ function MatchingActivity({
                       onClick={() => handleRightClick(item.id)}
                       className={`p-3 border-2 cursor-pointer rounded-xl shadow-sm ${
                         isSelected
-                          ? "border-brand-500 bg-gradient-to-r from-brand-50 to-brand-100"
+                          ? "border-primary bg-gradient-to-r from-muted to-accent"
                           : isMatched
                             ? answered
                               ? isCorrect
@@ -1453,7 +1453,7 @@ function MatchingActivity({
                                   ? "border-red-500 bg-gradient-to-r from-red-50 to-red-100"
                                   : "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100"
                               : "border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100"
-                            : "border-brand-200 bg-gradient-to-r from-brand-50 to-brand-100 hover:border-brand-300"
+                            : "border-accent bg-gradient-to-r from-muted to-accent hover:border-ring"
                       }`}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -1467,7 +1467,7 @@ function MatchingActivity({
                           <motion.span
                             animate={{ x: [0, -5, 0] }}
                             transition={{ repeat: Infinity, duration: 1 }}
-                            className="text-brand-600 font-semibold"
+                            className="text-ring font-semibold"
                           >
                             ←
                           </motion.span>
@@ -1491,7 +1491,7 @@ function MatchingActivity({
                 disabled={Object.keys(userAnswer).length !== config.pairs.length}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-gradient-to-r from-ring to-primary text-white rounded-lg shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm font-medium"
               >
                 Check Matches
               </motion.button>

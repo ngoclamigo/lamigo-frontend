@@ -59,7 +59,7 @@ export function ProgressDashboard() {
         transition={{ duration: 0.5 }}
         className="text-center"
       >
-        <h2 className="text-4xl font-bold text-brand-600 mb-4">Your Learning Journey</h2>
+        <h2 className="text-4xl font-bold text-primary mb-4">Your Learning Journey</h2>
         <p className="text-gray-600 text-lg">Track your progress and celebrate your achievements</p>
       </motion.div>
 
@@ -89,15 +89,15 @@ export function ProgressDashboard() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.2 }}
           whileHover={{ y: -5 }}
-          className="bg-gradient-to-br from-white to-brand-50 p-6 rounded-2xl shadow border border-gray-100"
+          className="bg-gradient-to-br from-white to-muted p-6 rounded-2xl shadow border border-gray-100"
         >
           <div className="flex items-center">
-            <div className="bg-gradient-to-br from-brand-400 to-brand-600 p-4 rounded-xl">
+            <div className="bg-gradient-to-br from-ring to-primary p-4 rounded-xl">
               <Clock className="w-6 h-6 text-white" />
             </div>
             <div className="ml-4">
               <p className="text-gray-600 text-sm font-semibold">Time Spent</p>
-              <p className="text-3xl font-bold text-brand-600">
+              <p className="text-3xl font-bold text-primary">
                 {Math.round(totalTimeSpent / 60)}h
               </p>
               <p className="text-xs text-gray-500 mt-1">Hours learning</p>
@@ -129,15 +129,15 @@ export function ProgressDashboard() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.4 }}
           whileHover={{ y: -5 }}
-          className="bg-gradient-to-br from-white to-brand-50 p-6 rounded-2xl shadow border border-gray-100"
+          className="bg-gradient-to-br from-white to-muted p-6 rounded-2xl shadow border border-gray-100"
         >
           <div className="flex items-center">
-            <div className="bg-gradient-to-br from-brand-400 to-brand-600 p-4 rounded-xl">
+            <div className="bg-gradient-to-br from-ring to-primary p-4 rounded-xl">
               <Target className="w-6 h-6 text-white" />
             </div>
             <div className="ml-4">
               <p className="text-gray-600 text-sm font-semibold">Total Points</p>
-              <p className="text-3xl font-bold text-brand-600">
+              <p className="text-3xl font-bold text-primary">
                 {achievements.reduce((total, a) => total + (a.points || 0), 0)}
               </p>
               <p className="text-xs text-gray-500 mt-1">Points collected</p>
@@ -170,7 +170,7 @@ export function ProgressDashboard() {
                       item.status === "completed"
                         ? "bg-green-500"
                         : item.status === "in_progress"
-                          ? "bg-brand-500"
+                          ? "bg-muted0"
                           : "bg-gray-400"
                     }`}
                   ></div>
@@ -188,7 +188,7 @@ export function ProgressDashboard() {
                         initial={{ width: 0 }}
                         animate={{ width: `${item.completion_percentage}%` }}
                         transition={{ duration: 1, delay: 0.2 * index }}
-                        className="bg-gradient-to-r from-brand-400 to-brand-600 h-2 rounded-full"
+                        className="bg-gradient-to-r from-ring to-primary h-2 rounded-full"
                       ></motion.div>
                     </div>
                     <span className="text-sm font-bold text-gray-800">

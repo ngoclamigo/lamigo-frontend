@@ -151,7 +151,7 @@ export function ProgramChat({
       <div
         className="relative p-4 rounded-t-lg"
         style={{
-          background: "linear-gradient(135deg, var(--brand-600), var(--brand-700))",
+          background: "linear-gradient(135deg, hsl(var(--ring)), hsl(var(--primary)))",
         }}
       >
         <motion.div
@@ -196,16 +196,16 @@ export function ProgramChat({
               animate={{ opacity: [0.4, 1, 0.4] }}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
-              <div className="w-2 h-2 bg-brand-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-ring rounded-full"></div>
               <motion.div
                 animate={{ opacity: [0.4, 1, 0.4] }}
                 transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
-                className="w-2 h-2 bg-brand-400 rounded-full"
+                className="w-2 h-2 bg-ring rounded-full"
               ></motion.div>
               <motion.div
                 animate={{ opacity: [0.4, 1, 0.4] }}
                 transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
-                className="w-2 h-2 bg-brand-400 rounded-full"
+                className="w-2 h-2 bg-ring rounded-full"
               ></motion.div>
             </motion.div>
           </div>
@@ -227,16 +227,16 @@ export function ProgramChat({
               animate={{ opacity: [0.4, 1, 0.4] }}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
-              <div className="w-2 h-2 bg-brand-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-ring rounded-full"></div>
               <motion.div
                 animate={{ opacity: [0.4, 1, 0.4] }}
                 transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
-                className="w-2 h-2 bg-brand-400 rounded-full"
+                className="w-2 h-2 bg-ring rounded-full"
               ></motion.div>
               <motion.div
                 animate={{ opacity: [0.4, 1, 0.4] }}
                 transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
-                className="w-2 h-2 bg-brand-400 rounded-full"
+                className="w-2 h-2 bg-ring rounded-full"
               ></motion.div>
             </motion.div>
           </div>
@@ -256,7 +256,7 @@ export function ProgramChat({
           )}
           {/* Text Input */}
           <div className="w-full relative">
-            <div className="relative flex items-center w-full bg-white border rounded-lg focus-within:ring-2 focus-within:ring-brand-400">
+            <div className="relative flex items-center w-full bg-white border rounded-lg focus-within:ring-2 focus-within:ring-ring">
               <textarea
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
@@ -300,7 +300,7 @@ export function ProgramChat({
               disabled={!inputValue.trim() || isLoading}
               className="px-4 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
-                background: "linear-gradient(135deg, var(--brand-500), var(--brand-600))",
+                background: "linear-gradient(135deg, hsl(var(--ring)), hsl(var(--primary)))",
               }}
             >
               <div className="flex items-center gap-2 text-white">

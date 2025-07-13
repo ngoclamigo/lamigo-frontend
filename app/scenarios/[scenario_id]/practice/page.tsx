@@ -50,7 +50,7 @@ export default function ScenarioPracticePage() {
     <>
       {isLoading ? (
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <div className="w-16 h-16 border-4 border-gray-300 border-t-brand-500 rounded-full animate-spin mb-4"></div>
+          <div className="w-16 h-16 border-4 border-gray-300 border-t-primary rounded-full animate-spin mb-4"></div>
           <p className="text-lg text-gray-600 dark:text-gray-400">Loading scenario details...</p>
         </div>
       ) : isError ? (
@@ -64,7 +64,7 @@ export default function ScenarioPracticePage() {
             </p>
             <button
               onClick={() => router.push(`/scenarios/${encodeURIComponent(scenario_id)}`)}
-              className="px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors"
+              className="px-4 py-2 bg-primary text-white rounded-lg transition-colors"
             >
               Back to Scenarios
             </button>
@@ -76,7 +76,7 @@ export default function ScenarioPracticePage() {
             <div className="relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                className="object-cover w-full aspect-square bg-gradient-to-r from-blue-50 to-indigo-100"
+                className="object-cover w-full aspect-square bg-gradient-to-r from-muted to-accent"
                 src={`https://api.dicebear.com/9.x/initials/svg?seed=${scenario.persona.name}`}
                 alt={`Avatar for ${scenario.persona.name}`}
               />
@@ -102,7 +102,7 @@ export default function ScenarioPracticePage() {
                           index % 3 === 0
                             ? "bg-blue-50 text-blue-700"
                             : index % 3 === 1
-                              ? "bg-emerald-50 text-emerald-700"
+                              ? "bg-green-50 text-green-700"
                               : "bg-purple-50 text-purple-700"
                         }`}
                       >
@@ -137,7 +137,7 @@ export default function ScenarioPracticePage() {
                           index % 3 === 0
                             ? "bg-blue-50 text-blue-700"
                             : index % 3 === 1
-                              ? "bg-emerald-50 text-emerald-700"
+                              ? "bg-green-50 text-green-700"
                               : "bg-purple-50 text-purple-700"
                         }`}
                       >
@@ -152,7 +152,7 @@ export default function ScenarioPracticePage() {
           <div
             className="relative flex-1 rounded-xl shadow-lg"
             style={{
-              background: "linear-gradient(0deg,var(--brand-200) 50%, var(--brand-100) 100%)",
+              background: "linear-gradient(0deg,hsl(var(--accent)) 50%, hsl(var(--muted)) 100%)",
               // "linear-gradient(0deg,rgba(182, 202, 255, 1) 50%, rgba(153, 246, 228, 1) 100%)",
             }}
           >
@@ -182,7 +182,7 @@ export default function ScenarioPracticePage() {
           <p className="text-lg text-gray-600 dark:text-gray-400">No scenario found</p>
           <button
             onClick={() => router.push(`/scenarios/${encodeURIComponent(scenario_id)}`)}
-            className="mt-4 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors"
+            className="mt-4 px-4 py-2 bg-primary text-white rounded-lg transition-colors"
           >
             Back to Scenarios
           </button>
