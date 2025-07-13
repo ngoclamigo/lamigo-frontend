@@ -15,7 +15,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiChevronDown, FiChevronUp, FiMic, FiMicOff, FiPlay } from "react-icons/fi";
 import { useMediaDevices } from "~/hooks/use-media-devices";
-import { getScenario } from "~/lib/api";
+import { getScenario } from "~/network/scenarios";
 import type { Scenario } from "~/types/scenario";
 import { getCallTypeLabel, getIntentTypeLabel, getObjectionTypeLabel } from "~/utils/label";
 

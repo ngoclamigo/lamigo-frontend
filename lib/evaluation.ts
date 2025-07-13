@@ -8,7 +8,7 @@ export async function generateEvaluation(
   transcriptions: Transcription[]
 ): Promise<EvaluationResult> {
   try {
-    const response = await fetch("/api/evaluation", {
+    const response = await fetch("/api/ai/evaluation", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

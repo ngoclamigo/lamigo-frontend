@@ -5,8 +5,8 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getScenarios } from "~/lib/api";
-import { Scenario } from "~/types/scenario";
+import { getScenarios } from "~/network/scenarios";
+import type { Scenario } from "~/types/scenario";
 import { getCallTypeLabel, getIntentTypeLabel, getLeadStageCategoryLabel } from "~/utils/label";
 
 export default function ScenariosPage() {

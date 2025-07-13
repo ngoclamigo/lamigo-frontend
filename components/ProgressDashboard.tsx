@@ -3,12 +3,12 @@
 import { CheckCircle, Clock, Target, Trophy } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { getLearningAchievements, getLearningProgress } from "~/lib/api";
-import { LearningAchievement, LearningProgress } from "~/types/learning-path";
+import { getLearningAchievements, getLearningProgress } from "~/network/programs";
+import { ProgramAchievement, ProgramProgress } from "~/types/program";
 
 export function ProgressDashboard() {
-  const [progress, setProgress] = useState<LearningProgress[]>([]);
-  const [achievements, setAchievements] = useState<LearningAchievement[]>([]);
+  const [progress, setProgress] = useState<ProgramProgress[]>([]);
+  const [achievements, setAchievements] = useState<ProgramAchievement[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -158,7 +158,7 @@ export function ProgressDashboard() {
           <div className="space-y-3">
             {progress.slice(0, 5).map((item, index) => (
               <motion.div
-                key={item.progress_id}
+                key={item.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 * index }}
@@ -215,7 +215,7 @@ export function ProgressDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {achievements.map((achievement, index) => (
               <motion.div
-                key={achievement.achievement_id}
+                key={achievement.id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: 0.1 * index }}

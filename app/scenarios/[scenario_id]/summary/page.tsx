@@ -3,8 +3,8 @@
 import { motion } from "motion/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getScenario } from "~/lib/api";
 import { generateEvaluation } from "~/lib/evaluation";
+import { getScenario } from "~/network/scenarios";
 import { EvaluationResult, Transcription } from "~/types/evaluation";
 
 export default function ScenarioSummaryPage() {

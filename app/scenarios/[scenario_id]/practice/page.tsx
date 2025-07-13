@@ -6,8 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RecommendationView } from "~/components/RecommendationView";
 import { CALL_STATUS, useVapi } from "~/hooks/use-vapi";
-import { getScenario } from "~/lib/api";
 import { cn } from "~/lib/utils";
+import { getScenario } from "~/network/scenarios";
 import { MessageTypeEnum, TranscriptMessageTypeEnum } from "~/types/conversation.type";
 import { Scenario } from "~/types/scenario";
 import {

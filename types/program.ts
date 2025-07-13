@@ -101,3 +101,28 @@ export interface MatchingConfig {
   }[];
   narration?: string;
 }
+
+export interface ProgramProgress {
+  id: string;
+  learner_id: string;
+  program_id: string;
+  activity_id: string;
+  status: "not_started" | "in_progress" | "completed";
+  completion_percentage: number;
+  time_spent_minutes: number;
+  last_accessed: string;
+  started_at?: string;
+  completed_at?: string;
+}
+
+export interface ProgramAchievement {
+  id: string;
+  learner_id: string;
+  title: string;
+  description: string;
+  type: "completion" | "streak" | "time_based" | "skill_based";
+  earned_at: string;
+  badge_url?: string;
+  points?: number;
+  program_id?: string;
+}
