@@ -13,13 +13,13 @@ export function AppLayout({ children }: AppLayoutProps) {
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <Image
-                src="/brand.svg"
+                src="/brand-full.png"
                 alt="Lamigo Logo"
-                width={120}
+                width={148}
                 height={40}
                 className="h-10 w-auto"
               />
-              <span className="ml-2 font-bold text-xl text-primary">Lamigo</span>
+              {/* <span className="ml-2 font-bold text-xl text-primary">Lamigo</span> */}
             </Link>
           </div>
 
