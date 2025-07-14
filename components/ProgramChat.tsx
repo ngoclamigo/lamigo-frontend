@@ -6,8 +6,8 @@ import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useSpeech } from "~/hooks/use-speech";
-import { AudioPlayer } from "./AudioPlayer";
 import { sendMessage } from "~/network/programs";
+import { AudioPlayer } from "./AudioPlayer";
 
 interface Message {
   id: string;

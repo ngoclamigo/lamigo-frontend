@@ -1,4 +1,3 @@
-
 // Mock Progress Data
 export const mockProgress = [
   {

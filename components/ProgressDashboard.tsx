@@ -97,9 +97,7 @@ export function ProgressDashboard() {
             </div>
             <div className="ml-4">
               <p className="text-gray-600 text-sm font-semibold">Time Spent</p>
-              <p className="text-3xl font-bold text-primary">
-                {Math.round(totalTimeSpent / 60)}h
-              </p>
+              <p className="text-3xl font-bold text-primary">{Math.round(totalTimeSpent / 60)}h</p>
               <p className="text-xs text-gray-500 mt-1">Hours learning</p>
             </div>
           </div>
