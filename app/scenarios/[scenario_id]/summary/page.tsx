@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getScenario } from "~/network/scenarios";
+import { FeedbackResponse } from "~/types/learning-outcomes";
 import { Scenario } from "~/types/scenario";
 import { getCallTypeLabel } from "~/utils/label";
 
@@ -13,25 +14,24 @@ const mockLearnerProfile = {
   experience_level: "Mid-level",
   historical_performance: {
     avg_core_scores: [75, 80, 70, 65], // [product, communication, discovery, objection]
-    improvement_areas: ["Objection Handling", "Discovery"],
+    improvement_areas: ["objection_handling", "discovery"],
   },
 };
 
 export default function ScenarioSummaryPage() {
   const params = useParams();
   const scenario_id = params.scenario_id as string;
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [feedbackResult, setFeedbackResult] = useState<any | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [feedbackResult, setFeedbackResult] = useState<FeedbackResponse | null>(null);
   const [scenario, setScenario] = useState<Scenario | null>(null);
 
   useEffect(() => {
     const fetchScenarioAndEvaluate = async () => {
-      setIsLoading(true);
-      setIsError(false);
+      setLoading(true);
       try {
-        const data = await getScenario(scenario_id);
-        setScenario(data.data);
+        const { data } = await getScenario(scenario_id);
+        setScenario(data);
         const mockTranscriptions = [
           {
             text: "Hi, I'm calling about our software solution that could help with your current challenges.",
@@ -47,9 +47,24 @@ export default function ScenarioSummaryPage() {
           ? JSON.parse(transcriptions)
           : mockTranscriptions;
         const conversation = transcriptionsParsed
-          .map((t: any) => `${t.role === "user" ? "Learner" : "Client"}: ${t.text}`)
+          .reduce((acc: string[], curr: any, index: number) => {
+            const role = curr.role === "user" ? "LEARNER" : "CLIENT";
+            const prev = transcriptionsParsed[index - 1];
+            const prevRole = prev?.role === "user" ? "LEARNER" : "CLIENT";
+
+            if (index === 0 || role !== prevRole) {
+              // New turn
+              acc.push(`${role}: ${curr.text}`);
+            } else {
+              // Same turn, append to previous
+              acc[acc.length - 1] += ` ${curr.text}`;
+            }
+
+            return acc;
+          }, [])
           .join("\n");
-        if (data.data.persona && data.data.scenarios) {
+
+        if (data.persona && data.scenarios) {
           // todo: Replace with actual feedback logic
           const res = await fetch("/api/ai/feedback", {
             method: "POST",
@@ -59,7 +74,7 @@ export default function ScenarioSummaryPage() {
             body: JSON.stringify({
               transcript: conversation,
               learner_profile: mockLearnerProfile,
-              scenario_context: data.data.scenarios,
+              scenario_context: data.scenarios,
             }),
           });
           if (!res.ok) {
@@ -71,9 +86,9 @@ export default function ScenarioSummaryPage() {
         }
       } catch (error) {
         console.error("Failed to fetch scenario or generate feedback:", error);
-        setIsError(true);
+        setError("Failed to load scenario or generate feedback");
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
@@ -81,7 +96,7 @@ export default function ScenarioSummaryPage() {
   }, [params.scenario_id]);
 
   // Show loading state
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <motion.div
@@ -98,7 +113,7 @@ export default function ScenarioSummaryPage() {
   }
 
   // Show error state
-  if (isError || !feedbackResult) {
+  if (error || !feedbackResult) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <motion.div
@@ -243,7 +258,7 @@ export default function ScenarioSummaryPage() {
           💪 Your Winning Talking Points
         </h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {winning_talking_points.map((point: any, index: number) => (
+          {winning_talking_points.map((point, index: number) => (
             <motion.div
               key={index}
               className="bg-white p-5 border-l-4 border-emerald-500 cursor-pointer rounded-lg shadow-sm hover:shadow-md transition-shadow"
@@ -255,8 +270,8 @@ export default function ScenarioSummaryPage() {
               <div className="w-6 h-6 bg-emerald-500 text-white flex items-center justify-center text-xs font-bold mb-2 rounded-full">
                 {index + 1}
               </div>
-              <div className="font-semibold text-gray-900 mb-1">{point.point}</div>
-              <div className="text-sm text-gray-500">&quot;{point.context}&quot;</div>
+              <div className="font-semibold text-gray-900 mb-1">{point.context}</div>
+              <div className="text-sm text-gray-500">&quot;{point.why_effective}&quot;</div>
             </motion.div>
           ))}
         </div>
@@ -267,7 +282,7 @@ export default function ScenarioSummaryPage() {
           <h2 className="text-xl font-bold text-gray-900">📊 Performance Breakdown</h2>
         </div>
         <div className="grid gap-4">
-          {performance_breakdown.map((metric: any, index: number) => {
+          {performance_breakdown.map((metric, index: number) => {
             const colorClass = {
               emerald: "bg-gradient-to-r from-emerald-50 to-emerald-100 border-emerald-500",
               yellow: "bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-500",
@@ -362,7 +377,16 @@ export default function ScenarioSummaryPage() {
             whileHover={{ scale: 1.05, backgroundColor: "#f9fafb" }}
             whileTap={{ scale: 0.98 }}
           >
-            🎭 ONE MORE FULL PRACTICE
+            🎭{" "}
+            {feedbackResult.readiness_calculation.final_score > 90
+              ? "Suggest advanced scenarios"
+              : feedbackResult.readiness_calculation.final_score > 80
+                ? "Proceed with confidence"
+                : feedbackResult.readiness_calculation.final_score > 70
+                  ? "1-2 more practice sessions"
+                  : feedbackResult.readiness_calculation.final_score > 60
+                    ? "Focus on weak areas"
+                    : "Remedial training path"}
           </motion.a>
           <motion.a
             href="#"
