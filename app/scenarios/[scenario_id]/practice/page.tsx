@@ -77,13 +77,13 @@ export default function ScenarioPracticePage() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 className="object-cover w-full aspect-square bg-gradient-to-r from-muted to-accent"
-                src={`https://api.dicebear.com/9.x/initials/svg?seed=${scenario.persona.name}`}
-                alt={`Avatar for ${scenario.persona.name}`}
+                src={`https://api.dicebear.com/9.x/initials/svg?seed=${scenario.persona.buyer_identity.name}`}
+                alt={`Avatar for ${scenario.persona.buyer_identity.name}`}
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                <h2 className="text-xl font-bold text-white">{scenario.persona.name}</h2>
+                <h2 className="text-xl font-bold text-white">{scenario.persona.buyer_identity.name}</h2>
                 <p className="text-sm text-gray-300">
-                  {scenario.persona.job_title || "N/A"} - {scenario.persona.company || "N/A"}
+                  {scenario.persona.buyer_identity.title || "N/A"} - {scenario.persona.buyer_identity.company || "N/A"}
                 </p>
               </div>
             </div>

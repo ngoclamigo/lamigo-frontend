@@ -1,9 +1,12 @@
 export type Persona = {
-  name: string;
-  job_title: string;
-  company: string;
-  industry: string;
-  location: string;
+  buyer_identity: {
+    name: string;
+    gender: "male" | "female";
+    title: string;
+    company: string;
+    role_context: string;
+    evaluation_context: string;
+  };
 };
 
 export type IntentType =
@@ -52,7 +55,7 @@ export type CallType =
 
 export type ScenarioDetail = {
   // name: string;
-  // description: string;
+  description: string;
   type: "call_scenario";
   category: LeadStageCategory;
   call_type: CallType;

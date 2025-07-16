@@ -94,11 +94,11 @@ export default function ScenariosPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4 text-primary" />
-                  <h2 className="font-semibold text-gray-900">{scenario.persona.name}</h2>
+                  <h2 className="font-semibold text-gray-900">{scenario.persona.buyer_identity.name}</h2>
                 </div>
                 <div className="text-sm text-gray-600">
-                  <p>{scenario.persona.job_title}</p>
-                  <p>{scenario.persona.company}</p>
+                  <p>{scenario.persona.buyer_identity.title}</p>
+                  <p>{scenario.persona.buyer_identity.company}</p>
                 </div>
               </div>
 

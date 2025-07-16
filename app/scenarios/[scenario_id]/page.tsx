@@ -345,19 +345,19 @@ export default function ScenarioPage() {
                   className={`px-6 pb-6 overflow-hidden`}
                 >
                   <p className="mb-4 text-gray-600 dark:text-gray-400">
-                    {`I'll be playing ${scenario.persona.name}. Here's what you should know about how I communicate:`}
+                    {`I'll be playing ${scenario.persona.buyer_identity.name}. Here's what you should know about how I communicate:`}
                   </p>
 
                   <div className="bg-gray-50 dark:bg-gray-700 p-5 rounded-lg mb-4">
                     <div>
                       <div className="flex items-center mb-4">
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-ring to-primary flex items-center justify-center text-white text-base font-bold shadow-sm">
-                          {scenario.persona.name.charAt(0).toUpperCase()}
+                          {scenario.persona.buyer_identity.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="ml-4">
-                          <p className="text-lg font-bold">{scenario.persona.name}</p>
+                          <p className="text-lg font-bold">{scenario.persona.buyer_identity.name}</p>
                           <p className="text-gray-600 dark:text-gray-400">
-                            {scenario.persona.job_title}, {scenario.persona.company}
+                            {scenario.persona.buyer_identity.title}, {scenario.persona.buyer_identity.company}
                           </p>
                         </div>
                       </div>
@@ -367,22 +367,22 @@ export default function ScenarioPage() {
                         {
                           icon: BriefcaseBusiness,
                           title: "Job Title",
-                          desc: scenario.persona.job_title,
+                          desc: scenario.persona.buyer_identity.title,
                         },
                         {
                           icon: Building2,
                           title: "Company",
-                          desc: scenario.persona.company,
+                          desc: scenario.persona.buyer_identity.company,
                         },
                         {
                           icon: Factory,
                           title: "Industry",
-                          desc: scenario.persona.industry,
+                          desc: "N/A",
                         },
                         {
                           icon: MapPin,
                           title: "Location",
-                          desc: scenario.persona.location,
+                          desc: "N/A",
                         },
                       ].map((item, index) => (
                         <motion.div

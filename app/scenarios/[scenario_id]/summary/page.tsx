@@ -198,7 +198,7 @@ export default function ScenarioSummaryPage() {
                     : "text-red-800"
             }`}
           >
-            {scenario?.persona.company} • {(Number(scenario?.scenarios.time_limit) || 0) / 60}{" "}
+            {scenario?.persona.buyer_identity.company} • {(Number(scenario?.scenarios.time_limit) || 0) / 60}{" "}
             minutes
           </p>
           <motion.div
@@ -415,7 +415,7 @@ export default function ScenarioSummaryPage() {
           whileHover={{ y: -3 }}
           transition={{ type: "spring", stiffness: 300 }}
         >
-          <span className="block text-lg font-bold text-gray-900">{scenario?.persona.name}</span>
+          <span className="block text-lg font-bold text-gray-900">{scenario?.persona.buyer_identity.name}</span>
           <span className="text-xs text-slate-500 uppercase tracking-wide">Practice Partner</span>
         </motion.div>
         <motion.div
