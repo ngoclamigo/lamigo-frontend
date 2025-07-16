@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
   try {
     const response = await client.responses.create({
-      model: "gpt-4.1",
+      model: "gpt-4",
       instructions: topic
         ? `You are an AI assistant specialized in providing information and answering questions about ${topic}. Your responses should be informative, concise, and relevant to the user's query. No yapping, one paragraph. If you don't know the answer, it's okay to say so.`
         : "You are an AI assistant specialized in providing information and answering questions about various topics. Your responses should be informative, concise, and relevant to the user's query. No yapping, one paragraph. If you don't know the answer, it's okay to say so.",

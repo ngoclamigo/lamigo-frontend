@@ -233,7 +233,7 @@ export class FeedbackAnalyzer {
     `;
 
     const response = await this.openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 500,
       temperature: 0.5,
@@ -274,7 +274,7 @@ export class FeedbackAnalyzer {
     `;
 
     const response = await this.openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 400,
       temperature: 0.6,
@@ -319,7 +319,7 @@ export class FeedbackAnalyzer {
     `;
 
     const response = await this.openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 300,
       temperature: 0.5,

@@ -93,7 +93,7 @@ export default function ScenarioSummaryPage() {
     };
 
     fetchScenarioAndEvaluate();
-  }, [params.scenario_id]);
+  }, [scenario_id]);
 
   // Show loading state
   if (loading) {
@@ -106,7 +106,7 @@ export default function ScenarioSummaryPage() {
           transition={{ duration: 0.5 }}
         >
           <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600">Generating your feedback...</p>
+          <p className="text-gray-600">Analyzing your practice session...</p>
         </motion.div>
       </div>
     );

@@ -128,22 +128,22 @@ export const SPECIALTY_MAPPING = {
 export const ROLE_AMPLIFIERS = {
   "Sales Rep": {
     amplified_skills: ["Discovery", "Objection Handling"],
-    focus: "Deal progression, competitive positioning",
+    focus: ["Deal progression", "Competitive positioning"],
   },
   "Account Manager": {
     amplified_skills: ["Relationship Building", "Expansion"],
-    focus: "Customer success, upsell opportunities",
+    focus: ["Customer success", "Upsell opportunities"],
   },
   "BDR/SDR": {
     amplified_skills: ["Opening", "Qualification"],
-    focus: "Pipeline generation, meeting booking",
+    focus: ["Pipeline generation", "Meeting booking"],
   },
   "Sales Engineer": {
     amplified_skills: ["Technical Discovery", "Demo Skills"],
-    focus: "Solution fit, technical objection handling",
+    focus: ["Solution fit", "Technical objection handling"],
   },
   "Customer Success": {
     amplified_skills: ["Problem Solving", "Retention"],
-    focus: "Adoption drivers, renewal risk factors",
+    focus: ["Adoption drivers", "Renewal risk factors"],
   },
 };
