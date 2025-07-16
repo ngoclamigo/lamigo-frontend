@@ -65,13 +65,23 @@ export class FeedbackAnalyzer {
     `;
 
     const response = await this.openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 200,
       temperature: 0.3,
+      response_format: {
+        type: "json_object",
+      },
     });
 
-    const content = response.choices[0]?.message?.content?.trim() || "{}";
+    const content =
+      response.choices[0]?.message?.content?.trim() ||
+      `{
+      "product_knowledge": 0,
+      "communication": 0,
+      "discovery": 0,
+      "objection_handling": 0
+    }`;
     const scores = JSON.parse(content);
 
     const coreAverage =
@@ -105,10 +115,13 @@ export class FeedbackAnalyzer {
     `;
 
     const response = await this.openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 300,
       temperature: 0.3,
+      response_format: {
+        type: "json_object",
+      },
     });
 
     const content = response.choices[0]?.message?.content?.trim() || "{}";
@@ -222,25 +235,30 @@ export class FeedbackAnalyzer {
 
     For each competency, provide specific feedback about what was done well.
     Return JSON array with format:
-    [
-      {
-        "category": "Product Knowledge",
-        "score": 85,
-        "trend": "+3 vs last session",
-        "feedback": "Specific feedback about performance"
-      }
-    ]
+    {
+      performance_breakdown: [
+        {
+          "category": "Product Knowledge",
+          "score": 85,
+          "trend": "+3 vs last session",
+          "feedback": "Specific feedback about performance"
+        }
+      ]
+    }
     `;
 
     const response = await this.openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 500,
       temperature: 0.5,
+      response_format: {
+        type: "json_object",
+      },
     });
 
-    const content = response.choices[0]?.message?.content?.trim() || "[]";
-    return JSON.parse(content);
+    const content = response.choices[0]?.message?.content?.trim() || "{}";
+    return JSON.parse(content)?.performance_breakdown || [];
   }
 
   private async generateWinningTalkingPoints(
@@ -264,24 +282,29 @@ export class FeedbackAnalyzer {
 
     Find 2-3 specific moments where the learner said something particularly effective.
     Return JSON array with format:
-    [
-      {
-        "point": "Specific phrase or approach used",
-        "context": "When and why it was used",
-        "why_effective": "Why this worked well"
-      }
-    ]
+    {
+      winning_talking_points: [
+        {
+          "point": "Specific phrase or approach used",
+          "context": "When and why it was used",
+          "why_effective": "Why this worked well"
+        }
+      ]
+    }
     `;
 
     const response = await this.openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 400,
       temperature: 0.6,
+      response_format: {
+        type: "json_object",
+      },
     });
 
-    const content = response.choices[0]?.message?.content?.trim() || "[]";
-    return JSON.parse(content);
+    const content = response.choices[0]?.message?.content?.trim() || "{}";
+    return JSON.parse(content)?.winning_talking_points || [];
   }
 
   private async generateKeyInsight(
@@ -319,13 +342,22 @@ export class FeedbackAnalyzer {
     `;
 
     const response = await this.openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 300,
       temperature: 0.5,
+      response_format: {
+        type: "json_object",
+      },
     });
 
-    const content = response.choices[0]?.message?.content?.trim() || "{}";
+    const content =
+      response.choices[0]?.message?.content?.trim() ||
+      `{
+      "primary_finding": "No significant findings",
+      "improvement_area": "No specific area identified",
+      "next_session_focus": "No specific focus identified"
+    }`;
     return JSON.parse(content);
   }
 }

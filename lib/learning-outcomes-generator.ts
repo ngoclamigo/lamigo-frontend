@@ -258,7 +258,7 @@ export class LearningOutcomesGenerator {
     `;
 
     const response = await this.openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 100,
       temperature: 0.7,
