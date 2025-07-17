@@ -270,8 +270,8 @@ export default function ScenarioSummaryPage() {
               <div className="w-6 h-6 bg-emerald-500 text-white flex items-center justify-center text-xs font-bold mb-2 rounded-full">
                 {index + 1}
               </div>
-              <div className="font-semibold text-gray-900 mb-1">{point.context}</div>
-              <div className="text-sm text-gray-500">&quot;{point.why_effective}&quot;</div>
+              <div className="font-semibold text-gray-900 mb-1">&quot;{point.point}&quot;</div>
+              <div className="text-sm text-gray-500">{point.why_effective}</div>
             </motion.div>
           ))}
         </div>

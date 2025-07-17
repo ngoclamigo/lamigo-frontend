@@ -369,7 +369,11 @@ export default function FeedbackSimulatorPage() {
                         {feedback.ui_sections.winning_talking_points.map((point, index) => (
                           <div key={index} className="border-l-4 border-green-500 pl-4 py-2">
                             {/* <h4 className="font-medium text-green-800 mb-1">{point.point}</h4> */}
-                            <p className="text-green-600 mb-2">{point.context}</p>
+                            <p className="text-sm text-muted-foreground">
+                              <span className="font-medium">Why/when:</span>{" "}
+                              {point.context}
+                            </p>
+                            <p className="text-green-600 mb-2">&quot;{point.point}&quot;</p>
                             <p className="text-sm text-muted-foreground">
                               <span className="font-medium">Why effective:</span>{" "}
                               {point.why_effective}
